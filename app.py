@@ -5,13 +5,13 @@ import plotly.express as px
 import plotly.graph_objects as go
 import os
 import time
+import joblib
 
 # ─────────────────────────────────────────────────────────────
 # PENGATURAN HALAMAN
 # ─────────────────────────────────────────────────────────────
 st.set_page_config(
-    page_title="Data Hutan Global",
-    page_icon=" ",
+    page_title="Global Carbon Data",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
@@ -33,20 +33,19 @@ if "applied_year" not in st.session_state:
     st.session_state.applied_year = None
 
 # ─────────────────────────────────────────────────────────────
-# TEMA PIXEL - HANYA PUTIH DAN HIJAU
+# TEMA GEN Z RETRO ROUNDY (NEO-BRUTALISM)
 # ─────────────────────────────────────────────────────────────
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
 
 * {
-    font-family: 'VT323', monospace !important;
-    color: #008800 !important;
-    border-radius: 0px !important;
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    color: #111827 !important;
 }
 
 body, .stApp, .block-container, header[data-testid="stHeader"] {
-    background-color: #FFFFFF !important;
+    background-color: #FFFDF0 !important;
 }
 
 [data-testid="stSidebar"] { display: none; }
@@ -56,86 +55,102 @@ body, .stApp, .block-container, header[data-testid="stHeader"] {
     max-width: 1200px !important;
 }
 
-/* ── KOTAK / CARD TEMA PIXEL ── */
-.pixel-card {
+/* ── KOTAK / CARD TEMA RETRO ROUNDY ── */
+.retro-card {
     background-color: #FFFFFF;
-    border: 4px solid #008800;
-    box-shadow: 6px 6px 0px #008800;
-    padding: 1.5rem;
+    border: 3px solid #111827;
+    border-radius: 24px !important;
+    box-shadow: 4px 4px 0px #111827;
+    padding: 2rem;
     margin-bottom: 2rem;
+    transition: all 0.2s ease-in-out;
+}
+.retro-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 6px 6px 0px #111827;
 }
 
-.pixel-title {
-    font-size: 2.5rem;
-    font-weight: bold;
-    text-transform: uppercase;
+.retro-title {
+    font-size: 2.2rem;
+    font-weight: 800;
     margin-bottom: 0.5rem;
 }
 
-.pixel-sub {
-    font-size: 1.5rem;
+.retro-sub {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #4B5563 !important;
     margin-bottom: 1rem;
 }
 
-/* ── TOMBOL TEMA PIXEL ── */
+/* ── TOMBOL ── */
 .stButton > button {
-    background-color: #FFFFFF !important;
-    color: #008800 !important;
-    border: 3px solid #008800 !important;
-    box-shadow: 4px 4px 0px #008800 !important;
-    font-size: 1.2rem !important;
-    padding: 0.5rem !important;
+    background-color: #A7F3D0 !important;
+    color: #111827 !important;
+    border: 3px solid #111827 !important;
+    border-radius: 100px !important;
+    box-shadow: 3px 3px 0px #111827 !important;
+    font-size: 1.1rem !important;
+    font-weight: 800 !important;
+    padding: 0.6rem !important;
     transition: all 0.1s ease;
 }
 
 .stButton > button:hover, .stButton > button:active {
-    background-color: #008800 !important;
-    color: #FFFFFF !important;
-    box-shadow: 0px 0px 0px #008800 !important;
-    transform: translate(4px, 4px) !important;
+    background-color: #6EE7B7 !important;
+    box-shadow: 0px 0px 0px #111827 !important;
+    transform: translate(3px, 3px) !important;
 }
 
 /* ── METRIK / ANGKA ── */
 [data-testid="stMetric"] {
-    background: #FFFFFF !important;
-    border: 3px solid #008800 !important;
-    box-shadow: 4px 4px 0px #008800 !important;
-    padding: 1rem !important;
+    background: #FDE68A !important;
+    border: 3px solid #111827 !important;
+    border-radius: 24px !important;
+    box-shadow: 4px 4px 0px #111827 !important;
+    padding: 1.5rem !important;
     text-align: center;
 }
 [data-testid="stMetricLabel"] > div {
-    font-size: 1.2rem !important;
-    text-transform: uppercase !important;
+    font-size: 1.1rem !important;
+    font-weight: 800 !important;
 }
 [data-testid="stMetricValue"] {
-    font-size: 2rem !important;
+    font-size: 2.2rem !important;
+    font-weight: 800 !important;
 }
 
 /* ── FORM & INPUT ── */
 .stSelectbox label, .stSlider > label, .stNumberInput label, .stMultiSelect label {
-    font-size: 1.2rem !important;
-    text-transform: uppercase !important;
+    font-size: 1.1rem !important;
+    font-weight: 800 !important;
 }
 [data-baseweb="select"] > div, .stTextInput input, .stNumberInput input {
     background-color: #FFFFFF !important;
-    border: 3px solid #008800 !important;
-    color: #008800 !important;
+    border: 3px solid #111827 !important;
+    border-radius: 16px !important;
+    color: #111827 !important;
+    font-weight: 600 !important;
 }
 
 /* ── TABEL ── */
-.stDataFrame { border: 3px solid #008800 !important; }
+.stDataFrame { 
+    border: 3px solid #111827 !important; 
+    border-radius: 16px !important; 
+    overflow: hidden !important; 
+}
 thead tr th {
-    background: #FFFFFF !important;
-    border-bottom: 3px solid #008800 !important;
-    font-size: 1.2rem !important;
-    text-transform: uppercase !important;
+    background: #FECACA !important;
+    border-bottom: 3px solid #111827 !important;
+    font-size: 1rem !important;
+    font-weight: 800 !important;
 }
 
 </style>
 """, unsafe_allow_html=True)
 
 # ─────────────────────────────────────────────────────────────
-# MENU NAVIGASI (Selaras & Sama Ukuran)
+# MENU NAVIGASI
 # ─────────────────────────────────────────────────────────────
 nav_1, nav_2, nav_3 = st.columns(3)
 
@@ -155,11 +170,12 @@ with nav_3:
 st.markdown("<br>", unsafe_allow_html=True)
 
 # ─────────────────────────────────────────────────────────────
-# AMBIL DATA
+# AMBIL DATA DAN MODEL MACHINE LEARNING
 # ─────────────────────────────────────────────────────────────
 @st.cache_data
 def load_data():
     paths = [
+        "global_deforestation_2000_2025 (2).csv",
         "/content/drive/MyDrive/Tugas Week 12/global_deforestation_2000_2025.csv",
         "global_deforestation_2000_2025.csv",
     ]
@@ -181,7 +197,7 @@ def load_data():
                 df["Region"] = df["Country"].apply(region)
             return df
 
-    # Data Buatan jika tidak ada file
+    # Data Buatan jika tidak ada file ditemukan
     np.random.seed(42)
     countries = ["Brazil", "Indonesia", "Canada", "Russia", "USA", "Congo", "Australia", "India", "China", "Malaysia"]
     rows = []
@@ -197,18 +213,44 @@ def load_data():
                 "Year": y,
                 "Forest_Area_km2": max(fa, 5000),
                 "Land_Area_km2": bf * np.random.uniform(1.3, 2.2),
+                "Forest_Cover_Pct": (fa / (bf * np.random.uniform(1.3, 2.2))) * 100,
                 "Annual_Deforestation_Rate": d,
                 "Annual_Afforestation_Rate": a,
                 "Total_Carbon_Stock_Tonnes": max(bc * (fa / bf) * np.random.uniform(0.97, 1.03), 1e8),
-                "Primary_Driver_of_Change": np.random.choice(["Pertanian", "Kebakaran", "Tambang", "Penebangan"], p=[0.45, 0.25, 0.15, 0.15]),
+                "Primary_Driver_of_Change": np.random.choice(["Agriculture", "Logging", "Fire", "Mining"], p=[0.45, 0.25, 0.15, 0.15]),
                 "Region": region(c),
             })
     return pd.DataFrame(rows)
 
+@st.cache_resource
+def load_ml_model():
+    """Mencoba memuat model XGBoost dari path"""
+    paths = ["model_xgboost.pkl", "/content/drive/MyDrive/Tugas Week 12/model_xgboost.pkl"]
+    for p in paths:
+        if os.path.exists(p):
+            try:
+                return joblib.load(p)
+            except:
+                pass
+    return None
+
+ml_model = load_ml_model()
+
 def predict_carbon(f: dict) -> float:
-    log_f = np.log1p(max(f["Forest_Area_km2"], 1.0))
-    ratio = f["Forest_Area_km2"] / (f["Land_Area_km2"] + 1e-6)
-    val = (4.2 + 0.94 * log_f + 0.08 * ratio - 0.04 * f["Annual_Deforestation_Rate"] + 0.025 * f.get("Annual_Afforestation_Rate", 0))
+    # Coba gunakan prediksi dari XGBoost jika kompatibel
+    if ml_model is not None:
+        try:
+            df_pred = pd.DataFrame([f])
+            # Pastikan urutan dan jumlah feature sesuai pipeline
+            pred = ml_model.predict(df_pred)
+            return float(pred[0])
+        except Exception:
+            pass # Lanjut ke formula logika dasar jika input pipeline berbeda
+            
+    # Formula historis dasar
+    log_f = np.log1p(max(f.get("Forest_Area_km2", 1000), 1.0))
+    ratio = f.get("Forest_Area_km2", 1000) / (f.get("Land_Area_km2", 1000) + 1e-6)
+    val = (4.2 + 0.94 * log_f + 0.08 * ratio - 0.04 * f.get("Annual_Deforestation_Rate", 0) + 0.025 * f.get("Annual_Afforestation_Rate", 0))
     return max(np.expm1(val), 0)
 
 df = load_data()
@@ -222,26 +264,26 @@ if st.session_state.applied_year is None:
     st.session_state.applied_year = YEAR_MAX
 
 # ─────────────────────────────────────────────────────────────
-# GAYA GRAFIK TEMA PIXEL (HANYA HIJAU & PUTIH)
+# GAYA GRAFIK RETRO (Warna Terang, Garis Tegas)
 # ─────────────────────────────────────────────────────────────
 CHART_LAYOUT = dict(
-    paper_bgcolor="#FFFFFF",
-    plot_bgcolor="#FFFFFF",
-    font=dict(family="VT323", color="#008800", size=16),
+    paper_bgcolor="rgba(0,0,0,0)",
+    plot_bgcolor="rgba(0,0,0,0)",
+    font=dict(family="Plus Jakarta Sans", color="#111827", size=14),
     margin=dict(l=10, r=10, t=30, b=10),
 )
 AX_STYLE = dict(
     showgrid=True,
-    gridcolor="#008800",
+    gridcolor="#E5E7EB",
     gridwidth=2,
-    linecolor="#008800",
+    linecolor="#111827",
     linewidth=3,
-    tickfont=dict(family="VT323", color="#008800", size=14),
+    tickfont=dict(family="Plus Jakarta Sans", color="#111827", size=13),
     zeroline=True,
-    zerolinecolor="#008800",
+    zerolinecolor="#111827",
     zerolinewidth=3
 )
-MAP_SCALE = [[0.0, "#FFFFFF"], [1.0, "#008800"]]
+MAP_SCALE = [[0.0, "#D1FAE5"], [1.0, "#059669"]]
 
 # ─────────────────────────────────────────────────────────────
 # LOGIKA FILTER
@@ -265,15 +307,15 @@ page = st.session_state.page
 # ═══════════════════════ HALAMAN 1: PAPAN DATA ══════════════════════════
 if page == "dashboard":
     st.markdown("""
-    <div class='pixel-card'>
-        <div class='pixel-title'>DATA KARBON DUNIA</div>
-        <div class='pixel-sub'>Cek jumlah pohon dan karbon di seluruh dunia saat ini.</div>
+    <div class='retro-card'>
+        <div class='retro-title'>DATA KARBON DUNIA</div>
+        <div class='retro-sub'>Cek ketersediaan jumlah pohon dan karbon di seluruh dunia saat ini.</div>
     </div>
     """, unsafe_allow_html=True)
 
     # AREA FILTER
-    st.markdown("<div class='pixel-card'>", unsafe_allow_html=True)
-    st.markdown("<div style='font-size:1.5rem; font-weight:bold; margin-bottom:1rem;'>PILIH DATA:</div>", unsafe_allow_html=True)
+    st.markdown("<div class='retro-card'>", unsafe_allow_html=True)
+    st.markdown("<div style='font-size:1.4rem; font-weight:800; margin-bottom:1rem;'>Filter Data Pilihan:</div>", unsafe_allow_html=True)
     
     f1, f2, f3, f4 = st.columns(4)
     with f1:
@@ -289,7 +331,7 @@ if page == "dashboard":
         sel_year = st.selectbox("TAHUN", year_options, index=default_year_idx)
 
     st.markdown("<br>", unsafe_allow_html=True)
-    if st.button("TAMPILKAN DATA SEKARANG", use_container_width=True):
+    if st.button("Terapkan Visualisasi", use_container_width=True):
         st.session_state.applied_region = sel_region
         st.session_state.applied_country = sel_country
         st.session_state.applied_driver = sel_driver
@@ -312,14 +354,14 @@ if page == "dashboard":
     k1, k2, k3, k4 = st.columns(4)
     k1.metric("TOTAL KARBON", f"{total_c:.2f} Tt")
     k2.metric("LUAS HUTAN", f"{total_f:.2f} Jt km²")
-    k3.metric("KECEPATAN HILANG", f"{avg_d:.2f}%")
-    k4.metric("KECEPATAN TUMBUH", f"{avg_a:.2f}%")
+    k3.metric("RATA-RATA HILANG", f"{avg_d:.2f}%")
+    k4.metric("RATA-RATA TUMBUH", f"{avg_a:.2f}%")
 
     st.markdown("<br>", unsafe_allow_html=True)
 
     # PETA
-    st.markdown("<div class='pixel-card'>", unsafe_allow_html=True)
-    st.markdown("<div style='font-size:1.5rem; font-weight:bold;'>PETA KARBON NEGARA</div>", unsafe_allow_html=True)
+    st.markdown("<div class='retro-card'>", unsafe_allow_html=True)
+    st.markdown("<div style='font-size:1.4rem; font-weight:800;'>Peta Intensitas Karbon</div>", unsafe_allow_html=True)
     if not df_yr.empty:
         fig_map = px.choropleth(
             df_yr, locations="Country", locationmode="country names",
@@ -328,68 +370,68 @@ if page == "dashboard":
         fig_map.update_layout(
             **CHART_LAYOUT,
             geo=dict(
-                showframe=True, framecolor="#008800", framewidth=4,
-                showcoastlines=True, coastlinecolor="#008800",
-                bgcolor="#FFFFFF", showland=True, landcolor="#FFFFFF",
-                showocean=True, oceancolor="#FFFFFF"
+                showframe=True, framecolor="#111827", framewidth=3,
+                showcoastlines=True, coastlinecolor="#111827",
+                bgcolor="rgba(0,0,0,0)", showland=True, landcolor="#F3F4F6",
+                showocean=True, oceancolor="#DBEAFE"
             ),
             coloraxis_showscale=False
         )
         st.plotly_chart(fig_map, use_container_width=True)
     else:
-        st.write("DATA KOSONG")
+        st.write("Data visualisasi kosong.")
     st.markdown("</div>", unsafe_allow_html=True)
 
     # GRAFIK BAWAH
     col_a, col_b = st.columns(2)
     with col_a:
-        st.markdown("<div class='pixel-card'>", unsafe_allow_html=True)
-        st.markdown("<div style='font-size:1.5rem; font-weight:bold;'>PENYEBAB HUTAN HILANG</div>", unsafe_allow_html=True)
+        st.markdown("<div class='retro-card'>", unsafe_allow_html=True)
+        st.markdown("<div style='font-size:1.4rem; font-weight:800;'>Faktor Penyebab Hutan Hilang</div>", unsafe_allow_html=True)
         if not df_f.empty:
             drv = df_f.groupby("Primary_Driver_of_Change").size().reset_index(name="n")
             fig_drv = go.Figure(go.Bar(
                 x=drv["n"], y=drv["Primary_Driver_of_Change"], orientation="h",
-                marker=dict(color="#FFFFFF", line=dict(color="#008800", width=3))
+                marker=dict(color="#A7F3D0", line=dict(color="#111827", width=3))
             ))
             fig_drv.update_layout(**CHART_LAYOUT, xaxis=AX_STYLE, yaxis=AX_STYLE)
             st.plotly_chart(fig_drv, use_container_width=True)
         else:
-            st.write("DATA KOSONG")
+            st.write("Data visualisasi kosong.")
         st.markdown("</div>", unsafe_allow_html=True)
 
     with col_b:
-        st.markdown("<div class='pixel-card'>", unsafe_allow_html=True)
-        st.markdown("<div style='font-size:1.5rem; font-weight:bold;'>NEGARA KARBON TERTINGGI</div>", unsafe_allow_html=True)
+        st.markdown("<div class='retro-card'>", unsafe_allow_html=True)
+        st.markdown("<div style='font-size:1.4rem; font-weight:800;'>Negara Penyimpan Karbon Tertinggi</div>", unsafe_allow_html=True)
         if not df_yr.empty:
             top = df_yr.nlargest(5, "Total_Carbon_Stock_Tonnes")
             fig_top = go.Figure(go.Bar(
                 x=top["Total_Carbon_Stock_Tonnes"] / 1e9, y=top["Country"], orientation="h",
-                marker=dict(color="#008800", line=dict(color="#008800", width=3))
+                marker=dict(color="#FDE68A", line=dict(color="#111827", width=3))
             ))
             fig_top.update_layout(**CHART_LAYOUT, xaxis=AX_STYLE, yaxis=AX_STYLE)
             st.plotly_chart(fig_top, use_container_width=True)
         else:
-            st.write("DATA KOSONG")
+            st.write("Data visualisasi kosong.")
         st.markdown("</div>", unsafe_allow_html=True)
 
 # ═══════════════════════ HALAMAN 2: SIMULATOR ══════════════════════════
 elif page == "simulator":
     st.markdown("""
-    <div class='pixel-card'>
-        <div class='pixel-title'>TEBAK MASA DEPAN</div>
-        <div class='pixel-sub'>Ubah angka di bawah untuk melihat apa yang akan terjadi pada hutan kita.</div>
+    <div class='retro-card'>
+        <div class='retro-title'>TEBAK MASA DEPAN</div>
+        <div class='retro-sub'>Atur persentase di bawah untuk memprediksi sisa cadangan karbon global (Mendukung algoritma XGBoost).</div>
     </div>
     """, unsafe_allow_html=True)
 
     with st.form("form_sim"):
-        st.markdown("<div class='pixel-card'>", unsafe_allow_html=True)
+        st.markdown("<div class='retro-card'>", unsafe_allow_html=True)
         
         c1, c2, c3 = st.columns(3)
         negara = c1.selectbox("PILIH NEGARA", COUNTRIES)
         pemicu = c2.selectbox("PENYEBAB UTAMA", DRIVERS)
         thn_target = c3.slider("TAHUN TARGET", 2026, 2050, 2035)
         
-        st.markdown("<hr style='border:2px solid #008800;'>", unsafe_allow_html=True)
+        st.markdown("<hr style='border:1px solid #111827;'>", unsafe_allow_html=True)
         
         s1, s2 = st.columns(2)
         laju_d = s1.slider("KECEPATAN HUTAN HILANG (%)", 0.0, 5.0, 1.2, 0.1)
@@ -401,22 +443,34 @@ elif page == "simulator":
 
     if run_btn:
         hasil_list, thn_list = [], []
+        # Menarik data land area dasar dari dataframe
+        base_data = df[df["Country"] == negara]
+        base_land = base_data["Land_Area_km2"].values[0] if not base_data.empty else 400000
+        base_forest = base_data[base_data["Year"] == YEAR_MAX]["Forest_Area_km2"].values[0] if not base_data.empty else 250000
+
         for y in range(YEAR_MAX, thn_target + 1):
-            fa = 250000 * (1 + (laju_a - laju_d) / 100) ** (y - YEAR_MAX)
+            fa = base_forest * (1 + (laju_a - laju_d) / 100) ** (y - YEAR_MAX)
+            # Menyesuaikan input dengan asumsi fitur yang ada
             hasil = predict_carbon({
-                "Year": y, "Forest_Area_km2": max(fa, 1000), "Land_Area_km2": 400000,
-                "Annual_Deforestation_Rate": laju_d, "Annual_Afforestation_Rate": laju_a
+                "Country": negara,
+                "Primary_Driver_of_Change": pemicu,
+                "Year": y, 
+                "Forest_Area_km2": max(fa, 1000), 
+                "Land_Area_km2": base_land,
+                "Forest_Cover_Pct": (max(fa, 1000) / base_land) * 100,
+                "Annual_Deforestation_Rate": laju_d, 
+                "Annual_Afforestation_Rate": laju_a
             })
             hasil_list.append(hasil)
             thn_list.append(y)
 
-        st.markdown("<div class='pixel-card'>", unsafe_allow_html=True)
-        st.markdown("<div style='font-size:1.5rem; font-weight:bold;'>HASIL MASA DEPAN</div>", unsafe_allow_html=True)
+        st.markdown("<div class='retro-card'>", unsafe_allow_html=True)
+        st.markdown("<div style='font-size:1.4rem; font-weight:800;'>Prediksi Cadangan Karbon</div>", unsafe_allow_html=True)
         
         fig_line = go.Figure(go.Scatter(
             x=thn_list, y=hasil_list, mode="lines+markers",
-            line=dict(color="#008800", width=4),
-            marker=dict(size=10, color="#FFFFFF", line=dict(color="#008800", width=3))
+            line=dict(color="#111827", width=4),
+            marker=dict(size=12, color="#FECACA", line=dict(color="#111827", width=3))
         ))
         fig_line.update_layout(**CHART_LAYOUT, xaxis=AX_STYLE, yaxis=AX_STYLE)
         st.plotly_chart(fig_line, use_container_width=True)
@@ -426,22 +480,22 @@ elif page == "simulator":
 # ═══════════════════════ HALAMAN 3: KEBIJAKAN ══════════════════════════
 else:
     st.markdown("""
-    <div class='pixel-card'>
-        <div class='pixel-title'>ATURAN BARU</div>
-        <div class='pixel-sub'>Coba terapkan aturan dan lihat dampaknya di tahun 2030.</div>
+    <div class='retro-card'>
+        <div class='retro-title'>SIMULATOR ATURAN</div>
+        <div class='retro-sub'>Coba terapkan kebijakan dan lihat langsung seberapa efektif dampaknya di tahun 2030.</div>
     </div>
     """, unsafe_allow_html=True)
 
     col_l, col_r = st.columns([1, 1])
 
     with col_l:
-        st.markdown("<div class='pixel-card'>", unsafe_allow_html=True)
-        st.markdown("<div style='font-size:1.5rem; font-weight:bold; margin-bottom:1rem;'>PILIH ATURAN:</div>", unsafe_allow_html=True)
+        st.markdown("<div class='retro-card'>", unsafe_allow_html=True)
+        st.markdown("<div style='font-size:1.4rem; font-weight:800; margin-bottom:1rem;'>Panel Kebijakan:</div>", unsafe_allow_html=True)
         
-        p1 = st.toggle("STOP TEBANG POHON")
-        p2 = st.toggle("TAMBAH UANG TANAM POHON")
+        p1 = st.toggle("STOP TEBANG POHON KOMERSIAL")
+        p2 = st.toggle("TAMBAH DANA REBOISASI")
         p3 = st.toggle("HUKUM TEGAS BAKAR HUTAN")
-        p4 = st.toggle("BANTU PETANI LOKAL")
+        p4 = st.toggle("BERIKAN INSENTIF PETANI")
         
         st.markdown("</div>", unsafe_allow_html=True)
 
@@ -453,16 +507,22 @@ else:
         if p4: ba *= 1.4; bd *= 0.9
 
         h_pol = predict_carbon({
-            "Year": 2030, "Forest_Area_km2": 400000, "Land_Area_km2": 600000,
-            "Annual_Deforestation_Rate": bd, "Annual_Afforestation_Rate": ba
+            "Country": "Global_Avg",
+            "Primary_Driver_of_Change": "None",
+            "Year": 2030, 
+            "Forest_Area_km2": 400000, 
+            "Land_Area_km2": 600000,
+            "Forest_Cover_Pct": 66.6,
+            "Annual_Deforestation_Rate": bd, 
+            "Annual_Afforestation_Rate": ba
         })
         
-        st.markdown("<div class='pixel-card'>", unsafe_allow_html=True)
-        st.markdown("<div style='font-size:1.5rem; font-weight:bold; margin-bottom:1rem;'>EFEK DI TAHUN 2030:</div>", unsafe_allow_html=True)
+        st.markdown("<div class='retro-card'>", unsafe_allow_html=True)
+        st.markdown("<div style='font-size:1.4rem; font-weight:800; margin-bottom:1rem;'>Proyeksi di Tahun 2030:</div>", unsafe_allow_html=True)
         
         m1, m2 = st.columns(2)
         m1.metric("HUTAN HILANG", f"{bd:.2f}%")
         m2.metric("HUTAN TUMBUH", f"{ba:.2f}%")
-        st.metric("PREDIKSI TOTAL KARBON", f"{h_pol:,.0f} Ton")
+        st.metric("ESTIMASI STOK KARBON", f"{h_pol:,.0f} Ton")
         
         st.markdown("</div>", unsafe_allow_html=True)
