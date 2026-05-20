@@ -93,9 +93,7 @@ st.markdown("""
 @st.cache_data
 def load_data():
     paths_to_try = [
-        "/content/drive/MyDrive/Tugas Week 12/global_deforestation_2000_2025.csv",
-        "Tugas Week 12/global_deforestation_2000_2025.csv",
-        "global_deforestation_2000_2025.csv"
+        return pd.read_csv("global_deforestation_2000_2025.csv")
     ]
     
     for path in paths_to_try:
@@ -150,7 +148,7 @@ def predict_carbon_stock(features):
     for path in model_paths:
         if os.path.exists(path):
             try:
-                model = joblib.load(path)
+                model = joblib.load(model_xgboost.pkl)
                 pred_log = model.predict(input_array)[0]
                 model_loaded = True
                 break
@@ -166,7 +164,7 @@ def predict_carbon_stock(features):
 
 # --- SIDEBAR NAVIGASI ---
 with st.sidebar:
-    logo_path = "/content/drive/MyDrive/Tugas Week 12/logo.png"
+    logo_path = "logo.png"
     if os.path.exists(logo_path):
         st.image(logo_path, width=100)
     else:
