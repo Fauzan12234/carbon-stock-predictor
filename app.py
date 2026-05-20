@@ -27,47 +27,47 @@ if "applied_driver"  not in st.session_state: st.session_state.applied_driver  =
 if "applied_year"    not in st.session_state: st.session_state.applied_year    = None
 
 # ─────────────────────────────────────────────────────────────
-# CSS — DESIGN SYSTEM
+# CSS — DESAIN MINIMALIS ELEGAN (MOBILE FRIENDLY)
 # ─────────────────────────────────────────────────────────────
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
 
-/* ── Variables ── */
+/* Variabel Warna Selaras */
 :root {
-    --sidebar-bg:   #111C16;
-    --sidebar-border: #1E2E23;
-    --nav-idle:     #4A6955;
-    --nav-hover-bg: rgba(255,255,255,0.06);
-    --nav-active-bg:#1C5C34;
-    --nav-active:   #FFFFFF;
+    --sidebar-bg:       #0F1A12;
+    --sidebar-border:   #1E2E23;
+    --nav-idle:         #627A6B;
+    --nav-hover-bg:     rgba(255,255,255,0.05);
+    --nav-active-bg:    #1C5C34;
+    --nav-active:       #FFFFFF;
 
-    --page-bg:      #F4F6F4;
-    --card-bg:      #FFFFFF;
-    --card-border:  #E0E8E0;
-    --card-shadow:  0 1px 4px rgba(20,40,26,0.06);
+    --page-bg:          #F7F9F6;
+    --card-bg:          #FFFFFF;
+    --card-border:      #DDE4DE;
+    --card-shadow:      0 2px 8px rgba(15,26,18,0.05);
 
-    --text-primary: #111C16;
-    --text-secondary:#506858;
-    --text-muted:   #8FA898;
+    --text-primary:     #0F1A12;
+    --text-secondary:   #3C4D42;
+    --text-muted:       #7A8C81;
 
-    --accent-dark:  #0F3D22;
-    --accent-mid:   #1A6B3C;
-    --accent-base:  #22A05A;
-    --accent-light: #72D4A0;
-    --accent-pale:  #D4F0E4;
+    --accent-dark:      #0C2618;
+    --accent-mid:       #165C34;
+    --accent-base:      #1E9E54;
+    --accent-light:     #6CCB9A;
+    --accent-pale:      #D8EFE5;
 
-    --red:          #C84040;
-    --red-pale:     #FDECEA;
+    --red:              #A63A3A;
+    --red-pale:         #FCE8E6;
 
-    --radius-sm:    8px;
-    --radius-md:    12px;
-    --radius-lg:    16px;
+    --radius-sm:        8px;
+    --radius-md:        12px;
+    --radius-lg:        16px;
 }
 
-/* ── Reset & Base ── */
+/* Reset & Basis */
 *, html, body, [class*="css"] {
-    font-family: 'DM Sans', sans-serif !important;
+    font-family: 'Inter', 'DM Sans', system-ui, sans-serif !important;
     box-sizing: border-box;
 }
 .stApp { background: var(--page-bg) !important; }
@@ -77,7 +77,7 @@ st.markdown("""
     max-width: 1300px !important;
 }
 
-/* ─────────────── SIDEBAR ─────────────── */
+/* ─────── SIDEBAR ─────── */
 [data-testid="stSidebar"] {
     background: var(--sidebar-bg) !important;
     border-right: 1px solid var(--sidebar-border) !important;
@@ -89,24 +89,23 @@ st.markdown("""
 }
 [data-testid="stSidebar"] * { color: var(--nav-idle) !important; }
 
-/* sidebar — ALL buttons base */
+/* Tombol navigasi sidebar */
 [data-testid="stSidebar"] .stButton > button {
     background: transparent !important;
     border: none !important;
     border-radius: var(--radius-sm) !important;
     color: var(--nav-idle) !important;
-    font-family: 'DM Sans', sans-serif !important;
-    font-size: 0.83rem !important;
+    font-size: 0.85rem !important;
     font-weight: 500 !important;
-    padding: 0.58rem 0.85rem !important;
+    padding: 0.65rem 0.9rem !important;
     width: 100% !important;
     text-align: left !important;
     cursor: pointer !important;
     transition: background 0.15s ease, color 0.15s ease !important;
     box-shadow: none !important;
     transform: none !important;
-    margin-bottom: 2px !important;
-    letter-spacing: 0 !important;
+    margin-bottom: 3px !important;
+    letter-spacing: 0.01em !important;
 }
 [data-testid="stSidebar"] .stButton > button:hover {
     background: var(--nav-hover-bg) !important;
@@ -119,53 +118,51 @@ st.markdown("""
     outline: none !important;
 }
 
-/* ─── active nav wrapper: inject class via st.markdown ─── */
+/* Navigasi aktif */
 .nav-item-active .stButton > button {
     background: var(--nav-active-bg) !important;
     color: var(--nav-active) !important;
     font-weight: 600 !important;
 }
 .nav-item-active .stButton > button:hover {
-    background: #215e36 !important;
+    background: #1A6237 !important;
 }
 
-/* ─────────────── TYPOGRAPHY ─────────────── */
+/* ─────── TIPOGRAFI ─────── */
 h1, h2, h3, h4 {
-    font-family: 'DM Sans', sans-serif !important;
+    font-family: 'Inter', 'DM Sans', sans-serif !important;
     color: var(--text-primary) !important;
-    font-weight: 700 !important;
-    letter-spacing: -0.025em !important;
+    font-weight: 600 !important;
+    letter-spacing: -0.02em !important;
 }
 p, span, div, li { color: var(--text-secondary) !important; }
-label { color: var(--text-secondary) !important; }
+label { color: var(--text-secondary) !important; font-weight: 500; }
 
-/* ─────────────── KPI METRICS ─────────────── */
+/* ─────── METRIK KPI ─────── */
 [data-testid="stMetric"] {
     background: var(--card-bg) !important;
     border: 1px solid var(--card-border) !important;
     border-radius: var(--radius-md) !important;
-    padding: 1.1rem 1.35rem 1.2rem !important;
+    padding: 1rem 1.25rem !important;
     box-shadow: var(--card-shadow) !important;
 }
 [data-testid="stMetricLabel"] > div {
-    font-size: 0.63rem !important;
-    font-weight: 700 !important;
-    letter-spacing: 0.1em !important;
+    font-size: 0.6rem !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.08em !important;
     text-transform: uppercase !important;
     color: var(--text-muted) !important;
 }
-[data-testid="stMetricLabel"] * { color: var(--text-muted) !important; }
 [data-testid="stMetricValue"] {
-    font-size: 1.65rem !important;
+    font-size: 1.7rem !important;
     font-weight: 700 !important;
     color: var(--text-primary) !important;
-    letter-spacing: -0.035em !important;
+    letter-spacing: -0.03em !important;
     line-height: 1.15 !important;
 }
-[data-testid="stMetricValue"] * { color: var(--text-primary) !important; }
-[data-testid="stMetricDelta"] * { font-size: 0.73rem !important; }
+[data-testid="stMetricDelta"] * { font-size: 0.75rem !important; }
 
-/* ─────────────── CARDS ─────────────── */
+/* ─────── KARTU ─────── */
 .eco-card {
     background: var(--card-bg);
     border: 1px solid var(--card-border);
@@ -175,12 +172,12 @@ label { color: var(--text-secondary) !important; }
     margin-bottom: 1.2rem;
 }
 .eco-card-dark {
-    background: linear-gradient(135deg, #0B1D12 0%, #0F3D22 50%, #1A6B3C 100%);
-    border: 1px solid #1A4028;
+    background: linear-gradient(145deg, #0B1C13 0%, #124022 50%, #165C34 100%);
+    border: 1px solid #1F402B;
     border-radius: var(--radius-lg);
     padding: 1.75rem 2rem;
     margin-bottom: 1.2rem;
-    box-shadow: 0 8px 28px rgba(11,29,18,0.28);
+    box-shadow: 0 10px 28px rgba(15,26,18,0.25);
 }
 .eco-card-flat {
     background: var(--page-bg);
@@ -190,7 +187,7 @@ label { color: var(--text-secondary) !important; }
     margin-bottom: 1.2rem;
 }
 
-/* ─────────────── FILTER BAR ─────────────── */
+/* ─────── FILTER BAR ─────── */
 .filter-bar {
     background: var(--card-bg);
     border: 1px solid var(--card-border);
@@ -200,16 +197,16 @@ label { color: var(--text-secondary) !important; }
     box-shadow: var(--card-shadow);
 }
 
-/* ─────────────── FORM ELEMENTS ─────────────── */
+/* ─────── FORM ELEMENTS ─────── */
 .stSelectbox label, .stSlider > label,
 .stNumberInput label, .stMultiSelect label,
 .stTextInput label {
-    font-size: 0.63rem !important;
-    font-weight: 700 !important;
-    letter-spacing: 0.09em !important;
+    font-size: 0.6rem !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.08em !important;
     text-transform: uppercase !important;
     color: var(--text-muted) !important;
-    margin-bottom: 0.25rem !important;
+    margin-bottom: 0.2rem !important;
 }
 [data-baseweb="select"] > div {
     border-radius: var(--radius-sm) !important;
@@ -224,14 +221,14 @@ label { color: var(--text-secondary) !important; }
     color: var(--text-primary) !important;
 }
 
-/* ─────────────── MAIN BUTTONS ─────────────── */
+/* ─────── TOMBOL UTAMA ─────── */
 .block-container .stButton > button {
     background: var(--accent-dark) !important;
     color: #FFFFFF !important;
     border: none !important;
     border-radius: var(--radius-sm) !important;
-    padding: 0.62rem 1.5rem !important;
-    font-size: 0.81rem !important;
+    padding: 0.6rem 1.4rem !important;
+    font-size: 0.82rem !important;
     font-weight: 600 !important;
     letter-spacing: 0.02em !important;
     transition: background 0.2s ease !important;
@@ -244,71 +241,71 @@ label { color: var(--text-secondary) !important; }
     transform: none !important;
 }
 
-/* ─────────────── SECTION LABELS ─────────────── */
+/* ─────── LABEL BAGIAN ─────── */
 .sec-label {
     display: block;
     font-size: 0.6rem;
-    font-weight: 700;
-    letter-spacing: 0.15em;
+    font-weight: 600;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--text-muted) !important;
-    margin-bottom: 0.2rem;
+    margin-bottom: 0.25rem;
 }
 .page-title {
-    font-size: 1.6rem;
-    font-weight: 700;
+    font-size: 1.7rem;
+    font-weight: 600;
     color: var(--text-primary) !important;
     letter-spacing: -0.03em;
     line-height: 1.2;
     margin: 0 0 0.35rem;
 }
 .page-sub {
-    font-size: 0.84rem;
+    font-size: 0.85rem;
     color: var(--text-muted) !important;
     line-height: 1.65;
     margin: 0 0 1.6rem;
 }
 .card-title {
-    font-size: 0.92rem;
-    font-weight: 700;
+    font-size: 0.95rem;
+    font-weight: 600;
     color: var(--text-primary) !important;
-    letter-spacing: -0.015em;
+    letter-spacing: -0.01em;
     margin: 0 0 0.12rem;
 }
 .card-sub {
-    font-size: 0.73rem;
+    font-size: 0.75rem;
     color: var(--text-muted) !important;
     margin: 0 0 1rem;
     line-height: 1.5;
 }
 
-/* ─────────────── RESULT HERO ─────────────── */
+/* ─────── RESULT HERO ─────── */
 .result-eyebrow {
     display: block;
     font-size: 0.6rem;
-    font-weight: 700;
-    letter-spacing: 0.15em;
+    font-weight: 600;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--accent-light) !important;
     margin-bottom: 0.5rem;
 }
 .result-number {
-    font-size: 2.75rem;
+    font-size: 2.85rem;
     font-weight: 700;
     color: #FFFFFF !important;
-    letter-spacing: -0.04em;
+    letter-spacing: -0.03em;
     line-height: 1;
 }
-.result-unit { font-size: 1rem; font-weight: 300; color: rgba(255,255,255,0.45) !important; }
+.result-unit { font-size: 1rem; font-weight: 300; color: rgba(255,255,255,0.5) !important; }
 .result-meta {
-    font-size: 0.76rem;
-    color: rgba(255,255,255,0.4) !important;
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.45) !important;
     margin-top: 0.7rem;
     line-height: 1.8;
 }
 .result-meta strong { color: var(--accent-light) !important; }
 
-/* ─────────────── POLICY ─────────────── */
+/* ─────── POLICY STRIP ─────── */
 .policy-strip {
     background: var(--page-bg);
     border-radius: var(--radius-sm);
@@ -319,8 +316,8 @@ label { color: var(--text-secondary) !important; }
 .ps-label {
     display: block;
     font-size: 0.6rem;
-    font-weight: 700;
-    letter-spacing: 0.1em;
+    font-weight: 600;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--text-muted) !important;
     margin-bottom: 0.15rem;
@@ -333,7 +330,7 @@ label { color: var(--text-secondary) !important; }
 }
 .ps-unit { font-size: 0.9rem; font-weight: 400; color: var(--text-muted) !important; }
 
-/* ─────────────── BADGE ─────────────── */
+/* ─────── BADGE ─────── */
 .badge-green {
     display: inline-block;
     background: var(--accent-pale);
@@ -344,10 +341,10 @@ label { color: var(--text-secondary) !important; }
     text-transform: uppercase;
     padding: 0.18rem 0.65rem;
     border-radius: 100px;
-    border: 1px solid #B4E4CC;
+    border: 1px solid #B8E0C8;
 }
 
-/* ─────────────── EXPANDER ─────────────── */
+/* ─────── EXPANDER ─────── */
 .stExpander {
     border: 1px solid var(--card-border) !important;
     border-radius: var(--radius-sm) !important;
@@ -355,33 +352,58 @@ label { color: var(--text-secondary) !important; }
 }
 details > summary > span { color: var(--text-muted) !important; }
 
-/* ─────────────── ALERTS ─────────────── */
+/* ─────── ALERTS ─────── */
 .stSuccess > div, .stError > div { border-radius: var(--radius-sm) !important; font-size: 0.84rem !important; }
 
-/* ─────────────── TABLE ─────────────── */
+/* ─────── TABLE ─────── */
 .stDataFrame { border-radius: var(--radius-sm) !important; overflow: hidden !important; }
 thead tr th {
     background: var(--page-bg) !important;
     color: var(--text-muted) !important;
-    font-size: 0.63rem !important;
-    font-weight: 700 !important;
-    letter-spacing: 0.09em !important;
+    font-size: 0.62rem !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.08em !important;
     text-transform: uppercase !important;
     border-bottom: 1px solid var(--card-border) !important;
     padding: 0.6rem 0.75rem !important;
 }
 
-/* ─────────────── DIVIDERS ─────────────── */
+/* ─────── DIVIDERS ─────── */
 hr { border-color: var(--sidebar-border) !important; margin: 1rem 0 !important; }
 .divider-light { border-color: var(--card-border) !important; }
 
-/* ─────────────── TOGGLE ─────────────── */
+/* ─────── TOGGLE ─────── */
 .stToggle label span { color: var(--text-secondary) !important; font-size: 0.85rem !important; }
 
-/* scrollbar */
+/* ─────── SCROLLBAR ─────── */
 ::-webkit-scrollbar { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: #2E4A36; border-radius: 4px; }
+
+/* ─────── MOBILE RESPONSIVE ─────── */
+@media (max-width: 768px) {
+    /* Sidebar lebih longgar di mobile (Streamlit akan mengganti mode) */
+    [data-testid="stSidebar"] {
+        min-width: 0 !important;
+        max-width: 100% !important;
+    }
+    .block-container {
+        padding: 1rem 1rem 4rem !important;
+    }
+    /* Paksa kolom Streamlit bertumpuk vertikal */
+    [data-testid="stHorizontalBlock"] > [data-testid="stColumn"] {
+        flex: 1 1 100% !important;
+        width: 100% !important;
+    }
+    [data-testid="stHorizontalBlock"] {
+        flex-wrap: wrap !important;
+    }
+    .eco-card, .eco-card-dark, .eco-card-flat {
+        padding: 1rem !important;
+    }
+    .page-title { font-size: 1.4rem; }
+    .page-sub { font-size: 0.8rem; }
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -461,51 +483,46 @@ REGIONS   = sorted([str(x) for x in df['Region'].dropna().unique()])
 YEAR_MIN  = int(df['Year'].min()) if not df['Year'].isnull().all() else 2000
 YEAR_MAX  = int(df['Year'].max()) if not df['Year'].isnull().all() else 2025
 
-# Init applied defaults
+# Inisialisasi default filter
 if st.session_state.applied_region  is None: st.session_state.applied_region  = REGIONS
 if st.session_state.applied_country is None: st.session_state.applied_country = COUNTRIES
 if st.session_state.applied_driver  is None: st.session_state.applied_driver  = DRIVERS
 if st.session_state.applied_year    is None: st.session_state.applied_year    = YEAR_MAX
 
-# Palettes & chart defaults
-CSCALE = [[0.0,'#D4F0E4'],[0.3,'#72D4A0'],[0.65,'#1A6B3C'],[1.0,'#0B1D12']]
-COLORS  = ['#0B1D12','#1A6B3C','#22A05A','#72D4A0','#B4E4CC','#D4F0E4']
+# Palet & pengaturan chart (lebih lembut)
+CSCALE = [[0.0, '#D8EFE5'], [0.3, '#6CCB9A'], [0.65, '#165C34'], [1.0, '#0C2618']]
+COLORS  = ['#0C2618','#165C34','#1E9E54','#6CCB9A','#B8E0C8','#D8EFE5']
 CHART   = dict(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
-               margin=dict(l=0,r=0,t=4,b=0), font=dict(family='DM Sans',color='#8FA898'))
-AX_X    = dict(showgrid=False, tickfont=dict(family='DM Sans',size=10,color='#8FA898'),
-               linecolor='#E0E8E0', linewidth=1)
+               margin=dict(l=0,r=0,t=4,b=0), font=dict(family='Inter, DM Sans', color='#7A8C81'))
+AX_X    = dict(showgrid=False, tickfont=dict(family='Inter, DM Sans', size=10, color='#7A8C81'),
+               linecolor='#DDE4DE', linewidth=1)
 AX_Y    = dict(showgrid=True, gridcolor='#EDF2ED', gridwidth=1,
-               tickfont=dict(family='DM Sans',size=10,color='#8FA898'), zeroline=False)
-LEG     = dict(font=dict(family='DM Sans',size=10,color='#506858'),bgcolor='rgba(0,0,0,0)')
+               tickfont=dict(family='Inter, DM Sans', size=10, color='#7A8C81'), zeroline=False)
+LEG     = dict(font=dict(family='Inter, DM Sans', size=10, color='#3C4D42'), bgcolor='rgba(0,0,0,0)')
 
 
 # ─────────────────────────────────────────────────────────────
 # SIDEBAR
 # ─────────────────────────────────────────────────────────────
 with st.sidebar:
+    # Branding
     st.markdown("""
     <div style="margin-bottom:2rem;padding-bottom:1.25rem;
                 border-bottom:1px solid #1E2E23;">
       <div style="display:flex;align-items:center;gap:7px;margin-bottom:2px;">
         <div style="width:7px;height:7px;border-radius:50%;
-                    background:#22A05A;flex-shrink:0;"></div>
-        <span style="font-size:1rem;font-weight:700;letter-spacing:-0.02em;
+                    background:#1E9E54;flex-shrink:0;"></div>
+        <span style="font-size:1rem;font-weight:600;letter-spacing:-0.02em;
                      color:#E8F4EC !important;">EcoAnalytics</span>
       </div>
-      <p style="font-size:0.58rem;color:#2E4A36 !important;letter-spacing:0.12em;
+      <p style="font-size:0.58rem;color:#627A6B !important;letter-spacing:0.12em;
                 text-transform:uppercase;margin:0 0 0 14px;">
         Global Carbon Stock
       </p>
     </div>
     """, unsafe_allow_html=True)
 
-    st.markdown("""
-    <p style="font-size:0.58rem;font-weight:700;letter-spacing:0.14em;
-              text-transform:uppercase;color:#2A3E2E !important;
-              margin:0 0 0.5rem 0.25rem;">
-      MENU
-    </p>""", unsafe_allow_html=True)
-
+    # Navigasi
     nav_pages = [
         ("dashboard", "🌍", "Dashboard"),
         ("simulator", "📈", "Simulator"),
@@ -520,16 +537,17 @@ with st.sidebar:
             st.rerun()
         st.markdown("</div>", unsafe_allow_html=True)
 
+    # Info footer
     st.markdown("<div style='height:1.5rem'></div>", unsafe_allow_html=True)
     st.markdown("""<hr style="border-color:#1E2E23 !important;">""", unsafe_allow_html=True)
     st.markdown("""
     <div style="padding:0 0.25rem;">
-      <p style="font-size:0.58rem;font-weight:700;letter-spacing:0.12em;
-                text-transform:uppercase;color:#2A3E2E !important;margin-bottom:0.5rem;">
-        INFO
+      <p style="font-size:0.58rem;font-weight:600;letter-spacing:0.1em;
+                text-transform:uppercase;color:#627A6B !important;margin-bottom:0.5rem;">
+        Tentang
       </p>
-      <p style="font-size:0.75rem;color:#3A5242 !important;line-height:1.8;margin:0;">
-        <span style="color:#72D4A0 !important;font-weight:600;">Kelompok 6</span><br>
+      <p style="font-size:0.75rem;color:#627A6B !important;line-height:1.8;margin:0;">
+        <span style="color:#6CCB9A !important;font-weight:600;">Kelompok 6</span><br>
         Python System Analytics<br>
         Fak. Teknologi Informasi
       </p>
@@ -542,9 +560,7 @@ page = st.session_state.page
 # ─────────────────────────────────────────────────────────────
 
 
-# ═════════════════════════════════════════════════════════════
-# PAGE 1 — DASHBOARD
-# ═════════════════════════════════════════════════════════════
+# ═══════════════════════ DASHBOARD ══════════════════════════
 if page == "dashboard":
 
     st.markdown("""
@@ -553,13 +569,13 @@ if page == "dashboard":
     <p class='page-sub'>Distribusi biomassa, tren deforestasi, dan tutupan hutan dunia.</p>
     """, unsafe_allow_html=True)
 
-    # ── Filter Bar — staged (apply button) ──
+    # ── Filter Bar (dua baris agar ramah mobile) ──
     st.markdown("<div class='filter-bar'>", unsafe_allow_html=True)
-    st.markdown("""<p style="font-size:0.63rem;font-weight:700;letter-spacing:0.1em;
-        text-transform:uppercase;color:#8FA898 !important;margin:0 0 0.75rem;">
+    st.markdown("""<p style="font-size:0.6rem;font-weight:600;letter-spacing:0.1em;
+        text-transform:uppercase;color:#7A8C81 !important;margin:0 0 0.75rem;">
         Filter Data</p>""", unsafe_allow_html=True)
 
-    fc1, fc2, fc3, fc4, fc5 = st.columns([2, 2, 2, 1, 1])
+    fc1, fc2, fc3 = st.columns(3)
     with fc1:
         sel_region = st.multiselect("Kawasan", REGIONS,
                                     default=st.session_state.applied_region,
@@ -572,6 +588,8 @@ if page == "dashboard":
         sel_driver  = st.multiselect("Pemicu", DRIVERS,
                                      default=st.session_state.applied_driver,
                                      placeholder="Semua pemicu")
+
+    fc4, fc5, fc6 = st.columns([2, 1, 1])
     with fc4:
         sel_year = st.selectbox("Tahun",
                                 list(range(YEAR_MIN, YEAR_MAX + 1)),
@@ -580,6 +598,8 @@ if page == "dashboard":
     with fc5:
         st.markdown("<div style='height:1.85rem'></div>", unsafe_allow_html=True)
         apply_btn = st.button("Terapkan")
+    with fc6:
+        st.write("")   # dummy
 
     if apply_btn:
         st.session_state.applied_region  = sel_region  or REGIONS
@@ -591,7 +611,7 @@ if page == "dashboard":
 
     st.markdown("</div>", unsafe_allow_html=True)
 
-    # ── Use applied filters ──
+    # ── Terapkan filter ──
     AR = st.session_state.applied_region
     AC = st.session_state.applied_country
     AD = st.session_state.applied_driver
@@ -615,14 +635,14 @@ if page == "dashboard":
     k1, k2, k3, k4 = st.columns(4)
     k1.metric("Stok Karbon Total",  f"{total_c/1e12:.2f} Tt")
     k2.metric("Luas Hutan",         f"{total_f/1e6:.2f} jt km²")
-    k3.metric("Rata-rata Deforestasi", f"{avg_d:.2f}%/thn",
+    k3.metric("Rata‑rata Deforestasi", f"{avg_d:.2f}%/thn",
               delta=f"{avg_d-base_d:+.2f}% vs {YEAR_MIN}",
               delta_color="inverse")
-    k4.metric("Rata-rata Aforestasi",  f"{avg_a:.2f}%/thn")
+    k4.metric("Rata‑rata Aforestasi",  f"{avg_a:.2f}%/thn")
 
     st.markdown("<div style='height:0.5rem'></div>", unsafe_allow_html=True)
 
-    # ── Row 1: Peta + Donut ──
+    # ── Peta + Donut ──
     col_a, col_b = st.columns([3, 2], gap="large")
 
     with col_a:
@@ -643,7 +663,7 @@ if page == "dashboard":
                      showland=True, landcolor="#EEF3EE",
                      showocean=True, oceancolor="#E6EEF4"),
             coloraxis_colorbar=dict(title="", thickness=5, len=0.45,
-                                    tickfont=dict(family='DM Sans',size=9,color='#8FA898'))
+                                    tickfont=dict(family='Inter, DM Sans', size=9, color='#7A8C81'))
         )
         st.plotly_chart(fig_map, use_container_width=True)
         st.markdown("</div>", unsafe_allow_html=True)
@@ -657,8 +677,8 @@ if page == "dashboard":
         fig_pie = go.Figure(go.Pie(
             labels=drv['Primary_Driver_of_Change'], values=drv['n'],
             hole=0.66,
-            marker_colors=['#0B1D12','#1A6B3C','#22A05A','#72D4A0'],
-            textfont=dict(family='DM Sans', size=11),
+            marker_colors=['#0C2618','#165C34','#1E9E54','#6CCB9A'],
+            textfont=dict(family='Inter, DM Sans', size=11),
             hovertemplate="<b>%{label}</b><br>%{value} kasus<extra></extra>"
         ))
         fig_pie.update_layout(
@@ -668,13 +688,13 @@ if page == "dashboard":
             annotations=[dict(
                 text=f"<b>{drv['n'].sum()}</b><br><span style='font-size:9px'>Total</span>",
                 x=0.5, y=0.5, showarrow=False,
-                font=dict(family='DM Sans', size=16, color='#111C16')
+                font=dict(family='Inter, DM Sans', size=16, color='#0F1A12')
             )]
         )
         st.plotly_chart(fig_pie, use_container_width=True)
         st.markdown("</div>", unsafe_allow_html=True)
 
-    # ── Row 2: Tren + Bar ──
+    # ── Tren + Peringkat ──
     col_c, col_d = st.columns([3, 2], gap="large")
 
     with col_c:
@@ -703,24 +723,24 @@ if page == "dashboard":
             y=top8['Country'],
             orientation='h',
             marker=dict(color=top8['Total_Carbon_Stock_Tonnes'],
-                        colorscale=[[0,'#B4E4CC'],[1,'#0B1D12']], showscale=False),
+                        colorscale=[[0,'#B8E0C8'],[1,'#0C2618']], showscale=False),
             text=[f"{v:.1f} Gt" for v in top8['Total_Carbon_Stock_Tonnes']/1e9],
             textposition='outside',
-            textfont=dict(family='DM Sans', size=10, color='#8FA898'),
+            textfont=dict(family='Inter, DM Sans', size=10, color='#7A8C81'),
             hovertemplate="<b>%{y}</b>: %{x:.2f} Gt<extra></extra>"
         ))
         fig_bar.update_layout(
             **CHART,
             xaxis=dict(**AX_X, title=dict(text='Giga Ton',
-                        font=dict(family='DM Sans', size=10, color='#8FA898'))),
+                        font=dict(family='Inter, DM Sans', size=10, color='#7A8C81'))),
             yaxis=dict(**AX_Y, showgrid=False,
-                       tickfont=dict(family='DM Sans', size=11, color='#506858')),
+                       tickfont=dict(family='Inter, DM Sans', size=11, color='#3C4D42')),
             margin=dict(l=0, r=58, t=4, b=0), height=295
         )
         st.plotly_chart(fig_bar, use_container_width=True)
         st.markdown("</div>", unsafe_allow_html=True)
 
-    # ── Table ──
+    # ── Tabel Detail ──
     st.markdown("""<div class='eco-card'>
       <span class='card-title'>Data Detail</span>
       <p class='card-sub'>Ringkasan terfilter untuk tahun yang dipilih.</p>
@@ -737,9 +757,7 @@ if page == "dashboard":
     st.markdown("</div>", unsafe_allow_html=True)
 
 
-# ═════════════════════════════════════════════════════════════
-# PAGE 2 — SIMULATOR
-# ═════════════════════════════════════════════════════════════
+# ═══════════════════════ SIMULATOR ══════════════════════════
 elif page == "simulator":
 
     st.markdown("""
@@ -750,8 +768,8 @@ elif page == "simulator":
 
     with st.form("form_sim"):
         st.markdown("<div class='eco-card'>", unsafe_allow_html=True)
-        st.markdown("""<p style="font-size:0.63rem;font-weight:700;letter-spacing:0.1em;
-            text-transform:uppercase;color:#8FA898 !important;margin:0 0 0.9rem;">
+        st.markdown("""<p style="font-size:0.6rem;font-weight:600;letter-spacing:0.1em;
+            text-transform:uppercase;color:#7A8C81 !important;margin:0 0 0.9rem;">
             Konfigurasi Skenario</p>""", unsafe_allow_html=True)
 
         r1c1, r1c2, r1c3 = st.columns([1,1,2])
@@ -759,10 +777,10 @@ elif page == "simulator":
         pemicu     = r1c2.selectbox("Pemicu Utama", DRIVERS)
         thn_target = r1c3.slider("Target Tahun Proyeksi", 2026, 2060, 2035)
 
-        st.markdown("<hr style='border-color:#E0E8E0 !important;margin:1rem 0 !important;'>",
+        st.markdown("<hr style='border-color:#DDE4DE !important;margin:1rem 0 !important;'>",
                     unsafe_allow_html=True)
-        st.markdown("""<p style="font-size:0.63rem;font-weight:700;letter-spacing:0.1em;
-            text-transform:uppercase;color:#8FA898 !important;margin:0 0 0.9rem;">
+        st.markdown("""<p style="font-size:0.6rem;font-weight:600;letter-spacing:0.1em;
+            text-transform:uppercase;color:#7A8C81 !important;margin:0 0 0.9rem;">
             Skenario Intervensi</p>""", unsafe_allow_html=True)
 
         s1, s2 = st.columns(2, gap="large")
@@ -824,8 +842,8 @@ elif page == "simulator":
             df_proj = pd.DataFrame({'Tahun':thn_list,'Stok Karbon':hasil_list})
             fg = go.Figure(go.Scatter(
                 x=df_proj['Tahun'], y=df_proj['Stok Karbon'],
-                mode='lines', line=dict(color='#1A6B3C', width=2.5),
-                fill='tozeroy', fillcolor='rgba(26,107,60,0.07)',
+                mode='lines', line=dict(color='#165C34', width=2.5),
+                fill='tozeroy', fillcolor='rgba(22,92,52,0.07)',
                 hovertemplate="Tahun %{x}<br>%{y:,.0f} Ton<extra></extra>"
             ))
             fg.update_layout(**CHART, xaxis=AX_X, yaxis=AX_Y, height=235)
@@ -852,9 +870,7 @@ elif page == "simulator":
                      f"Cadangan karbon menyusut kritis hingga {thn_target}.")
 
 
-# ═════════════════════════════════════════════════════════════
-# PAGE 3 — KEBIJAKAN
-# ═════════════════════════════════════════════════════════════
+# ═══════════════════════ KEBIJAKAN ══════════════════════════
 else:
 
     st.markdown("""
@@ -867,10 +883,10 @@ else:
 
     with col_l:
         st.markdown("<div class='eco-card'>", unsafe_allow_html=True)
-        st.markdown("""<p style="font-size:0.63rem;font-weight:700;letter-spacing:0.1em;
-            text-transform:uppercase;color:#8FA898 !important;margin:0 0 1rem;">
+        st.markdown("""<p style="font-size:0.6rem;font-weight:600;letter-spacing:0.1em;
+            text-transform:uppercase;color:#7A8C81 !important;margin:0 0 1rem;">
             Panel Intervensi</p>
-            <h4 style="font-size:0.95rem;margin:0 0 1.2rem;color:#111C16 !important;">
+            <h4 style="font-size:0.95rem;margin:0 0 1.2rem;color:#0F1A12 !important;">
             Kontrol Regulasi</h4>""", unsafe_allow_html=True)
 
         p1 = st.toggle("Moratorium Penebangan Komersial",
@@ -885,7 +901,7 @@ else:
         p4 = st.toggle("Insentif Petani Hutan",
                         help="Memotivasi petani untuk menjaga hutan bukan membuka lahan.")
 
-        st.markdown("<hr style='border-color:#E0E8E0 !important;margin:1.1rem 0 !important;'>",
+        st.markdown("<hr style='border-color:#DDE4DE !important;margin:1.1rem 0 !important;'>",
                     unsafe_allow_html=True)
 
         aktif = {"Moratorium Penebangan":p1,"Dana Reboisasi":p2,
@@ -899,12 +915,12 @@ else:
             for nm, val in aktif.items():
                 if val:
                     st.markdown(
-                        f"<p style='font-size:0.79rem;color:#1A6B3C !important;"
+                        f"<p style='font-size:0.79rem;color:#165C34 !important;"
                         f"margin:3px 0;font-weight:600;'>✓ {nm}</p>",
                         unsafe_allow_html=True)
         else:
             st.markdown(
-                "<p style='font-size:0.79rem;color:#8FA898 !important;"
+                "<p style='font-size:0.79rem;color:#7A8C81 !important;"
                 "font-style:italic;margin:0;'>Belum ada intervensi aktif.</p>",
                 unsafe_allow_html=True)
         st.markdown("</div>", unsafe_allow_html=True)
@@ -923,10 +939,10 @@ else:
         pct_pol = (h_pol-h_base)/h_base*100
 
         st.markdown("<div class='eco-card'>", unsafe_allow_html=True)
-        st.markdown("""<p style="font-size:0.63rem;font-weight:700;letter-spacing:0.1em;
-            text-transform:uppercase;color:#8FA898 !important;margin:0 0 1rem;">
+        st.markdown("""<p style="font-size:0.6rem;font-weight:600;letter-spacing:0.1em;
+            text-transform:uppercase;color:#7A8C81 !important;margin:0 0 1rem;">
             Dampak Proyeksi 2030</p>
-            <h4 style="font-size:0.95rem;margin:0 0 1.2rem;color:#111C16 !important;">
+            <h4 style="font-size:0.95rem;margin:0 0 1.2rem;color:#0F1A12 !important;">
             Hasil Simulasi</h4>""", unsafe_allow_html=True)
 
         m1, m2, m3 = st.columns(3)
@@ -971,13 +987,13 @@ else:
     fl = go.Figure()
     fl.add_trace(go.Scatter(
         x=yrs, y=b_traj, mode='lines', name='Tanpa Kebijakan',
-        line=dict(color='#C84040', width=2, dash='dot'),
-        fill='tozeroy', fillcolor='rgba(200,64,64,0.04)'
+        line=dict(color='#A63A3A', width=2, dash='dot'),
+        fill='tozeroy', fillcolor='rgba(166,58,58,0.05)'
     ))
     fl.add_trace(go.Scatter(
         x=yrs, y=p_traj, mode='lines', name='Dengan Kebijakan',
-        line=dict(color='#1A6B3C', width=2.5),
-        fill='tozeroy', fillcolor='rgba(26,107,60,0.07)'
+        line=dict(color='#165C34', width=2.5),
+        fill='tozeroy', fillcolor='rgba(22,92,52,0.07)'
     ))
     fl.update_layout(**CHART, xaxis=AX_X, yaxis=AX_Y,
                      legend=dict(**LEG), hovermode='x unified', height=255)
