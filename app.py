@@ -27,57 +27,65 @@ if "applied_driver"  not in st.session_state: st.session_state.applied_driver  =
 if "applied_year"    not in st.session_state: st.session_state.applied_year    = None
 
 # ─────────────────────────────────────────────────────────────
-# CSS — DESAIN MINIMALIS ELEGAN (MOBILE FRIENDLY)
+# CSS — MINIMALIS ELEGAN (PUTIH & HIJAU GELAP)
 # ─────────────────────────────────────────────────────────────
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-/* Variabel Warna Selaras */
+/* ── Variabel Warna ── */
 :root {
-    --sidebar-bg:       #0F1A12;
-    --sidebar-border:   #1E2E23;
-    --nav-idle:         #627A6B;
-    --nav-hover-bg:     rgba(255,255,255,0.05);
-    --nav-active-bg:    #1C5C34;
+    --sidebar-bg:       #0B2618;
+    --sidebar-border:   #1A3829;
+    --nav-idle:         #9BB2A2;
+    --nav-hover-bg:     rgba(255,255,255,0.08);
+    --nav-active-bg:    #1B5E3A;
     --nav-active:       #FFFFFF;
 
-    --page-bg:          #F7F9F6;
+    --page-bg:          #FFFFFF;
     --card-bg:          #FFFFFF;
-    --card-border:      #DDE4DE;
-    --card-shadow:      0 2px 8px rgba(15,26,18,0.05);
+    --card-border:      #E3E8E4;
+    --card-shadow:      0 2px 8px rgba(11,38,24,0.04);
 
-    --text-primary:     #0F1A12;
-    --text-secondary:   #3C4D42;
-    --text-muted:       #7A8C81;
+    --text-primary:     #0B2618;
+    --text-secondary:   #2D4A3A;
+    --text-muted:       #5B6B60;
 
-    --accent-dark:      #0C2618;
-    --accent-mid:       #165C34;
-    --accent-base:      #1E9E54;
-    --accent-light:     #6CCB9A;
-    --accent-pale:      #D8EFE5;
+    --accent-dark:      #0B2618;
+    --accent-mid:       #1B5E3A;
+    --accent-base:      #2A7A4B;
+    --accent-light:     #68B684;
+    --accent-pale:      #D0E8D8;
 
-    --red:              #A63A3A;
-    --red-pale:         #FCE8E6;
+    --red:              #B33F3F;
+    --red-pale:         #FCEAE8;
 
     --radius-sm:        8px;
     --radius-md:        12px;
     --radius-lg:        16px;
 }
 
-/* Reset & Basis */
+/* ── Reset & Base ── */
 *, html, body, [class*="css"] {
-    font-family: 'Inter', 'DM Sans', system-ui, sans-serif !important;
+    font-family: 'Inter', system-ui, sans-serif !important;
     box-sizing: border-box;
 }
 .stApp { background: var(--page-bg) !important; }
-#MainMenu, footer, header { visibility: hidden; }
+
+/* Hanya sembunyikan menu bawaan (MainMenu) dan footer, TAPI PERTAHANKAN HEADER AGAR TOMBOL SIDEBAR MUNCUL */
+#MainMenu { visibility: hidden; }
+footer { visibility: hidden; }
+/* Sembunyikan toolbar kanan atas (Deploy, Settings) tanpa menghilangkan tombol collapse sidebar */
+[data-testid="stToolbar"] { display: none !important; }
+/* Header transparan agar tidak mengganggu */
+header[data-testid="stHeader"] { background: transparent !important; }
+
 .block-container {
     padding: 2rem 2.25rem 5rem !important;
     max-width: 1300px !important;
 }
 
-/* ─────── SIDEBAR ─────── */
+/* ── SIDEBAR ── */
 [data-testid="stSidebar"] {
     background: var(--sidebar-bg) !important;
     border-right: 1px solid var(--sidebar-border) !important;
@@ -125,12 +133,12 @@ st.markdown("""
     font-weight: 600 !important;
 }
 .nav-item-active .stButton > button:hover {
-    background: #1A6237 !important;
+    background: #1B5E3A !important;
 }
 
-/* ─────── TIPOGRAFI ─────── */
+/* ── TIPOGRAFI ── */
 h1, h2, h3, h4 {
-    font-family: 'Inter', 'DM Sans', sans-serif !important;
+    font-family: 'Inter', sans-serif !important;
     color: var(--text-primary) !important;
     font-weight: 600 !important;
     letter-spacing: -0.02em !important;
@@ -138,7 +146,7 @@ h1, h2, h3, h4 {
 p, span, div, li { color: var(--text-secondary) !important; }
 label { color: var(--text-secondary) !important; font-weight: 500; }
 
-/* ─────── METRIK KPI ─────── */
+/* ── KPI METRIK ── */
 [data-testid="stMetric"] {
     background: var(--card-bg) !important;
     border: 1px solid var(--card-border) !important;
@@ -162,7 +170,7 @@ label { color: var(--text-secondary) !important; font-weight: 500; }
 }
 [data-testid="stMetricDelta"] * { font-size: 0.75rem !important; }
 
-/* ─────── KARTU ─────── */
+/* ── KARTU ── */
 .eco-card {
     background: var(--card-bg);
     border: 1px solid var(--card-border);
@@ -172,12 +180,12 @@ label { color: var(--text-secondary) !important; font-weight: 500; }
     margin-bottom: 1.2rem;
 }
 .eco-card-dark {
-    background: linear-gradient(145deg, #0B1C13 0%, #124022 50%, #165C34 100%);
-    border: 1px solid #1F402B;
+    background: var(--accent-dark);
+    border: 1px solid #1A3829;
     border-radius: var(--radius-lg);
     padding: 1.75rem 2rem;
     margin-bottom: 1.2rem;
-    box-shadow: 0 10px 28px rgba(15,26,18,0.25);
+    box-shadow: 0 10px 28px rgba(11,38,24,0.2);
 }
 .eco-card-flat {
     background: var(--page-bg);
@@ -187,7 +195,7 @@ label { color: var(--text-secondary) !important; font-weight: 500; }
     margin-bottom: 1.2rem;
 }
 
-/* ─────── FILTER BAR ─────── */
+/* ── FILTER BAR ── */
 .filter-bar {
     background: var(--card-bg);
     border: 1px solid var(--card-border);
@@ -197,7 +205,7 @@ label { color: var(--text-secondary) !important; font-weight: 500; }
     box-shadow: var(--card-shadow);
 }
 
-/* ─────── FORM ELEMENTS ─────── */
+/* ── FORM ELEMENTS ── */
 .stSelectbox label, .stSlider > label,
 .stNumberInput label, .stMultiSelect label,
 .stTextInput label {
@@ -221,7 +229,7 @@ label { color: var(--text-secondary) !important; font-weight: 500; }
     color: var(--text-primary) !important;
 }
 
-/* ─────── TOMBOL UTAMA ─────── */
+/* ── TOMBOL UTAMA ── */
 .block-container .stButton > button {
     background: var(--accent-dark) !important;
     color: #FFFFFF !important;
@@ -241,7 +249,7 @@ label { color: var(--text-secondary) !important; font-weight: 500; }
     transform: none !important;
 }
 
-/* ─────── LABEL BAGIAN ─────── */
+/* ── LABEL BAGIAN ── */
 .sec-label {
     display: block;
     font-size: 0.6rem;
@@ -279,7 +287,7 @@ label { color: var(--text-secondary) !important; font-weight: 500; }
     line-height: 1.5;
 }
 
-/* ─────── RESULT HERO ─────── */
+/* ── RESULT HERO ── */
 .result-eyebrow {
     display: block;
     font-size: 0.6rem;
@@ -296,16 +304,16 @@ label { color: var(--text-secondary) !important; font-weight: 500; }
     letter-spacing: -0.03em;
     line-height: 1;
 }
-.result-unit { font-size: 1rem; font-weight: 300; color: rgba(255,255,255,0.5) !important; }
+.result-unit { font-size: 1rem; font-weight: 300; color: rgba(255,255,255,0.6) !important; }
 .result-meta {
     font-size: 0.78rem;
-    color: rgba(255,255,255,0.45) !important;
+    color: rgba(255,255,255,0.5) !important;
     margin-top: 0.7rem;
     line-height: 1.8;
 }
 .result-meta strong { color: var(--accent-light) !important; }
 
-/* ─────── POLICY STRIP ─────── */
+/* ── POLICY STRIP ── */
 .policy-strip {
     background: var(--page-bg);
     border-radius: var(--radius-sm);
@@ -330,7 +338,7 @@ label { color: var(--text-secondary) !important; font-weight: 500; }
 }
 .ps-unit { font-size: 0.9rem; font-weight: 400; color: var(--text-muted) !important; }
 
-/* ─────── BADGE ─────── */
+/* ── BADGE ── */
 .badge-green {
     display: inline-block;
     background: var(--accent-pale);
@@ -344,7 +352,7 @@ label { color: var(--text-secondary) !important; font-weight: 500; }
     border: 1px solid #B8E0C8;
 }
 
-/* ─────── EXPANDER ─────── */
+/* ── EXPANDER ── */
 .stExpander {
     border: 1px solid var(--card-border) !important;
     border-radius: var(--radius-sm) !important;
@@ -352,10 +360,10 @@ label { color: var(--text-secondary) !important; font-weight: 500; }
 }
 details > summary > span { color: var(--text-muted) !important; }
 
-/* ─────── ALERTS ─────── */
+/* ── ALERTS ── */
 .stSuccess > div, .stError > div { border-radius: var(--radius-sm) !important; font-size: 0.84rem !important; }
 
-/* ─────── TABLE ─────── */
+/* ── TABLE ── */
 .stDataFrame { border-radius: var(--radius-sm) !important; overflow: hidden !important; }
 thead tr th {
     background: var(--page-bg) !important;
@@ -368,21 +376,20 @@ thead tr th {
     padding: 0.6rem 0.75rem !important;
 }
 
-/* ─────── DIVIDERS ─────── */
+/* ── DIVIDERS ── */
 hr { border-color: var(--sidebar-border) !important; margin: 1rem 0 !important; }
 .divider-light { border-color: var(--card-border) !important; }
 
-/* ─────── TOGGLE ─────── */
+/* ── TOGGLE ── */
 .stToggle label span { color: var(--text-secondary) !important; font-size: 0.85rem !important; }
 
-/* ─────── SCROLLBAR ─────── */
+/* ── SCROLLBAR ── */
 ::-webkit-scrollbar { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #2E4A36; border-radius: 4px; }
+::-webkit-scrollbar-thumb { background: #1B5E3A; border-radius: 4px; }
 
-/* ─────── MOBILE RESPONSIVE ─────── */
+/* ── MOBILE RESPONSIVE ── */
 @media (max-width: 768px) {
-    /* Sidebar lebih longgar di mobile (Streamlit akan mengganti mode) */
     [data-testid="stSidebar"] {
         min-width: 0 !important;
         max-width: 100% !important;
@@ -390,7 +397,7 @@ hr { border-color: var(--sidebar-border) !important; margin: 1rem 0 !important; 
     .block-container {
         padding: 1rem 1rem 4rem !important;
     }
-    /* Paksa kolom Streamlit bertumpuk vertikal */
+    /* Kolom bertumpuk vertikal */
     [data-testid="stHorizontalBlock"] > [data-testid="stColumn"] {
         flex: 1 1 100% !important;
         width: 100% !important;
@@ -439,7 +446,7 @@ def load_data():
                 df['Region'] = df['Country'].apply(region)
             return df
 
-    # Dummy fallback
+    # Dummy fallback (data buatan)
     np.random.seed(42)
     countries = ['Brazil','Indonesia','Canada','Russia','USA',
                  'Congo','Australia','India','China','Malaysia']
@@ -489,40 +496,39 @@ if st.session_state.applied_country is None: st.session_state.applied_country = 
 if st.session_state.applied_driver  is None: st.session_state.applied_driver  = DRIVERS
 if st.session_state.applied_year    is None: st.session_state.applied_year    = YEAR_MAX
 
-# Palet & pengaturan chart (lebih lembut)
-CSCALE = [[0.0, '#D8EFE5'], [0.3, '#6CCB9A'], [0.65, '#165C34'], [1.0, '#0C2618']]
-COLORS  = ['#0C2618','#165C34','#1E9E54','#6CCB9A','#B8E0C8','#D8EFE5']
+# Palet & pengaturan chart (hijau minimalis, tidak hitam)
+CSCALE = [[0.0, '#D0E8D8'], [0.3, '#68B684'], [0.65, '#1B5E3A'], [1.0, '#0B2618']]
+COLORS  = ['#0B2618','#1B5E3A','#2A7A4B','#68B684','#9FD1B5','#D0E8D8']
 CHART   = dict(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
-               margin=dict(l=0,r=0,t=4,b=0), font=dict(family='Inter, DM Sans', color='#7A8C81'))
-AX_X    = dict(showgrid=False, tickfont=dict(family='Inter, DM Sans', size=10, color='#7A8C81'),
-               linecolor='#DDE4DE', linewidth=1)
-AX_Y    = dict(showgrid=True, gridcolor='#EDF2ED', gridwidth=1,
-               tickfont=dict(family='Inter, DM Sans', size=10, color='#7A8C81'), zeroline=False)
-LEG     = dict(font=dict(family='Inter, DM Sans', size=10, color='#3C4D42'), bgcolor='rgba(0,0,0,0)')
+               margin=dict(l=0,r=0,t=4,b=0), font=dict(family='Inter', color='#5B6B60'))
+AX_X    = dict(showgrid=False, tickfont=dict(family='Inter', size=10, color='#5B6B60'),
+               linecolor='#E3E8E4', linewidth=1)
+AX_Y    = dict(showgrid=True, gridcolor='#F0F3F0', gridwidth=1,
+               tickfont=dict(family='Inter', size=10, color='#5B6B60'), zeroline=False)
+LEG     = dict(font=dict(family='Inter', size=10, color='#2D4A3A'), bgcolor='rgba(0,0,0,0)')
 
 
 # ─────────────────────────────────────────────────────────────
-# SIDEBAR
+# SIDEBAR (dipertahankan, tombol burger tetap berfungsi)
 # ─────────────────────────────────────────────────────────────
 with st.sidebar:
     # Branding
     st.markdown("""
     <div style="margin-bottom:2rem;padding-bottom:1.25rem;
-                border-bottom:1px solid #1E2E23;">
+                border-bottom:1px solid #1A3829;">
       <div style="display:flex;align-items:center;gap:7px;margin-bottom:2px;">
         <div style="width:7px;height:7px;border-radius:50%;
-                    background:#1E9E54;flex-shrink:0;"></div>
+                    background:#2A7A4B;flex-shrink:0;"></div>
         <span style="font-size:1rem;font-weight:600;letter-spacing:-0.02em;
-                     color:#E8F4EC !important;">EcoAnalytics</span>
+                     color:#F0F6F0 !important;">EcoAnalytics</span>
       </div>
-      <p style="font-size:0.58rem;color:#627A6B !important;letter-spacing:0.12em;
+      <p style="font-size:0.58rem;color:#9BB2A2 !important;letter-spacing:0.12em;
                 text-transform:uppercase;margin:0 0 0 14px;">
         Global Carbon Stock
       </p>
     </div>
     """, unsafe_allow_html=True)
 
-    # Navigasi
     nav_pages = [
         ("dashboard", "🌍", "Dashboard"),
         ("simulator", "📈", "Simulator"),
@@ -537,17 +543,16 @@ with st.sidebar:
             st.rerun()
         st.markdown("</div>", unsafe_allow_html=True)
 
-    # Info footer
     st.markdown("<div style='height:1.5rem'></div>", unsafe_allow_html=True)
-    st.markdown("""<hr style="border-color:#1E2E23 !important;">""", unsafe_allow_html=True)
+    st.markdown("""<hr style="border-color:#1A3829 !important;">""", unsafe_allow_html=True)
     st.markdown("""
     <div style="padding:0 0.25rem;">
       <p style="font-size:0.58rem;font-weight:600;letter-spacing:0.1em;
-                text-transform:uppercase;color:#627A6B !important;margin-bottom:0.5rem;">
+                text-transform:uppercase;color:#9BB2A2 !important;margin-bottom:0.5rem;">
         Tentang
       </p>
-      <p style="font-size:0.75rem;color:#627A6B !important;line-height:1.8;margin:0;">
-        <span style="color:#6CCB9A !important;font-weight:600;">Kelompok 6</span><br>
+      <p style="font-size:0.75rem;color:#9BB2A2 !important;line-height:1.8;margin:0;">
+        <span style="color:#68B684 !important;font-weight:600;">Kelompok 6</span><br>
         Python System Analytics<br>
         Fak. Teknologi Informasi
       </p>
@@ -569,10 +574,10 @@ if page == "dashboard":
     <p class='page-sub'>Distribusi biomassa, tren deforestasi, dan tutupan hutan dunia.</p>
     """, unsafe_allow_html=True)
 
-    # ── Filter Bar (dua baris agar ramah mobile) ──
+    # ── Filter Bar ──
     st.markdown("<div class='filter-bar'>", unsafe_allow_html=True)
     st.markdown("""<p style="font-size:0.6rem;font-weight:600;letter-spacing:0.1em;
-        text-transform:uppercase;color:#7A8C81 !important;margin:0 0 0.75rem;">
+        text-transform:uppercase;color:#5B6B60 !important;margin:0 0 0.75rem;">
         Filter Data</p>""", unsafe_allow_html=True)
 
     fc1, fc2, fc3 = st.columns(3)
@@ -599,7 +604,7 @@ if page == "dashboard":
         st.markdown("<div style='height:1.85rem'></div>", unsafe_allow_html=True)
         apply_btn = st.button("Terapkan")
     with fc6:
-        st.write("")   # dummy
+        st.write("")
 
     if apply_btn:
         st.session_state.applied_region  = sel_region  or REGIONS
@@ -625,12 +630,15 @@ if page == "dashboard":
     df_yr = df_f[df_f['Year'] == AY]
 
     # ── KPI ──
-    total_c  = df_yr['Total_Carbon_Stock_Tonnes'].sum()
-    total_f  = df_yr['Forest_Area_km2'].sum()
-    avg_d    = df_yr['Annual_Deforestation_Rate'].mean()
-    avg_a    = df_yr['Annual_Afforestation_Rate'].mean()
-    base_d   = df[df['Year']==YEAR_MIN]['Annual_Deforestation_Rate'].mean()
-    if np.isnan(base_d): base_d = 0
+    if not df_yr.empty:
+        total_c  = df_yr['Total_Carbon_Stock_Tonnes'].sum()
+        total_f  = df_yr['Forest_Area_km2'].sum()
+        avg_d    = df_yr['Annual_Deforestation_Rate'].mean()
+        avg_a    = df_yr['Annual_Afforestation_Rate'].mean()
+        base_d   = df[df['Year']==YEAR_MIN]['Annual_Deforestation_Rate'].mean()
+        if np.isnan(base_d): base_d = 0
+    else:
+        total_c = total_f = avg_d = avg_a = base_d = 0
 
     k1, k2, k3, k4 = st.columns(4)
     k1.metric("Stok Karbon Total",  f"{total_c/1e12:.2f} Tt")
@@ -642,13 +650,11 @@ if page == "dashboard":
 
     st.markdown("<div style='height:0.5rem'></div>", unsafe_allow_html=True)
 
-    # ── Peta + Donut ──
-    col_a, col_b = st.columns([3, 2], gap="large")
-
-    with col_a:
+    # ── PETA BESAR ──
+    if not df_yr.empty:
         st.markdown("""<div class='eco-card'>
           <span class='card-title'>Distribusi Stok Karbon per Negara</span>
-          <p class='card-sub'>Intensitas cadangan karbon pada tahun yang dipilih.</p>
+          <p class='card-sub'>Intensitas cadangan karbon pada tahun {AY}.</p>
         """, unsafe_allow_html=True)
         fig_map = px.choropleth(
             df_yr, locations="Country", locationmode="country names",
@@ -660,100 +666,96 @@ if page == "dashboard":
             **CHART,
             geo=dict(showframe=False, showcoastlines=True, coastlinecolor="#D0DDD0",
                      projection_type='natural earth', bgcolor='rgba(0,0,0,0)',
-                     showland=True, landcolor="#EEF3EE",
+                     showland=True, landcolor="#F7F9F6",
                      showocean=True, oceancolor="#E6EEF4"),
             coloraxis_colorbar=dict(title="", thickness=5, len=0.45,
-                                    tickfont=dict(family='Inter, DM Sans', size=9, color='#7A8C81'))
+                                    tickfont=dict(family='Inter', size=9, color='#5B6B60'))
         )
         st.plotly_chart(fig_map, use_container_width=True)
         st.markdown("</div>", unsafe_allow_html=True)
+    else:
+        st.warning("Data tidak tersedia untuk filter yang dipilih.")
 
-    with col_b:
+    # ── ROW 2: DONUT CHART + PERINGKAT NEGARA ──
+    col_a, col_b = st.columns(2, gap="large")
+
+    with col_a:
         st.markdown("""<div class='eco-card'>
           <span class='card-title'>Pemicu Utama Deforestasi</span>
           <p class='card-sub'>Proporsi faktor penyebab kehilangan tutupan hutan.</p>
         """, unsafe_allow_html=True)
-        drv = df_f.groupby('Primary_Driver_of_Change').size().reset_index(name='n')
-        fig_pie = go.Figure(go.Pie(
-            labels=drv['Primary_Driver_of_Change'], values=drv['n'],
-            hole=0.66,
-            marker_colors=['#0C2618','#165C34','#1E9E54','#6CCB9A'],
-            textfont=dict(family='Inter, DM Sans', size=11),
-            hovertemplate="<b>%{label}</b><br>%{value} kasus<extra></extra>"
-        ))
-        fig_pie.update_layout(
-            **CHART,
-            showlegend=True,
-            legend=dict(**LEG, orientation='v', x=0.6, y=0.5, yanchor='middle'),
-            annotations=[dict(
-                text=f"<b>{drv['n'].sum()}</b><br><span style='font-size:9px'>Total</span>",
-                x=0.5, y=0.5, showarrow=False,
-                font=dict(family='Inter, DM Sans', size=16, color='#0F1A12')
-            )]
-        )
-        st.plotly_chart(fig_pie, use_container_width=True)
+        if not df_f.empty:
+            drv = df_f.groupby('Primary_Driver_of_Change').size().reset_index(name='n')
+            total_n = drv['n'].sum()
+            # Donut tanpa anotasi tengah agar tidak tabrakan
+            fig_pie = go.Figure(go.Pie(
+                labels=drv['Primary_Driver_of_Change'], values=drv['n'],
+                hole=0.7,
+                marker_colors=['#0B2618','#1B5E3A','#2A7A4B','#68B684'],
+                textfont=dict(family='Inter', size=11),
+                textposition='outside',
+                hovertemplate="<b>%{label}</b><br>%{value} kasus (%{percent})<extra></extra>"
+            ))
+            fig_pie.update_layout(
+                **CHART,
+                showlegend=True,
+                legend=dict(**LEG, orientation='h', yanchor='bottom', y=-0.2, x=0.5, xanchor='center'),
+                margin=dict(l=0, r=0, t=0, b=60)
+            )
+            st.plotly_chart(fig_pie, use_container_width=True)
+            st.caption(f"Total kasus: {total_n:,}")
+        else:
+            st.info("Tidak ada data pemicu.")
         st.markdown("</div>", unsafe_allow_html=True)
 
-    # ── Tren + Peringkat ──
-    col_c, col_d = st.columns([3, 2], gap="large")
-
-    with col_c:
-        st.markdown("""<div class='eco-card'>
-          <span class='card-title'>Tren Stok Karbon 2000–2025</span>
-          <p class='card-sub'>Perubahan cadangan karbon tahunan per negara.</p>
-        """, unsafe_allow_html=True)
-        trend = df_f.groupby(['Year','Country'])['Total_Carbon_Stock_Tonnes'].mean().reset_index()
-        fig_tr = px.line(trend, x='Year', y='Total_Carbon_Stock_Tonnes', color='Country',
-                         color_discrete_sequence=COLORS,
-                         labels={'Total_Carbon_Stock_Tonnes':'Stok Karbon (T)','Year':'Tahun'})
-        fig_tr.update_layout(**CHART, xaxis=AX_X, yaxis=AX_Y,
-                             legend=dict(**LEG), hovermode='x unified')
-        fig_tr.update_traces(line=dict(width=1.8))
-        st.plotly_chart(fig_tr, use_container_width=True)
-        st.markdown("</div>", unsafe_allow_html=True)
-
-    with col_d:
+    with col_b:
         st.markdown("""<div class='eco-card'>
           <span class='card-title'>Peringkat Negara</span>
           <p class='card-sub'>Stok karbon tertinggi pada tahun terpilih.</p>
         """, unsafe_allow_html=True)
-        top8 = df_yr.nlargest(8, 'Total_Carbon_Stock_Tonnes')
-        fig_bar = go.Figure(go.Bar(
-            x=top8['Total_Carbon_Stock_Tonnes']/1e9,
-            y=top8['Country'],
-            orientation='h',
-            marker=dict(color=top8['Total_Carbon_Stock_Tonnes'],
-                        colorscale=[[0,'#B8E0C8'],[1,'#0C2618']], showscale=False),
-            text=[f"{v:.1f} Gt" for v in top8['Total_Carbon_Stock_Tonnes']/1e9],
-            textposition='outside',
-            textfont=dict(family='Inter, DM Sans', size=10, color='#7A8C81'),
-            hovertemplate="<b>%{y}</b>: %{x:.2f} Gt<extra></extra>"
-        ))
-        fig_bar.update_layout(
-            **CHART,
-            xaxis=dict(**AX_X, title=dict(text='Giga Ton',
-                        font=dict(family='Inter, DM Sans', size=10, color='#7A8C81'))),
-            yaxis=dict(**AX_Y, showgrid=False,
-                       tickfont=dict(family='Inter, DM Sans', size=11, color='#3C4D42')),
-            margin=dict(l=0, r=58, t=4, b=0), height=295
-        )
-        st.plotly_chart(fig_bar, use_container_width=True)
+        if not df_yr.empty:
+            top8 = df_yr.nlargest(8, 'Total_Carbon_Stock_Tonnes')
+            fig_bar = go.Figure(go.Bar(
+                x=top8['Total_Carbon_Stock_Tonnes']/1e9,
+                y=top8['Country'],
+                orientation='h',
+                marker=dict(color=top8['Total_Carbon_Stock_Tonnes'],
+                            colorscale=[[0,'#D0E8D8'],[1,'#0B2618']], showscale=False),
+                text=[f"{v:.1f} Gt" for v in top8['Total_Carbon_Stock_Tonnes']/1e9],
+                textposition='outside',
+                textfont=dict(family='Inter', size=10, color='#5B6B60'),
+                hovertemplate="<b>%{y}</b>: %{x:.2f} Gt<extra></extra>"
+            ))
+            fig_bar.update_layout(
+                **CHART,
+                xaxis=dict(**AX_X, title=dict(text='Giga Ton',
+                            font=dict(family='Inter', size=10, color='#5B6B60'))),
+                yaxis=dict(**AX_Y, showgrid=False,
+                           tickfont=dict(family='Inter', size=11, color='#2D4A3A')),
+                margin=dict(l=0, r=58, t=4, b=0), height=295
+            )
+            st.plotly_chart(fig_bar, use_container_width=True)
+        else:
+            st.info("Data kosong.")
         st.markdown("</div>", unsafe_allow_html=True)
 
-    # ── Tabel Detail ──
+    # ── TABEL DETAIL ──
     st.markdown("""<div class='eco-card'>
       <span class='card-title'>Data Detail</span>
       <p class='card-sub'>Ringkasan terfilter untuk tahun yang dipilih.</p>
     """, unsafe_allow_html=True)
-    tbl = df_yr[['Country','Region','Forest_Area_km2','Annual_Deforestation_Rate',
-                 'Annual_Afforestation_Rate','Total_Carbon_Stock_Tonnes',
-                 'Primary_Driver_of_Change']].copy()
-    tbl.columns = ['Negara','Kawasan','Luas Hutan (km²)','Deforestasi (%)',
-                   'Aforestasi (%)','Stok Karbon (Ton)','Pemicu Utama']
-    for col, fmt in [('Luas Hutan (km²)','{:,.0f}'),('Stok Karbon (Ton)','{:,.0f}'),
-                     ('Deforestasi (%)','{:.2f}'),('Aforestasi (%)','{:.2f}')]:
-        tbl[col] = tbl[col].map(fmt.format)
-    st.dataframe(tbl, use_container_width=True, hide_index=True)
+    if not df_yr.empty:
+        tbl = df_yr[['Country','Region','Forest_Area_km2','Annual_Deforestation_Rate',
+                     'Annual_Afforestation_Rate','Total_Carbon_Stock_Tonnes',
+                     'Primary_Driver_of_Change']].copy()
+        tbl.columns = ['Negara','Kawasan','Luas Hutan (km²)','Deforestasi (%)',
+                       'Aforestasi (%)','Stok Karbon (Ton)','Pemicu Utama']
+        for col, fmt in [('Luas Hutan (km²)','{:,.0f}'),('Stok Karbon (Ton)','{:,.0f}'),
+                         ('Deforestasi (%)','{:.2f}'),('Aforestasi (%)','{:.2f}')]:
+            tbl[col] = tbl[col].map(fmt.format)
+        st.dataframe(tbl, use_container_width=True, hide_index=True)
+    else:
+        st.info("Tidak ada data untuk ditampilkan.")
     st.markdown("</div>", unsafe_allow_html=True)
 
 
@@ -769,7 +771,7 @@ elif page == "simulator":
     with st.form("form_sim"):
         st.markdown("<div class='eco-card'>", unsafe_allow_html=True)
         st.markdown("""<p style="font-size:0.6rem;font-weight:600;letter-spacing:0.1em;
-            text-transform:uppercase;color:#7A8C81 !important;margin:0 0 0.9rem;">
+            text-transform:uppercase;color:#5B6B60 !important;margin:0 0 0.9rem;">
             Konfigurasi Skenario</p>""", unsafe_allow_html=True)
 
         r1c1, r1c2, r1c3 = st.columns([1,1,2])
@@ -777,10 +779,10 @@ elif page == "simulator":
         pemicu     = r1c2.selectbox("Pemicu Utama", DRIVERS)
         thn_target = r1c3.slider("Target Tahun Proyeksi", 2026, 2060, 2035)
 
-        st.markdown("<hr style='border-color:#DDE4DE !important;margin:1rem 0 !important;'>",
+        st.markdown("<hr style='border-color:#E3E8E4 !important;margin:1rem 0 !important;'>",
                     unsafe_allow_html=True)
         st.markdown("""<p style="font-size:0.6rem;font-weight:600;letter-spacing:0.1em;
-            text-transform:uppercase;color:#7A8C81 !important;margin:0 0 0.9rem;">
+            text-transform:uppercase;color:#5B6B60 !important;margin:0 0 0.9rem;">
             Skenario Intervensi</p>""", unsafe_allow_html=True)
 
         s1, s2 = st.columns(2, gap="large")
@@ -842,8 +844,8 @@ elif page == "simulator":
             df_proj = pd.DataFrame({'Tahun':thn_list,'Stok Karbon':hasil_list})
             fg = go.Figure(go.Scatter(
                 x=df_proj['Tahun'], y=df_proj['Stok Karbon'],
-                mode='lines', line=dict(color='#165C34', width=2.5),
-                fill='tozeroy', fillcolor='rgba(22,92,52,0.07)',
+                mode='lines', line=dict(color='#1B5E3A', width=2.5),
+                fill='tozeroy', fillcolor='rgba(27,94,58,0.07)',
                 hovertemplate="Tahun %{x}<br>%{y:,.0f} Ton<extra></extra>"
             ))
             fg.update_layout(**CHART, xaxis=AX_X, yaxis=AX_Y, height=235)
@@ -884,9 +886,9 @@ else:
     with col_l:
         st.markdown("<div class='eco-card'>", unsafe_allow_html=True)
         st.markdown("""<p style="font-size:0.6rem;font-weight:600;letter-spacing:0.1em;
-            text-transform:uppercase;color:#7A8C81 !important;margin:0 0 1rem;">
+            text-transform:uppercase;color:#5B6B60 !important;margin:0 0 1rem;">
             Panel Intervensi</p>
-            <h4 style="font-size:0.95rem;margin:0 0 1.2rem;color:#0F1A12 !important;">
+            <h4 style="font-size:0.95rem;margin:0 0 1.2rem;color:#0B2618 !important;">
             Kontrol Regulasi</h4>""", unsafe_allow_html=True)
 
         p1 = st.toggle("Moratorium Penebangan Komersial",
@@ -901,7 +903,7 @@ else:
         p4 = st.toggle("Insentif Petani Hutan",
                         help="Memotivasi petani untuk menjaga hutan bukan membuka lahan.")
 
-        st.markdown("<hr style='border-color:#DDE4DE !important;margin:1.1rem 0 !important;'>",
+        st.markdown("<hr style='border-color:#E3E8E4 !important;margin:1.1rem 0 !important;'>",
                     unsafe_allow_html=True)
 
         aktif = {"Moratorium Penebangan":p1,"Dana Reboisasi":p2,
@@ -915,12 +917,12 @@ else:
             for nm, val in aktif.items():
                 if val:
                     st.markdown(
-                        f"<p style='font-size:0.79rem;color:#165C34 !important;"
+                        f"<p style='font-size:0.79rem;color:#1B5E3A !important;"
                         f"margin:3px 0;font-weight:600;'>✓ {nm}</p>",
                         unsafe_allow_html=True)
         else:
             st.markdown(
-                "<p style='font-size:0.79rem;color:#7A8C81 !important;"
+                "<p style='font-size:0.79rem;color:#5B6B60 !important;"
                 "font-style:italic;margin:0;'>Belum ada intervensi aktif.</p>",
                 unsafe_allow_html=True)
         st.markdown("</div>", unsafe_allow_html=True)
@@ -940,9 +942,9 @@ else:
 
         st.markdown("<div class='eco-card'>", unsafe_allow_html=True)
         st.markdown("""<p style="font-size:0.6rem;font-weight:600;letter-spacing:0.1em;
-            text-transform:uppercase;color:#7A8C81 !important;margin:0 0 1rem;">
+            text-transform:uppercase;color:#5B6B60 !important;margin:0 0 1rem;">
             Dampak Proyeksi 2030</p>
-            <h4 style="font-size:0.95rem;margin:0 0 1.2rem;color:#0F1A12 !important;">
+            <h4 style="font-size:0.95rem;margin:0 0 1.2rem;color:#0B2618 !important;">
             Hasil Simulasi</h4>""", unsafe_allow_html=True)
 
         m1, m2, m3 = st.columns(3)
@@ -987,13 +989,13 @@ else:
     fl = go.Figure()
     fl.add_trace(go.Scatter(
         x=yrs, y=b_traj, mode='lines', name='Tanpa Kebijakan',
-        line=dict(color='#A63A3A', width=2, dash='dot'),
-        fill='tozeroy', fillcolor='rgba(166,58,58,0.05)'
+        line=dict(color='#B33F3F', width=2, dash='dot'),
+        fill='tozeroy', fillcolor='rgba(179,63,63,0.05)'
     ))
     fl.add_trace(go.Scatter(
         x=yrs, y=p_traj, mode='lines', name='Dengan Kebijakan',
-        line=dict(color='#165C34', width=2.5),
-        fill='tozeroy', fillcolor='rgba(22,92,52,0.07)'
+        line=dict(color='#1B5E3A', width=2.5),
+        fill='tozeroy', fillcolor='rgba(27,94,58,0.07)'
     ))
     fl.update_layout(**CHART, xaxis=AX_X, yaxis=AX_Y,
                      legend=dict(**LEG), hovermode='x unified', height=255)
