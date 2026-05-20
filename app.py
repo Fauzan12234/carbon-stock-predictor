@@ -46,7 +46,6 @@ st.markdown("""
 [data-testid="stSidebar"] > div:first-child {
     padding: 2rem 1.5rem !important;
 }
-/* Semua teks sidebar jadi putih terang */
 [data-testid="stSidebar"] p,
 [data-testid="stSidebar"] span,
 [data-testid="stSidebar"] div,
@@ -260,17 +259,7 @@ label {
 [data-baseweb="select"] * { color: #0A1A14 !important; }
 .stSlider [data-testid="stMarkdownContainer"] p { color: #5A7A66 !important; }
 
-/* ── TOGGLE ── */
-.stToggle > label > div > p {
-    font-size: 0.875rem !important;
-    font-weight: 500 !important;
-    color: #0A1A14 !important;
-    letter-spacing: 0 !important;
-    text-transform: none !important;
-}
-.stToggle > label { align-items: center !important; }
-
-/* ── EXPANDER ── */
+/* ── EXPANDER & ALERTS ── */
 .stExpander {
     border: 1px solid #DDE8DD !important;
     border-radius: 10px !important;
@@ -283,17 +272,13 @@ details summary p {
     text-transform: uppercase !important;
     color: #5A7A66 !important;
 }
-
-/* ── ALERTS ── */
 .stSuccess > div, .stError > div, .stInfo > div, .stWarning > div {
     border-radius: 10px !important;
     font-size: 0.875rem !important;
 }
-
-/* ── DIVIDER ── */
 hr { border-color: #DDE8DD !important; margin: 1.5rem 0 !important; }
 
-/* ── RESULT HERO (Dark Card) ── */
+/* ── RESULT HERO ── */
 .result-label {
     font-size: 0.65rem;
     font-weight: 700;
@@ -386,17 +371,29 @@ def load_data():
         "/content/drive/MyDrive/Tugas Week 12/global_deforestation_2000_2025.csv",
         "global_deforestation_2000_2025.csv"
     ]
+    
+    # Fungsi pemetaan wilayah geografis
+    def assign_region(c):
+        c_lower = str(c).lower()
+        if c_lower in ['brazil', 'colombia', 'peru', 'argentina', 'chile', 'bolivia']: return 'Amerika Selatan'
+        elif c_lower in ['indonesia', 'malaysia', 'thailand', 'vietnam', 'philippines']: return 'Asia Tenggara'
+        elif c_lower in ['india', 'china', 'japan', 'korea']: return 'Asia'
+        elif c_lower in ['canada', 'usa', 'mexico', 'united states']: return 'Amerika Utara'
+        elif c_lower in ['congo', 'nigeria', 'south africa', 'algeria']: return 'Afrika'
+        elif c_lower in ['russia', 'kazakhstan', 'ukraine', 'france', 'germany']: return 'Eropa/Asia'
+        elif c_lower in ['australia', 'new zealand']: return 'Oseania'
+        else: return 'Lainnya'
+
     for p in paths:
         if os.path.exists(p):
-            return pd.read_csv(p)
+            df_real = pd.read_csv(p)
+            if 'Region' not in df_real.columns:
+                df_real['Region'] = df_real['Country'].apply(assign_region)
+            return df_real
 
+    # Fallback Data Dummy jika file tidak terbaca
     np.random.seed(42)
-    n_countries = 12
-    countries = [
-        'Brazil', 'Indonesia', 'Canada', 'Russia', 'USA',
-        'Congo', 'Australia', 'India', 'China', 'Malaysia',
-        'Colombia', 'Peru'
-    ]
+    countries = ['Brazil', 'Indonesia', 'Canada', 'Russia', 'USA', 'Congo', 'Australia', 'India', 'China', 'Malaysia', 'Colombia', 'Peru']
     rows = []
     for country in countries:
         base_forest = np.random.uniform(80000, 600000)
@@ -414,25 +411,14 @@ def load_data():
                 'Annual_Deforestation_Rate': defor,
                 'Annual_Afforestation_Rate': affor,
                 'Total_Carbon_Stock_Tonnes': max(carbon, 1e8),
-                'Net_Forest_Change_km2': (affor - defor) * forest_area / 100,
-                'Primary_Driver_of_Change': np.random.choice(
-                    ['Pertanian', 'Kebakaran', 'Pertambangan', 'Penebangan'], p=[0.45, 0.25, 0.15, 0.15]
-                ),
-                'Region': (
-                    'Amerika Selatan' if country in ['Brazil','Colombia','Peru'] else
-                    'Asia Tenggara' if country in ['Indonesia','Malaysia'] else
-                    'Asia' if country in ['India','China'] else
-                    'Amerika Utara' if country in ['Canada','USA'] else
-                    'Afrika' if country in ['Congo'] else
-                    'Eropa/Asia' if country in ['Russia'] else
-                    'Oseania'
-                )
+                'Primary_Driver_of_Change': np.random.choice(['Pertanian', 'Kebakaran', 'Pertambangan', 'Penebangan'], p=[0.45, 0.25, 0.15, 0.15]),
+                'Region': assign_region(country)
             })
     return pd.DataFrame(rows)
 
 
 def prediksi_stok(fitur: dict) -> float:
-    log_forest = np.log1p(fitur['Forest_Area_km2'])
+    log_forest = np.log1p(max(fitur['Forest_Area_km2'], 1.0))
     rasio = fitur['Forest_Area_km2'] / (fitur['Land_Area_km2'] + 1e-6)
     base = (
         4.2
@@ -445,11 +431,13 @@ def prediksi_stok(fitur: dict) -> float:
 
 
 df = load_data()
-COUNTRIES  = sorted(df['Country'].unique().tolist())
-DRIVERS    = sorted(df['Primary_Driver_of_Change'].unique().tolist())
-REGIONS    = sorted(df['Region'].unique().tolist())
-YEAR_MIN   = int(df['Year'].min())
-YEAR_MAX   = int(df['Year'].max())
+
+# Penanganan missing values dan konversi aman ke teks agar sorted tidak error
+COUNTRIES  = sorted([str(x) for x in df['Country'].dropna().unique()])
+DRIVERS    = sorted([str(x) for x in df['Primary_Driver_of_Change'].dropna().unique()])
+REGIONS    = sorted([str(x) for x in df['Region'].dropna().unique()])
+YEAR_MIN   = int(df['Year'].min()) if not df['Year'].isnull().all() else 2000
+YEAR_MAX   = int(df['Year'].max()) if not df['Year'].isnull().all() else 2025
 COLOR_SEQ  = ['#0A1A14','#1A5C3A','#2E8B57','#5AB88A','#94D4B0','#C4EACF','#DDE8DD']
 
 
@@ -495,7 +483,6 @@ with st.sidebar:
 # ══════════════════════════════════════════════
 if nav == "Dashboard Analitik":
 
-    # ── Header ──
     st.markdown("""
     <span class='sec-label'>Pemantauan Real-Time</span>
     <h2 class='page-title'>Dashboard Stok Karbon Global</h2>
@@ -505,7 +492,6 @@ if nav == "Dashboard Analitik":
     </p>
     """, unsafe_allow_html=True)
 
-    # ── Filter Bar ──
     st.markdown("<div class='card' style='padding:1.25rem 1.75rem; margin-bottom:1.25rem;'>", unsafe_allow_html=True)
     fc1, fc2, fc3, fc4 = st.columns([2, 2, 2, 1])
     with fc1:
@@ -537,15 +523,13 @@ if nav == "Dashboard Analitik":
         )
     st.markdown("</div>", unsafe_allow_html=True)
 
-    # ── Terapkan Filter ──
     df_f = df[
-        (df['Region'].isin(filter_region if filter_region else REGIONS)) &
-        (df['Country'].isin(filter_country if filter_country else COUNTRIES)) &
-        (df['Primary_Driver_of_Change'].isin(filter_driver if filter_driver else DRIVERS))
+        (df['Region'].astype(str).isin(filter_region if filter_region else REGIONS)) &
+        (df['Country'].astype(str).isin(filter_country if filter_country else COUNTRIES)) &
+        (df['Primary_Driver_of_Change'].astype(str).isin(filter_driver if filter_driver else DRIVERS))
     ]
     df_yr = df_f[df_f['Year'] == filter_year]
 
-    # ── KPI Strip ──
     k1, k2, k3, k4, k5 = st.columns(5)
     total_carbon = df_yr['Total_Carbon_Stock_Tonnes'].sum()
     total_forest = df_yr['Forest_Area_km2'].sum()
@@ -553,17 +537,21 @@ if nav == "Dashboard Analitik":
     avg_affor    = df_yr['Annual_Afforestation_Rate'].mean()
     n_countries  = df_yr['Country'].nunique()
 
+    # Hitung rata-rata dasar dengan aman menghindari error jika data tidak ada
+    base_defor_mean = df[df['Year'] == YEAR_MIN]['Annual_Deforestation_Rate'].mean()
+    if np.isnan(base_defor_mean):
+        base_defor_mean = 0
+
     k1.metric("Total Stok Karbon", f"{total_carbon/1e12:.2f} Tt")
     k2.metric("Total Area Hutan", f"{total_forest/1e6:.2f} jt km²")
     k3.metric("Rata-rata Deforestasi", f"{avg_defor:.2f}%/thn",
-              delta=f"{avg_defor - df[df['Year']==YEAR_MIN]['Annual_Deforestation_Rate'].mean():.2f}%",
+              delta=f"{avg_defor - base_defor_mean:.2f}%",
               delta_color="inverse")
     k4.metric("Rata-rata Aforestasi", f"{avg_affor:.2f}%/thn")
-    k5.metric("Jumlah Negara", f"{n_countries} Negara")
+    k5.metric("Jumlah Negara", f"{n_countries} Entitas")
 
     st.write("")
 
-    # ── Baris 2: Peta + Donut ──
     row1_l, row1_r = st.columns([3, 2], gap="large")
 
     with row1_l:
@@ -639,7 +627,6 @@ if nav == "Dashboard Analitik":
         st.plotly_chart(fig_donut, use_container_width=True)
         st.markdown("</div>", unsafe_allow_html=True)
 
-    # ── Baris 3: Tren Historis + Bar Perbandingan ──
     row2_l, row2_r = st.columns([3, 2], gap="large")
 
     with row2_l:
@@ -705,7 +692,6 @@ if nav == "Dashboard Analitik":
         st.plotly_chart(fig_bar, use_container_width=True)
         st.markdown("</div>", unsafe_allow_html=True)
 
-    # ── Baris 4: Scatter + Heatmap ──
     row3_l, row3_r = st.columns([1, 1], gap="large")
 
     with row3_l:
@@ -777,7 +763,6 @@ if nav == "Dashboard Analitik":
         st.plotly_chart(fig_cmp, use_container_width=True)
         st.markdown("</div>", unsafe_allow_html=True)
 
-    # ── Tabel Data Ringkasan ──
     st.markdown("""
     <div class='card'>
       <span class='card-title'>Ringkasan Data Detail</span>
@@ -886,7 +871,6 @@ elif nav == "Simulator Proyeksi":
             net          = laju_affor - laju_defor
             skenario_str = "Pemulihan" if net >= 0 else "Penurunan"
 
-        # ── Hasil Hero ──
         st.markdown(f"""
         <div class='card-dark'>
           <span class='result-label'>Proyeksi Cadangan Karbon &mdash; {thn_target}</span>
@@ -948,12 +932,12 @@ elif nav == "Simulator Proyeksi":
         st.write("")
         if net >= 0:
             st.success(
-                f"**Skenario Positif** — Laju aforestasi melampaui deforestasi sebesar "
+                f"Skenario Positif — Laju aforestasi melampaui deforestasi sebesar "
                 f"{net:.1f}%/tahun. Ekosistem diproyeksikan pulih secara bertahap hingga {thn_target}."
             )
         else:
             st.error(
-                f"**Peringatan Ekologis** — Laju deforestasi mendominasi sebesar "
+                f"Peringatan Ekologis — Laju deforestasi mendominasi sebesar "
                 f"{abs(net):.1f}%/tahun. Cadangan karbon diproyeksikan menyusut kritis hingga {thn_target}."
             )
 
@@ -1028,7 +1012,6 @@ else:
         st.markdown("</div>", unsafe_allow_html=True)
 
     with colr:
-        # ── Kalkulasi ──
         base_def = 2.0
         base_aff = 0.5
         if pol_log: base_def *= 0.3
@@ -1043,14 +1026,12 @@ else:
         }
         hasil_pol = prediksi_stok(p_params)
 
-        # Tanpa kebijakan (baseline)
         baseline_params = {**p_params,
             'Annual_Deforestation_Rate': 2.0, 'Annual_Afforestation_Rate': 0.5
         }
         hasil_base = prediksi_stok(baseline_params)
         selisih_pct = ((hasil_pol - hasil_base) / hasil_base) * 100
 
-        # ── KPI Row ──
         st.markdown("<div class='card-flat'>", unsafe_allow_html=True)
         st.markdown("<p class='sec-label'>Dampak Proyeksi 2030</p>", unsafe_allow_html=True)
         st.markdown("<h4 style='margin:0 0 1.25rem;'>Hasil Simulasi Ekologis</h4>", unsafe_allow_html=True)
@@ -1083,7 +1064,6 @@ else:
         </div>
         """, unsafe_allow_html=True)
 
-        # ── Radar Chart ──
         st.markdown("<div style='height:0.75rem;'></div>", unsafe_allow_html=True)
         st.markdown("<span class='card-title'>Profil Dampak Multidimensi</span>", unsafe_allow_html=True)
         st.markdown("<p class='card-sub'>Perbandingan kondisi baseline vs. dengan kebijakan aktif.</p>", unsafe_allow_html=True)
@@ -1139,7 +1119,6 @@ else:
         st.plotly_chart(fig_radar, use_container_width=True)
         st.markdown("</div>", unsafe_allow_html=True)
 
-    # ── Baris Bawah: Timeline Dampak ──
     st.write("")
     st.markdown("<div class='card'>", unsafe_allow_html=True)
     st.markdown("<span class='card-title'>Proyeksi Dampak Kebijakan Jangka Panjang (2025–2040)</span>", unsafe_allow_html=True)
