@@ -14,19 +14,19 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# --- TEMA & CSS KUSTOM ---
+# --- TEMA & CSS KUSTOM (MOBILE FRIENDLY) ---
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
     
     html, body, [data-testid="stAppViewContainer"], .main {
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
-        background-color: #F8FAF8 !important; /* Off-white with a hint of green */
+        background-color: #F8FAF8 !important;
         color: #2C3E2B !important;
     }
     
     [data-testid="stSidebar"] {
-        background-color: #1A2E20 !important; /* Dark Forest Green */
+        background-color: #1A2E20 !important;
         color: #E2E8F0 !important;
     }
     
@@ -34,13 +34,14 @@ st.markdown("""
         color: #E2E8F0 !important;
     }
     
+    /* Base Styling untuk Card / Metrik */
     .stMetric {
         background-color: #FFFFFF !important;
         padding: 20px !important;
         border-radius: 12px !important;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04) !important;
         border: 1px solid #EAEAEA !important;
-        border-top: 4px solid #2E7D32 !important; /* Emerald accent */
+        border-top: 4px solid #2E7D32 !important;
     }
     
     .stMetric div[data-testid="stMetricValue"] {
@@ -56,12 +57,18 @@ st.markdown("""
     }
     
     .prediction-card {
-        background-color: #EDF4ED !important; /* Sage Green */
+        background-color: #EDF4ED !important;
         border-left: 5px solid #2E7D32 !important;
         padding: 25px !important;
         border-radius: 8px !important;
         margin-top: 15px !important;
         box-shadow: 0 4px 10px rgba(46, 125, 50, 0.1) !important;
+    }
+    
+    .prediction-value {
+        margin: 5px 0 10px 0; 
+        font-size: 2.8rem; 
+        color: #1A2E20;
     }
     
     .stButton>button {
@@ -87,28 +94,37 @@ st.markdown("""
         border: 1px solid #EAEAEA;
         box-shadow: 0 4px 12px rgba(0,0,0,0.02);
     }
+    
+    @media (max-width: 768px) {
+        .stMetric { padding: 15px !important; }
+        .stMetric div[data-testid="stMetricValue"] { font-size: 1.5rem !important; }
+        .insight-box { padding: 15px; }
+        .prediction-card { padding: 15px !important; }
+        .prediction-value { font-size: 2rem !important; }
+        div[st-html="true"] h1 { font-size: 1.8rem !important; }
+    }
     </style>
     """, unsafe_allow_html=True)
 
+# --- FUNGSI LOAD DATA ---
 @st.cache_data
 def load_data():
-    paths_to_try = [
-        return pd.read_csv("global_deforestation_2000_2025.csv")
-    ]
+    file_path = "global_deforestation_2000_2025.csv"
     
-    for path in paths_to_try:
-        if os.path.exists(path):
-            return pd.read_csv(path)
+    if os.path.exists(file_path):
+        return pd.read_csv(file_path)
             
-    st.error("Dataset tidak ditemukan. Menampilkan data simulasi sementara.")
+    # Fallback jika file gagal ditemukan di Cloud
+    st.error("Dataset tidak ditemukan. Pastikan nama file CSV sudah benar di GitHub.")
     return pd.DataFrame({
-        'Country': ['Brazil', 'Indonesia', 'Congo', 'Country_Gen_001'],
-        'Year': [2025, 2025, 2025, 2025],
-        'Primary_Driver_of_Change': ['Commercial Agriculture', 'Logging', 'Mining', 'Fire']
+        'Country': ['Brazil', 'Indonesia', 'Congo'],
+        'Year': [2025, 2025, 2025],
+        'Primary_Driver_of_Change': ['Commercial Agriculture', 'Logging', 'Mining']
     })
 
 df = load_data()
 
+# Ambil list negara otomatis
 if 'Country' in df.columns:
     COUNTRIES = sorted(df['Country'].unique().tolist())
 else:
@@ -120,7 +136,7 @@ DRIVERS = sorted([
     'Small-scale Agriculture', 'Urbanization'
 ])
 
-# --- FUNGSI PREDIKSI (XGBOOST DENGAN FALLBACK DUMMY) ---
+# --- FUNGSI PREDIKSI (XGBOOST) ---
 def predict_carbon_stock(features):
     log_forest_area = np.log1p(features['Forest_Area_km2'])
     forest_land_ratio = features['Forest_Area_km2'] / (features['Land_Area_km2'] + 1e-6)
@@ -139,24 +155,15 @@ def predict_carbon_stock(features):
         features['Year']
     ]).reshape(1, -1)
     
-    model_paths = [
-        "/content/drive/MyDrive/Tugas Week 12/model_xgboost.pkl",
-        "model_xgboost.pkl"
-    ]
-    
     model_loaded = False
-    for path in model_paths:
-        if os.path.exists(path):
-            try:
-                model = joblib.load(model_xgboost.pkl)
-                pred_log = model.predict(input_array)[0]
-                model_loaded = True
-                break
-            except:
-                continue
-                
-    if not model_loaded:
-        # Formula simulasi regresi log-linear jika pkl tidak ada
+    
+    try:
+        # Panggil file pkl menggunakan kutip dua
+        model = joblib.load("model_xgboost.pkl")
+        pred_log = model.predict(input_array)[0]
+        model_loaded = True
+    except Exception as e:
+        # Fallback perhitungan log-linear jika pkl gagal di-load
         pred_log = 4.0 + (0.95 * log_forest_area) + (0.1 * forest_land_ratio) - (0.05 * features['Annual_Deforestation_Rate'])
         
     prediction_actual = np.expm1(pred_log)
@@ -166,7 +173,7 @@ def predict_carbon_stock(features):
 with st.sidebar:
     logo_path = "logo.png"
     if os.path.exists(logo_path):
-        st.image(logo_path, width=100)
+        st.image(logo_path, use_container_width=True)
     else:
         st.markdown("<div style='font-size: 50px; text-align: center;'>🌲</div>", unsafe_allow_html=True)
         
@@ -282,7 +289,7 @@ elif menu == "Simulator Prediksi":
             st.markdown(f"""
                 <div class="prediction-card">
                     <span style="color: #4A5D4E; font-size: 0.95rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Estimasi Stok Karbon di {country} ({year})</span>
-                    <h2 style="margin: 5px 0 10px 0; font-size: 2.8rem; color: #1A2E20;">{result:,.0f} <span style="font-size:1.2rem; font-weight:400; color:#555;">Ton Karbon</span></h2>
+                    <h2 class="prediction-value">{result:,.0f} <span style="font-size:1.2rem; font-weight:400; color:#555;">Ton Karbon</span></h2>
                     <p style="margin: 0; color: {status_color}; font-weight: 600; font-size: 1.1rem;">
                         {status_text}
                     </p>
