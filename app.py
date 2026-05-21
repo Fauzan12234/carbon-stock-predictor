@@ -120,18 +120,25 @@ ul[role="listbox"] li:hover { background-color: #F1F5F9 !important; }
 span[data-baseweb="tag"] { background-color: #FFFFFF !important; border: 2px solid #022C22 !important; color: #022C22 !important; }
 div[role="listbox"] { background-color: #FFFFFF !important; }
 
-/* EXPANDER (ADVANCED): HILANGKAN PANAH DAN PASTIKAN TETAP PUTIH SAAT AKTIF */
+/* EXPANDER (ADVANCED): TANPA ARROW + CLEAN */
 [data-testid="stExpander"] { 
     background-color: #FFFFFF !important; 
     border: 2px solid #022C22 !important; 
     border-radius: 16px !important; 
 }
-/* Paksa warna background putih walaupun terbuka/diklik */
-[data-testid="stExpander"] details, [data-testid="stExpander"] summary, [data-testid="stExpander"] details[open] summary {
+
+/* Paksa putih semua */
+[data-testid="stExpander"] details,
+[data-testid="stExpander"] summary,
+[data-testid="stExpander"] details[open] summary {
     background-color: #FFFFFF !important;
 }
-/* HAPUS SEMUA ARROW EXPANDER */
-[data-testid="stExpander"] summary svg,
+
+/* HAPUS TOTAL ARROW (SEMUA VARIAN) */
+[data-testid="stExpander"] summary * svg {
+    display: none !important;
+}
+
 [data-testid="stExpander"] summary::marker,
 [data-testid="stExpander"] summary::-webkit-details-marker {
     display: none !important;
