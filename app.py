@@ -24,19 +24,22 @@ if "adv_open" not in st.session_state: st.session_state.adv_open = False
 if "sim_run" not in st.session_state: st.session_state.sim_run = False
 if "pol_run" not in st.session_state: st.session_state.pol_run = False
 
-# CSS Custom - Tema Modern Rounded, Shape Panels & Full Putih untuk Komponen Interaktif
+# CSS Custom - Tema Modern Rounded, Background Putih dengan Solid Green Shadow
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
 
 /* GLOBAL STYLES */
-* { font-family: 'Plus Jakarta Sans', sans-serif !important; color: #022C22 !important; }
+* { 
+    font-family: 'Plus Jakarta Sans', sans-serif !important; 
+    color: #022C22 !important; 
+}
 
-/* Latar Belakang Aplikasi */
+/* Latar Belakang Aplikasi (Warna krem terang dengan dot pattern) */
 body, .stApp, .block-container, header[data-testid="stHeader"] { 
-    background-color: #FAFAF9 !important; 
-    background-image: radial-gradient(#D1FAE5 1px, transparent 1px);
-    background-size: 20px 20px;
+    background-color: #F8FAFC !important; 
+    background-image: radial-gradient(#D1FAE5 1.5px, transparent 1.5px);
+    background-size: 24px 24px;
 }
 [data-testid="stSidebar"] { display: none; }
 .block-container { padding: 2rem 2.25rem 5rem !important; max-width: 1250px !important; }
@@ -44,88 +47,83 @@ body, .stApp, .block-container, header[data-testid="stHeader"] {
 /* PANEL BELAKANG (SHAPE ROUNDED BACKGROUND PUTIH DENGAN OUTLINE SHADOW GELAP) */
 [data-testid="stVerticalBlockBorderWrapper"], [data-testid="stForm"] {
     background-color: #FFFFFF !important;
-    border: 3px solid #022C22 !important;
-    border-radius: 24px !important;
-    box-shadow: 5px 5px 0px #022C22 !important;
+    border: 2px solid #022C22 !important;
+    border-radius: 16px !important;
+    box-shadow: 6px 6px 0px #064E3B !important;
     padding: 1.5rem !important;
     margin-bottom: 1.5rem !important;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 [data-testid="stVerticalBlockBorderWrapper"]:hover, [data-testid="stForm"]:hover {
-    transform: translateY(-3px);
-    box-shadow: 8px 8px 0px #022C22 !important;
+    transform: translateY(-2px);
+    box-shadow: 8px 8px 0px #064E3B !important;
 }
 
-/* SEMUA TOMBOL (Dibuat putih terang dengan border outline gelap) */
+/* SEMUA TOMBOL */
 .stButton > button, [data-testid="baseButton-secondaryFormSubmit"] {
     background-color: #FFFFFF !important;
     color: #022C22 !important;
-    border: 3px solid #022C22 !important;
-    border-radius: 100px !important;
-    box-shadow: 4px 4px 0px #022C22 !important;
-    font-size: 1.1rem !important;
+    border: 2px solid #022C22 !important;
+    border-radius: 50px !important;
+    box-shadow: 4px 4px 0px #064E3B !important;
+    font-size: 1.05rem !important;
     font-weight: 800 !important;
-    padding: 0.6rem !important;
-    transition: all 0.1s ease;
+    padding: 0.5rem 1rem !important;
+    transition: all 0.15s ease-in-out;
 }
 .stButton > button:hover, [data-testid="baseButton-secondaryFormSubmit"]:hover {
-    background-color: #F8FAFC !important;
-    box-shadow: 0px 0px 0px #022C22 !important;
-    transform: translate(4px, 4px) !important;
+    background-color: #D1FAE5 !important;
+    box-shadow: 2px 2px 0px #064E3B !important;
+    transform: translate(2px, 2px) !important;
 }
 
 /* KOTAK METRIK ANGKA */
 [data-testid="stMetric"] {
     background: #FFFFFF !important;
     border: 2px solid #022C22 !important;
-    border-radius: 16px !important;
-    padding: 1rem !important;
+    border-radius: 12px !important;
+    padding: 1.25rem !important;
     text-align: center;
-    box-shadow: 3px 3px 0px #D1FAE5 !important;
+    box-shadow: 4px 4px 0px #064E3B !important;
 }
-[data-testid="stMetricLabel"] > div { font-size: 1rem !important; font-weight: 800 !important; }
+[data-testid="stMetricLabel"] > div { font-size: 0.9rem !important; font-weight: 800 !important; text-transform: uppercase; letter-spacing: 0.5px; color: #064E3B !important; }
 [data-testid="stMetricValue"] { font-size: 2.2rem !important; font-weight: 800 !important; }
 
-/* DROPDOWN & INPUT FIELDS (Memaksa background putih, termasuk tombol number_input) */
+/* DROPDOWN & INPUT FIELDS */
 .stSelectbox label, .stSlider > label, .stNumberInput label, .stMultiSelect label {
-    font-size: 1.05rem !important; font-weight: 800 !important; color: #022C22 !important;
+    font-size: 0.95rem !important; font-weight: 700 !important; color: #022C22 !important; margin-bottom: 0.25rem;
 }
 div[data-baseweb="select"] > div, .stTextInput input, .stNumberInput input, div[data-baseweb="base-input"] {
     background-color: #FFFFFF !important; 
     border: 2px solid #022C22 !important;
-    border-radius: 12px !important;
-    color: #022C22 !important;
-}
-/* Tombol Plus Minus pada Luas Hutan */
-[data-testid="stNumberInputStepUp"], [data-testid="stNumberInputStepDown"], div[data-baseweb="button"] {
-    background-color: #FFFFFF !important;
+    border-radius: 8px !important;
     color: #022C22 !important;
 }
 
 /* LIST DROPDOWN */
 div[data-baseweb="popover"], div[data-baseweb="menu"], ul[role="listbox"] { 
     background-color: #FFFFFF !important; 
+    border-radius: 8px !important;
+    border: 2px solid #022C22 !important;
 }
 ul[role="listbox"] li { 
     background-color: #FFFFFF !important;
     color: #022C22 !important; 
-    font-weight: 700 !important; 
+    font-weight: 600 !important; 
 }
-ul[role="listbox"] li:hover { background-color: #F1F5F9 !important; }
+ul[role="listbox"] li:hover { background-color: #D1FAE5 !important; }
 span[data-baseweb="tag"] { 
-    background-color: #FFFFFF !important; 
-    border: 2px solid #022C22 !important; 
+    background-color: #D1FAE5 !important; 
+    border: 1px solid #022C22 !important; 
     color: #022C22 !important; 
+    font-weight: 700 !important;
 }
-
-/* TOGGLES */
-[data-testid="stCheckbox"] label p { font-weight: 700 !important; font-size: 1.1rem !important; }
 
 /* TEKS CUSTOM */
-.title-text { font-size: 2.5rem; font-weight: 800; margin-bottom: 0.2rem; color: #022C22; text-transform: uppercase; }
-.sub-text { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; color: #064E3B; }
-.header-text { font-size: 1.5rem; font-weight: 800; margin-bottom: 1rem; color: #022C22; }
-.insight-text { font-size: 1.15rem; font-weight: 600; line-height: 1.6; color: #022C22; background: #FFFFFF; padding: 1.5rem; border-radius: 16px; border: 2px dashed #022C22; margin-top: 1rem;}
+.title-text { font-size: 2.2rem; font-weight: 800; margin-bottom: 0.2rem; color: #022C22; text-transform: uppercase; letter-spacing: -0.5px;}
+.sub-text { font-size: 1.05rem; font-weight: 600; margin-bottom: 0.5rem; color: #064E3B; }
+.header-text { font-size: 1.4rem; font-weight: 800; margin-bottom: 1rem; color: #022C22; border-bottom: 2px solid #022C22; padding-bottom: 0.5rem; display: inline-block;}
+.insight-text { font-size: 1.1rem; font-weight: 600; line-height: 1.6; color: #022C22; background: #ECFDF5; padding: 1.25rem; border-radius: 12px; border: 2px dashed #064E3B; margin-top: 1rem;}
 </style>
 """, unsafe_allow_html=True)
 
@@ -223,9 +221,9 @@ CHART_LAYOUT = dict(
     margin=dict(l=10, r=10, t=30, b=10),
 )
 AX_STYLE = dict(
-    showgrid=True, gridcolor="#E2E8F0", gridwidth=2, linecolor="#022C22", linewidth=3,
-    tickfont=dict(family="Plus Jakarta Sans", color="#022C22", size=13),
-    zeroline=True, zerolinecolor="#022C22", zerolinewidth=3
+    showgrid=True, gridcolor="#E2E8F0", gridwidth=1, linecolor="#022C22", linewidth=2,
+    tickfont=dict(family="Plus Jakarta Sans", color="#022C22", size=12),
+    zeroline=True, zerolinecolor="#022C22", zerolinewidth=2
 )
 MAP_SCALE = [[0.0, "#D1FAE5"], [1.0, "#064E3B"]]
 
@@ -295,8 +293,8 @@ if page == "dashboard":
             fig_map.update_layout(
                 **CHART_LAYOUT,
                 geo=dict(
-                    showframe=True, framecolor="#022C22", framewidth=3, showcoastlines=True, coastlinecolor="#022C22",
-                    bgcolor="rgba(0,0,0,0)", showland=True, landcolor="#F8FAFC", showocean=True, oceancolor="#DBEAFE"
+                    showframe=True, framecolor="#022C22", framewidth=2, showcoastlines=True, coastlinecolor="#022C22",
+                    bgcolor="rgba(0,0,0,0)", showland=True, landcolor="#F8FAFC", showocean=True, oceancolor="#ECFDF5"
                 ), coloraxis_showscale=False
             )
             st.plotly_chart(fig_map, use_container_width=True)
@@ -310,7 +308,7 @@ if page == "dashboard":
                 drv = df_f.groupby("Primary_Driver_of_Change").size().reset_index(name="n")
                 fig_drv = go.Figure(go.Bar(
                     x=drv["n"], y=drv["Primary_Driver_of_Change"], orientation="h",
-                    marker=dict(color="#D1FAE5", line=dict(color="#022C22", width=3))
+                    marker=dict(color="#10B981", line=dict(color="#022C22", width=2))
                 ))
                 fig_drv.update_layout(**CHART_LAYOUT, xaxis=AX_STYLE, yaxis=AX_STYLE)
                 st.plotly_chart(fig_drv, use_container_width=True)
@@ -323,7 +321,7 @@ if page == "dashboard":
                 top = df_agg.nlargest(5, "Total_Carbon_Stock_Tonnes")
                 fig_top = go.Figure(go.Bar(
                     x=top["Total_Carbon_Stock_Tonnes"] / 1e9, y=top["Country"], orientation="h",
-                    marker=dict(color="#34D399", line=dict(color="#022C22", width=3))
+                    marker=dict(color="#10B981", line=dict(color="#022C22", width=2))
                 ))
                 fig_top.update_layout(**CHART_LAYOUT, xaxis=AX_STYLE, yaxis=AX_STYLE)
                 st.plotly_chart(fig_top, use_container_width=True)
@@ -393,8 +391,8 @@ elif page == "simulator":
             st.markdown("<div class='header-text'>Prediksi Cadangan Karbon Visual</div>", unsafe_allow_html=True)
             fig_line = go.Figure(go.Scatter(
                 x=thn_list, y=hasil_list, mode="lines+markers",
-                line=dict(color="#022C22", width=4),
-                marker=dict(size=12, color="#FFFFFF", line=dict(color="#022C22", width=3))
+                line=dict(color="#064E3B", width=4),
+                marker=dict(size=10, color="#FFFFFF", line=dict(color="#064E3B", width=3))
             ))
             fig_line.update_layout(**CHART_LAYOUT, xaxis=AX_STYLE, yaxis=AX_STYLE)
             st.plotly_chart(fig_line, use_container_width=True)
