@@ -1,19 +1,19 @@
-import streamlit as st # Library utama untuk antarmuka web
-import pandas as pd # Untuk pengolahan data tabular
-import numpy as np # Untuk komputasi angka dan logika matematis
-import plotly.express as px # Membuat grafik peta dan interaktif
-import plotly.graph_objects as go # Kustomisasi detail grafik
-import os # Mengecek keberadaan file dataset
-import joblib # Memuat model Machine Learning
+import streamlit as st # Mengimpor library Streamlit untuk membangun UI web
+import pandas as pd # Mengimpor Pandas untuk pengolahan dataset
+import numpy as np # Mengimpor Numpy untuk operasi matematis dan numerik
+import plotly.express as px # Mengimpor Plotly Express untuk visualisasi peta
+import plotly.graph_objects as go # Mengimpor Plotly Graph Objects untuk chart kustom
+import os # Mengimpor OS untuk membaca file sistem
+import joblib # Mengimpor Joblib untuk memuat model prediksi Machine Learning
 
-# Pengaturan dasar halaman web Streamlit
+# Pengaturan konfigurasi halaman utama
 st.set_page_config(
     page_title="Global Carbon Dashboard",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
-# Menyimpan state halaman agar tidak ter-reset saat pengguna berinteraksi
+# Menyimpan riwayat navigasi dan filter pengguna di dalam session_state
 if "page" not in st.session_state: st.session_state.page = "dashboard"
 if "filters_applied" not in st.session_state: st.session_state.filters_applied = False
 if "applied_region" not in st.session_state: st.session_state.applied_region = []
@@ -21,20 +21,22 @@ if "applied_country" not in st.session_state: st.session_state.applied_country =
 if "applied_driver" not in st.session_state: st.session_state.applied_driver = []
 if "applied_year" not in st.session_state: st.session_state.applied_year = None
 
-# Kode CSS khusus untuk mengatur warna, layout, dan menghilangkan elemen default yang mengganggu
+# Inject CSS untuk desain "Cute Gen Z Retro Roundy" dan memperbaiki bug visual
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&display=swap');
 
-/* Mengatur font seluruh halaman */
+/* GLOBAL STYLES */
 * { font-family: 'Plus Jakarta Sans', sans-serif !important; color: #022C22 !important; }
-
-/* Menghilangkan sidebar dan merapikan padding kontainer utama */
-body, .stApp, .block-container, header[data-testid="stHeader"] { background-color: #FAFAF9 !important; }
+body, .stApp, .block-container, header[data-testid="stHeader"] { 
+    background-color: #FAFAF9 !important; 
+    background-image: radial-gradient(#D1FAE5 1px, transparent 1px);
+    background-size: 20px 20px;
+}
 [data-testid="stSidebar"] { display: none; }
 .block-container { padding: 2rem 2.25rem 5rem !important; max-width: 1250px !important; }
 
-/* Gaya retro untuk komponen container dan form bawaan Streamlit */
+/* KARTU CONTAINER (RETRO BORDER & SHADOW) */
 [data-testid="stVerticalBlockBorderWrapper"], [data-testid="stForm"] {
     background-color: #FFFFFF !important;
     border: 3px solid #022C22 !important;
@@ -42,14 +44,31 @@ body, .stApp, .block-container, header[data-testid="stHeader"] { background-colo
     box-shadow: 5px 5px 0px #022C22 !important;
     padding: 1.5rem !important;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
-    margin-bottom: 1rem !important;
+    margin-bottom: 1.5rem !important;
+}
+
+/* ANIMASI CUTE WOBBLE SAAT HOVER KARTU */
+@keyframes cuteWobble {
+    0% { transform: rotate(0deg) translateY(0px); }
+    25% { transform: rotate(-1deg) translateY(-2px); }
+    50% { transform: rotate(1deg) translateY(-4px); }
+    75% { transform: rotate(-1deg) translateY(-2px); }
+    100% { transform: rotate(0deg) translateY(0px); }
 }
 [data-testid="stVerticalBlockBorderWrapper"]:hover, [data-testid="stForm"]:hover {
-    transform: translateY(-3px);
+    animation: cuteWobble 0.5s ease-in-out forwards;
     box-shadow: 8px 8px 0px #022C22 !important;
 }
 
-/* Desain tombol aksi */
+/* ANIMASI FLOATING UNTUK EMOJI */
+@keyframes floatIcon {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-8px); }
+    100% { transform: translateY(0px); }
+}
+.floating-icon { display: inline-block; animation: floatIcon 3s ease-in-out infinite; }
+
+/* DESAIN TOMBOL (SEMUA PUTIH DENGAN BORDER RETRO) */
 .stButton > button, [data-testid="baseButton-secondaryFormSubmit"] {
     background-color: #FFFFFF !important;
     color: #022C22 !important;
@@ -62,23 +81,24 @@ body, .stApp, .block-container, header[data-testid="stHeader"] { background-colo
     transition: all 0.1s ease;
 }
 .stButton > button:hover, [data-testid="baseButton-secondaryFormSubmit"]:hover {
-    background-color: #D1FAE5 !important;
+    background-color: #F8FAFC !important;
     box-shadow: 0px 0px 0px #022C22 !important;
     transform: translate(4px, 4px) !important;
 }
 
-/* Desain kotak angka/metrik */
+/* DESAIN METRIK / ANGKA BESAR */
 [data-testid="stMetric"] {
     background: #FFFFFF !important;
     border: 2px solid #022C22 !important;
     border-radius: 16px !important;
     padding: 1rem !important;
     text-align: center;
+    box-shadow: 3px 3px 0px #D1FAE5 !important;
 }
 [data-testid="stMetricLabel"] > div { font-size: 1rem !important; font-weight: 800 !important; }
 [data-testid="stMetricValue"] { font-size: 2.2rem !important; font-weight: 800 !important; }
 
-/* Desain form input dan memastikan dropdown background-nya putih penuh */
+/* MEMASTIKAN DROPDOWN DAN INPUT BERWARNA PUTIH */
 .stSelectbox label, .stSlider > label, .stNumberInput label, .stMultiSelect label {
     font-size: 1.05rem !important; font-weight: 800 !important; color: #022C22 !important;
 }
@@ -86,46 +106,57 @@ div[data-baseweb="select"] > div, .stTextInput input, .stNumberInput input {
     background-color: #FFFFFF !important; 
     border: 2px solid #022C22 !important;
     border-radius: 12px !important;
+    color: #022C22 !important;
 }
+div[data-baseweb="select"] { background-color: #FFFFFF !important; }
 div[role="listbox"], ul[role="listbox"], div[data-baseweb="popover"] { background-color: #FFFFFF !important; }
-ul[role="listbox"] li { color: #022C22 !important; font-weight: 700 !important; }
-span[data-baseweb="tag"] { background-color: #D1FAE5 !important; border: 2px solid #022C22 !important; }
+ul[role="listbox"] li { color: #022C22 !important; font-weight: 700 !important; background-color: #FFFFFF !important;}
+ul[role="listbox"] li:hover { background-color: #F1F5F9 !important; }
+span[data-baseweb="tag"] { background-color: #FFFFFF !important; border: 2px solid #022C22 !important; }
 
-/* Desain header dropdown menu advanced */
-[data-testid="stExpander"] { background-color: #FFFFFF !important; border: 2px solid #022C22 !important; border-radius: 16px !important; }
+/* MEMPERBAIKI BUG PANAH EXPANDER YANG BOCOR / HILANG */
+[data-testid="stExpander"] { 
+    background-color: #FFFFFF !important; 
+    border: 2px solid #022C22 !important; 
+    border-radius: 16px !important; 
+}
 [data-testid="stExpander"] summary p { font-weight: 800 !important; font-size: 1.1rem !important; }
+[data-testid="stExpander"] summary svg {
+    display: inline-block !important;
+    fill: #022C22 !important;
+    color: #022C22 !important;
+    stroke: #022C22 !important;
+    visibility: visible !important;
+}
 [data-testid="stCheckbox"] label p { font-weight: 700 !important; font-size: 1.1rem !important; }
 
-/* Format ukuran dan style teks */
+/* TEKS CUSTOM */
 .title-text { font-size: 2.5rem; font-weight: 800; margin-bottom: 0.2rem; color: #022C22; text-transform: uppercase; }
-.sub-text { font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem; color: #064E3B; }
+.sub-text { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; color: #064E3B; }
 .header-text { font-size: 1.5rem; font-weight: 800; margin-bottom: 1rem; color: #022C22; }
-.insight-text { font-size: 1.15rem; font-weight: 600; line-height: 1.6; color: #022C22; background: #FDE68A; padding: 1.5rem; border-radius: 16px; border: 2px dashed #022C22; margin-top: 1rem;}
+.insight-text { font-size: 1.15rem; font-weight: 600; line-height: 1.6; color: #022C22; background: #FFFFFF; padding: 1.5rem; border-radius: 16px; border: 2px dashed #022C22; margin-top: 1rem;}
 </style>
 """, unsafe_allow_html=True)
 
-# Membuat tiga kolom navigasi menu utama
+# 3 Tombol Navigasi Utama
 nav_1, nav_2, nav_3 = st.columns(3)
 with nav_1:
-    if st.button("PAPAN DATA", use_container_width=True):
+    if st.button("DASHBOARD", use_container_width=True):
         st.session_state.page = "dashboard"
         st.rerun()
 with nav_2:
-    if st.button("COBA SIMULASI", use_container_width=True):
+    if st.button("SIMULATOR", use_container_width=True):
         st.session_state.page = "simulator"
         st.rerun()
 with nav_3:
-    if st.button("ATURAN BARU", use_container_width=True):
+    if st.button("KEBIJAKAN", use_container_width=True):
         st.session_state.page = "kebijakan"
         st.rerun()
 
-st.write("")
-
-# Memuat dan memproses Dataset dengan fallback data dummy jika file tidak ditemukan
+# Fungsi memuat data dengan fallback dummy
 @st.cache_data
 def load_data():
     paths = ["global_deforestation_2000_2025 (2).csv", "/content/drive/MyDrive/Tugas Week 12/global_deforestation_2000_2025.csv", "global_deforestation_2000_2025.csv"]
-    
     def region(c):
         m = {
             "brazil": "Amerika Selatan", "colombia": "Amerika Selatan", "peru": "Amerika Selatan", 
@@ -161,7 +192,7 @@ def load_data():
             })
     return pd.DataFrame(rows)
 
-# Memuat model ML XGBoost dari lokal
+# Fungsi memuat model AI XGBoost
 @st.cache_resource
 def load_ml_model():
     paths = ["model_xgboost.pkl", "/content/drive/MyDrive/Tugas Week 12/model_xgboost.pkl"]
@@ -173,7 +204,7 @@ def load_ml_model():
 
 ml_model = load_ml_model()
 
-# Algoritma memprediksi karbon menggunakan ML atau rumus dasar sebagai cadangan
+# Fungsi perhitungan karbon
 def predict_carbon(f: dict) -> float:
     if ml_model is not None:
         try:
@@ -196,7 +227,7 @@ YEAR_MAX = int(df["Year"].max()) if not df["Year"].isnull().all() else 2025
 
 if st.session_state.applied_year is None: st.session_state.applied_year = YEAR_MAX
 
-# Konfigurasi gaya grafik agar seragam
+# Konfigurasi gaya chart Plotly
 CHART_LAYOUT = dict(
     paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
     font=dict(family="Plus Jakarta Sans", color="#022C22", size=14),
@@ -209,7 +240,7 @@ AX_STYLE = dict(
 )
 MAP_SCALE = [[0.0, "#D1FAE5"], [1.0, "#064E3B"]]
 
-# Modul filtrasi data di dashboard
+# Modul penyaringan data
 def get_filtered_data():
     if not st.session_state.filters_applied:
         return df, df[df["Year"] == st.session_state.applied_year]
@@ -222,13 +253,12 @@ def get_filtered_data():
 
 page = st.session_state.page
 
-# ==================== HALAMAN 1: PAPAN DATA ====================
+# ==================== HALAMAN 1: DASHBOARD ====================
 if page == "dashboard":
     with st.container(border=True):
-        st.markdown("<div class='title-text'>DATA KARBON DUNIA</div>", unsafe_allow_html=True)
-        st.markdown("<div class='sub-text'>Cek ketersediaan jumlah pohon dan karbon di seluruh dunia saat ini.</div>", unsafe_allow_html=True)
+        st.markdown("<div class='title-text'><span class='floating-icon'>🌍</span> DASHBOARD KARBON</div>", unsafe_allow_html=True)
+        st.markdown("<div class='sub-text'>Pantau ketersediaan area hutan dan cadangan karbon di seluruh dunia.</div>", unsafe_allow_html=True)
 
-    # Area filtrasi interaktif
     with st.container(border=True):
         st.markdown("<div class='header-text'>Filter Data Pilihan</div>", unsafe_allow_html=True)
         f1, f2, f3, f4 = st.columns(4)
@@ -249,7 +279,6 @@ if page == "dashboard":
 
     df_f, df_yr = get_filtered_data()
 
-    # Perhitungan total hasil filter
     if not df_yr.empty:
         total_c = df_yr["Total_Carbon_Stock_Tonnes"].sum() / 1e12
         total_f = df_yr["Forest_Area_km2"].sum() / 1e6
@@ -262,9 +291,7 @@ if page == "dashboard":
     k2.metric("LUAS HUTAN", f"{total_f:.2f} Jt km²")
     k3.metric("RATA-RATA HILANG", f"{avg_d:.2f}%")
     k4.metric("RATA-RATA TUMBUH", f"{avg_a:.2f}%")
-    st.write("")
 
-    # Pembuatan Peta Globe Karbon
     with st.container(border=True):
         st.markdown("<div class='header-text'>Peta Intensitas Karbon</div>", unsafe_allow_html=True)
         if not df_yr.empty:
@@ -280,9 +307,8 @@ if page == "dashboard":
                 ), coloraxis_showscale=False
             )
             st.plotly_chart(fig_map, use_container_width=True)
-        else: st.write("Data visualisasi kosong.")
+        else: st.markdown("Data visualisasi kosong.")
 
-    # Kolom statistik bar chart
     col_a, col_b = st.columns(2)
     with col_a:
         with st.container(border=True):
@@ -295,7 +321,7 @@ if page == "dashboard":
                 ))
                 fig_drv.update_layout(**CHART_LAYOUT, xaxis=AX_STYLE, yaxis=AX_STYLE)
                 st.plotly_chart(fig_drv, use_container_width=True)
-            else: st.write("Data visualisasi kosong.")
+            else: st.markdown("Data visualisasi kosong.")
 
     with col_b:
         with st.container(border=True):
@@ -308,23 +334,20 @@ if page == "dashboard":
                 ))
                 fig_top.update_layout(**CHART_LAYOUT, xaxis=AX_STYLE, yaxis=AX_STYLE)
                 st.plotly_chart(fig_top, use_container_width=True)
-            else: st.write("Data visualisasi kosong.")
+            else: st.markdown("Data visualisasi kosong.")
 
 # ==================== HALAMAN 2: SIMULATOR ====================
 elif page == "simulator":
     with st.container(border=True):
-        st.markdown("<div class='title-text'>TEBAK MASA DEPAN</div>", unsafe_allow_html=True)
-        st.markdown("<div class='sub-text'>Atur konfigurasi di bawah untuk memprediksi sisa cadangan karbon global. (Terhubung dengan XGBoost model)</div>", unsafe_allow_html=True)
+        st.markdown("<div class='title-text'><span class='floating-icon'>🔮</span> SIMULATOR MASA DEPAN</div>", unsafe_allow_html=True)
+        st.markdown("<div class='sub-text'>Atur konfigurasi di bawah untuk memprediksi sisa cadangan karbon global di masa depan.</div>", unsafe_allow_html=True)
 
-    # Form simulasi untuk interaksi Machine Learning
     with st.form("form_sim", border=True):
         c1, c2, c3 = st.columns(3)
         negara = c1.selectbox("PILIH NEGARA", COUNTRIES)
         thn_target = c2.slider("TAHUN TARGET", 2026, 2050, 2035)
         pemicu = c3.selectbox("PENYEBAB UTAMA", DRIVERS)
         
-        # Pengaturan lanjutan disembunyikan didalam expander
-        st.write("")
         with st.expander("PENGATURAN LANJUTAN (ADVANCED)"):
             base_data = df[df["Country"] == negara]
             def_land = float(base_data["Land_Area_km2"].values[0]) if not base_data.empty else 400000.0
@@ -340,10 +363,8 @@ elif page == "simulator":
             luas_h_input = a1.number_input("LUAS HUTAN AWAL (km²)", min_value=0.0, value=def_forest, step=1000.0)
             luas_l_input = a2.number_input("LUAS DARATAN (km²)", min_value=0.0, value=def_land, step=1000.0)
 
-        st.write("")
         run_btn = st.form_submit_button("JALANKAN SIMULASI", use_container_width=True)
 
-    # Logika proses hasil prediksi
     if run_btn:
         hasil_list, thn_list = [], []
         
@@ -363,7 +384,6 @@ elif page == "simulator":
         diff_carbon = end_carbon - start_carbon
         persentase_perubahan = (diff_carbon / start_carbon) * 100 if start_carbon > 0 else 0
 
-        # Menampilkan grafik line chart tren target
         with st.container(border=True):
             st.markdown("<div class='header-text'>Prediksi Cadangan Karbon Visual</div>", unsafe_allow_html=True)
             fig_line = go.Figure(go.Scatter(
@@ -374,8 +394,6 @@ elif page == "simulator":
             fig_line.update_layout(**CHART_LAYOUT, xaxis=AX_STYLE, yaxis=AX_STYLE)
             st.plotly_chart(fig_line, use_container_width=True)
 
-            # Penjelasan teks otomatis sesuai pergerakan line
-            st.markdown("<div class='header-text' style='margin-top: 1rem;'>Kesimpulan Analisis Simulasi</div>", unsafe_allow_html=True)
             if persentase_perubahan > 0:
                 insight_msg = f"Tren Positif: Berdasarkan laju pertumbuhan hutan sebesar {laju_a:.2f}% dan laju kehilangan sebesar {laju_d:.2f}%, stok karbon di {negara} diproyeksikan akan meningkat sebesar {persentase_perubahan:.2f}%. Pada tahun {thn_target}, estimasi total stok karbon akan mencapai {end_carbon:,.0f} Ton."
             elif persentase_perubahan < 0:
@@ -388,24 +406,21 @@ elif page == "simulator":
 # ==================== HALAMAN 3: KEBIJAKAN ====================
 else:
     with st.container(border=True):
-        st.markdown("<div class='title-text'>SIMULATOR ATURAN</div>", unsafe_allow_html=True)
+        st.markdown("<div class='title-text'><span class='floating-icon'>📜</span> SIMULATOR KEBIJAKAN</div>", unsafe_allow_html=True)
         st.markdown("<div class='sub-text'>Coba terapkan kebijakan pada suatu negara dan lihat dampaknya di tahun 2030 berdasarkan baseline data asli.</div>", unsafe_allow_html=True)
 
     col_l, col_r = st.columns([1, 1])
 
     with col_l:
-        # Form panel untuk submit kebijakan
         with st.form("form_kebijakan", border=True):
             st.markdown("<div class='header-text'>Panel Kebijakan</div>", unsafe_allow_html=True)
             negara_kebijakan = st.selectbox("PILIH NEGARA UNTUK DITERAPKAN", COUNTRIES)
-            st.markdown("<hr style='border:1.5px solid #022C22;'>", unsafe_allow_html=True)
             
             p1 = st.toggle("STOP TEBANG POHON KOMERSIAL")
             p2 = st.toggle("TAMBAH DANA REBOISASI")
             p3 = st.toggle("HUKUM TEGAS BAKAR HUTAN")
             p4 = st.toggle("BERIKAN INSENTIF PETANI")
             
-            st.write("")
             run_pol = st.form_submit_button("TERAPKAN ATURAN", use_container_width=True)
 
     with col_r:
@@ -417,7 +432,6 @@ else:
             bd = float(base_data_pol["Annual_Deforestation_Rate"].mean()) if not base_data_pol.empty else 2.0
             ba = float(base_data_pol["Annual_Afforestation_Rate"].mean()) if not base_data_pol.empty else 0.5
 
-            # Simulasi algoritma perhitungan berdasarkan toggle yang diaktifkan
             kebijakan_diterapkan = []
             if p1: 
                 bd *= 0.3
@@ -439,7 +453,6 @@ else:
                 "Annual_Deforestation_Rate": bd, "Annual_Afforestation_Rate": ba
             })
             
-            # Kartu hasil dari penerapan kebijakan
             with st.container(border=True):
                 st.markdown(f"<div class='header-text'>Proyeksi {negara_kebijakan} (2030)</div>", unsafe_allow_html=True)
                 m1, m2 = st.columns(2)
@@ -447,7 +460,6 @@ else:
                 m2.metric("HUTAN TUMBUH", f"{ba:.2f}%")
                 st.metric("ESTIMASI STOK KARBON", f"{h_pol:,.0f} Ton")
 
-                # Format narasi penjelas
                 if not kebijakan_diterapkan:
                     penjelasan = "Tidak ada kebijakan baru yang diterapkan. Kondisi lingkungan akan bergerak sesuai rata-rata kebiasaan saat ini."
                 else:
