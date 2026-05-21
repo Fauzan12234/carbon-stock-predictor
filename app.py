@@ -1,10 +1,10 @@
-import streamlit as st # Mengimpor library UI Streamlit
-import pandas as pd # Manipulasi data tabular
-import numpy as np # Operasi numerik
-import plotly.express as px # Visualisasi peta interaktif
-import plotly.graph_objects as go # Visualisasi chart kustom
-import os # Mengecek ketersediaan file
-import joblib # Memuat model prediksi
+import streamlit as st
+import pandas as pd
+import numpy as np
+import plotly.express as px
+import plotly.graph_objects as go
+import os
+import joblib
 
 # Konfigurasi halaman utama
 st.set_page_config(
@@ -24,7 +24,7 @@ if "adv_open" not in st.session_state: st.session_state.adv_open = False
 if "sim_run" not in st.session_state: st.session_state.sim_run = False
 if "pol_run" not in st.session_state: st.session_state.pol_run = False
 
-# CSS Custom - Tema Modern Rounded, Shape Panels & Full Putih untuk Komponen Interaktif
+# CSS Custom - Tema Modern Rounded & Full Putih untuk Komponen
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&display=swap');
@@ -41,23 +41,23 @@ body, .stApp, .block-container, header[data-testid="stHeader"] {
 [data-testid="stSidebar"] { display: none; }
 .block-container { padding: 2rem 2.25rem 5rem !important; max-width: 1250px !important; }
 
-/* PANEL BELAKANG (SHAPE ROUNDED BACKGROUND PUTIH DENGAN OUTLINE SHADOW GELAP) */
-.retro-card, [data-testid="stForm"] {
+/* KARTU CONTAINER (MODERN ROUNDED) */
+[data-testid="stVerticalBlockBorderWrapper"] {
     background-color: #FFFFFF !important;
     border: 3px solid #022C22 !important;
     border-radius: 24px !important;
     box-shadow: 5px 5px 0px #022C22 !important;
-    padding: 2rem !important;
-    margin-bottom: 2rem !important;
+    padding: 1.5rem !important;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
+    margin-bottom: 1.5rem !important;
 }
-.retro-card:hover, [data-testid="stForm"]:hover {
+[data-testid="stVerticalBlockBorderWrapper"]:hover {
     transform: translateY(-3px);
     box-shadow: 8px 8px 0px #022C22 !important;
 }
 
-/* SEMUA TOMBOL (Dibuat putih terang dengan border outline gelap) */
-.stButton > button, [data-testid="baseButton-secondaryFormSubmit"] {
+/* SEMUA TOMBOL (Dibuat putih terang, tanpa arrow) */
+.stButton > button {
     background-color: #FFFFFF !important;
     color: #022C22 !important;
     border: 3px solid #022C22 !important;
@@ -68,7 +68,7 @@ body, .stApp, .block-container, header[data-testid="stHeader"] {
     padding: 0.6rem !important;
     transition: all 0.1s ease;
 }
-.stButton > button:hover, [data-testid="baseButton-secondaryFormSubmit"]:hover {
+.stButton > button:hover {
     background-color: #F8FAFC !important;
     box-shadow: 0px 0px 0px #022C22 !important;
     transform: translate(4px, 4px) !important;
@@ -86,22 +86,16 @@ body, .stApp, .block-container, header[data-testid="stHeader"] {
 [data-testid="stMetricLabel"] > div { font-size: 1rem !important; font-weight: 800 !important; }
 [data-testid="stMetricValue"] { font-size: 2.2rem !important; font-weight: 800 !important; }
 
-/* DROPDOWN & INPUT FIELDS (Memaksa background putih, termasuk tombol number_input) */
+/* DROPDOWN & INPUT FIELDS (Memaksa background putih) */
 .stSelectbox label, .stSlider > label, .stNumberInput label, .stMultiSelect label {
     font-size: 1.05rem !important; font-weight: 800 !important; color: #022C22 !important;
 }
-div[data-baseweb="select"] > div, .stTextInput input, .stNumberInput input, div[data-baseweb="base-input"] {
+div[data-baseweb="select"] > div, .stTextInput input, .stNumberInput input {
     background-color: #FFFFFF !important; 
     border: 2px solid #022C22 !important;
     border-radius: 12px !important;
     color: #022C22 !important;
 }
-/* Tombol Plus Minus pada Luas Hutan */
-[data-testid="stNumberInputStepUp"], [data-testid="stNumberInputStepDown"], div[data-baseweb="button"] {
-    background-color: #FFFFFF !important;
-    color: #022C22 !important;
-}
-
 div[data-baseweb="popover"], div[data-baseweb="menu"], ul[role="listbox"] { 
     background-color: #FFFFFF !important; 
 }
@@ -110,9 +104,9 @@ ul[role="listbox"] li {
     color: #022C22 !important; 
     font-weight: 700 !important; 
 }
-ul[role="listbox"] li:hover { background-color: #F1F5F9 !important; }
+ul[role="listbox"] li:hover { background-color: #D1FAE5 !important; }
 span[data-baseweb="tag"] { 
-    background-color: #FFFFFF !important; 
+    background-color: #D1FAE5 !important; 
     border: 2px solid #022C22 !important; 
     color: #022C22 !important; 
 }
@@ -161,6 +155,7 @@ def load_data():
             if "Region" not in df.columns: df["Region"] = df["Country"].apply(region)
             return df
 
+    # Data cadangan jika CSV tidak ada
     np.random.seed(42)
     countries = ["Brazil", "Indonesia", "Canada", "Russia", "USA", "Congo", "Australia", "India"]
     rows = []
@@ -241,28 +236,26 @@ page = st.session_state.page
 
 # ==================== HALAMAN 1: DASHBOARD ====================
 if page == "dashboard":
-    st.markdown("<div class='retro-card'>", unsafe_allow_html=True)
-    st.markdown("<div class='title-text'>DASHBOARD KARBON</div>", unsafe_allow_html=True)
-    st.markdown("<div class='sub-text'>Pantau ketersediaan area hutan dan cadangan karbon di seluruh dunia.</div>", unsafe_allow_html=True)
-    st.markdown("</div>", unsafe_allow_html=True)
+    with st.container(border=True):
+        st.markdown("<div class='title-text'>DASHBOARD KARBON</div>", unsafe_allow_html=True)
+        st.markdown("<div class='sub-text'>Pantau ketersediaan area hutan dan cadangan karbon di seluruh dunia.</div>", unsafe_allow_html=True)
 
-    st.markdown("<div class='retro-card'>", unsafe_allow_html=True)
-    st.markdown("<div class='header-text'>Filter Data Pilihan</div>", unsafe_allow_html=True)
-    f1, f2, f3 = st.columns(3)
-    with f1: sel_region = st.multiselect("KAWASAN", REGIONS, default=[])
-    with f2: sel_country = st.multiselect("NEGARA", COUNTRIES, default=[])
-    with f3: sel_driver = st.multiselect("PENYEBAB", DRIVERS, default=[])
-    
-    sel_year = st.slider("RENTANG TAHUN", min_value=YEAR_MIN, max_value=YEAR_MAX, value=st.session_state.applied_year)
+    with st.container(border=True):
+        st.markdown("<div class='header-text'>Filter Data Pilihan</div>", unsafe_allow_html=True)
+        f1, f2, f3 = st.columns(3)
+        with f1: sel_region = st.multiselect("KAWASAN", REGIONS, default=[])
+        with f2: sel_country = st.multiselect("NEGARA", COUNTRIES, default=[])
+        with f3: sel_driver = st.multiselect("PENYEBAB", DRIVERS, default=[])
+        
+        sel_year = st.slider("RENTANG TAHUN", min_value=YEAR_MIN, max_value=YEAR_MAX, value=st.session_state.applied_year)
 
-    if st.button("TERAPKAN VISUALISASI", use_container_width=True):
-        st.session_state.applied_region = sel_region
-        st.session_state.applied_country = sel_country
-        st.session_state.applied_driver = sel_driver
-        st.session_state.applied_year = sel_year
-        st.session_state.filters_applied = True
-        st.rerun()
-    st.markdown("</div>", unsafe_allow_html=True)
+        if st.button("TERAPKAN VISUALISASI", use_container_width=True):
+            st.session_state.applied_region = sel_region
+            st.session_state.applied_country = sel_country
+            st.session_state.applied_driver = sel_driver
+            st.session_state.applied_year = sel_year
+            st.session_state.filters_applied = True
+            st.rerun()
 
     df_f, df_yr = get_filtered_data()
     
@@ -283,98 +276,94 @@ if page == "dashboard":
     k4.metric("RATA-RATA TUMBUH", f"{avg_a:.2f}%")
     st.write("")
 
-    st.markdown("<div class='retro-card'>", unsafe_allow_html=True)
-    st.markdown("<div class='header-text'>Peta Intensitas Karbon</div>", unsafe_allow_html=True)
-    if not df_agg.empty:
-        fig_map = px.choropleth(
-            df_agg, locations="Country", locationmode="country names",
-            color="Total_Carbon_Stock_Tonnes", color_continuous_scale=MAP_SCALE
-        )
-        fig_map.update_layout(
-            **CHART_LAYOUT,
-            geo=dict(
-                showframe=True, framecolor="#022C22", framewidth=3, showcoastlines=True, coastlinecolor="#022C22",
-                bgcolor="rgba(0,0,0,0)", showland=True, landcolor="#F8FAFC", showocean=True, oceancolor="#DBEAFE"
-            ), coloraxis_showscale=False
-        )
-        st.plotly_chart(fig_map, use_container_width=True)
-    else: st.markdown("Data visualisasi kosong.")
-    st.markdown("</div>", unsafe_allow_html=True)
+    with st.container(border=True):
+        st.markdown("<div class='header-text'>Peta Intensitas Karbon</div>", unsafe_allow_html=True)
+        if not df_agg.empty:
+            fig_map = px.choropleth(
+                df_agg, locations="Country", locationmode="country names",
+                color="Total_Carbon_Stock_Tonnes", color_continuous_scale=MAP_SCALE
+            )
+            fig_map.update_layout(
+                **CHART_LAYOUT,
+                geo=dict(
+                    showframe=True, framecolor="#022C22", framewidth=3, showcoastlines=True, coastlinecolor="#022C22",
+                    bgcolor="rgba(0,0,0,0)", showland=True, landcolor="#F8FAFC", showocean=True, oceancolor="#DBEAFE"
+                ), coloraxis_showscale=False
+            )
+            st.plotly_chart(fig_map, use_container_width=True)
+        else: st.markdown("Data visualisasi kosong.")
 
     col_a, col_b = st.columns(2)
     with col_a:
-        st.markdown("<div class='retro-card'>", unsafe_allow_html=True)
-        st.markdown("<div class='header-text'>Faktor Penyebab Hutan Hilang</div>", unsafe_allow_html=True)
-        if not df_f.empty:
-            drv = df_f.groupby("Primary_Driver_of_Change").size().reset_index(name="n")
-            fig_drv = go.Figure(go.Bar(
-                x=drv["n"], y=drv["Primary_Driver_of_Change"], orientation="h",
-                marker=dict(color="#D1FAE5", line=dict(color="#022C22", width=3))
-            ))
-            fig_drv.update_layout(**CHART_LAYOUT, xaxis=AX_STYLE, yaxis=AX_STYLE)
-            st.plotly_chart(fig_drv, use_container_width=True)
-        else: st.markdown("Data visualisasi kosong.")
-        st.markdown("</div>", unsafe_allow_html=True)
+        with st.container(border=True):
+            st.markdown("<div class='header-text'>Faktor Penyebab Hutan Hilang</div>", unsafe_allow_html=True)
+            if not df_f.empty:
+                drv = df_f.groupby("Primary_Driver_of_Change").size().reset_index(name="n")
+                fig_drv = go.Figure(go.Bar(
+                    x=drv["n"], y=drv["Primary_Driver_of_Change"], orientation="h",
+                    marker=dict(color="#D1FAE5", line=dict(color="#022C22", width=3))
+                ))
+                fig_drv.update_layout(**CHART_LAYOUT, xaxis=AX_STYLE, yaxis=AX_STYLE)
+                st.plotly_chart(fig_drv, use_container_width=True)
+            else: st.markdown("Data visualisasi kosong.")
 
     with col_b:
-        st.markdown("<div class='retro-card'>", unsafe_allow_html=True)
-        st.markdown("<div class='header-text'>Negara Karbon Tertinggi</div>", unsafe_allow_html=True)
-        if not df_agg.empty:
-            top = df_agg.nlargest(5, "Total_Carbon_Stock_Tonnes")
-            fig_top = go.Figure(go.Bar(
-                x=top["Total_Carbon_Stock_Tonnes"] / 1e9, y=top["Country"], orientation="h",
-                marker=dict(color="#34D399", line=dict(color="#022C22", width=3))
-            ))
-            fig_top.update_layout(**CHART_LAYOUT, xaxis=AX_STYLE, yaxis=AX_STYLE)
-            st.plotly_chart(fig_top, use_container_width=True)
-        else: st.markdown("Data visualisasi kosong.")
-        st.markdown("</div>", unsafe_allow_html=True)
+        with st.container(border=True):
+            st.markdown("<div class='header-text'>Negara Karbon Tertinggi</div>", unsafe_allow_html=True)
+            if not df_agg.empty:
+                top = df_agg.nlargest(5, "Total_Carbon_Stock_Tonnes")
+                fig_top = go.Figure(go.Bar(
+                    x=top["Total_Carbon_Stock_Tonnes"] / 1e9, y=top["Country"], orientation="h",
+                    marker=dict(color="#34D399", line=dict(color="#022C22", width=3))
+                ))
+                fig_top.update_layout(**CHART_LAYOUT, xaxis=AX_STYLE, yaxis=AX_STYLE)
+                st.plotly_chart(fig_top, use_container_width=True)
+            else: st.markdown("Data visualisasi kosong.")
 
 # ==================== HALAMAN 2: SIMULATOR ====================
 elif page == "simulator":
-    st.markdown("<div class='retro-card'>", unsafe_allow_html=True)
-    st.markdown("<div class='title-text'>SIMULATOR MASA DEPAN</div>", unsafe_allow_html=True)
-    st.markdown("<div class='sub-text'>Atur konfigurasi di bawah untuk memprediksi sisa cadangan karbon global di masa depan.</div>", unsafe_allow_html=True)
-    st.markdown("</div>", unsafe_allow_html=True)
+    with st.container(border=True):
+        st.markdown("<div class='title-text'>SIMULATOR MASA DEPAN</div>", unsafe_allow_html=True)
+        st.markdown("<div class='sub-text'>Atur konfigurasi di bawah untuk memprediksi sisa cadangan karbon global di masa depan.</div>", unsafe_allow_html=True)
 
-    st.markdown("<div class='retro-card'>", unsafe_allow_html=True)
-    c1, c2, c3 = st.columns(3)
-    negara = c1.selectbox("PILIH NEGARA", COUNTRIES)
-    thn_target = c2.slider("TAHUN TARGET", 2026, 2050, 2035)
-    pemicu = c3.selectbox("PENYEBAB UTAMA", DRIVERS)
-    
-    # Base data defaults
-    base_data = df[df["Country"] == negara]
-    def_land = float(base_data["Land_Area_km2"].values[0]) if not base_data.empty else 400000.0
-    def_forest = float(base_data[base_data["Year"] == YEAR_MAX]["Forest_Area_km2"].values[0]) if not base_data.empty else 250000.0
-    def_d = float(base_data["Annual_Deforestation_Rate"].mean()) if not base_data.empty else 1.2
-    def_a = float(base_data["Annual_Afforestation_Rate"].mean()) if not base_data.empty else 0.5
-    
-    st.write("---")
-    
-    # Pengganti expander menjadi tombol aksi putih murni yang membuka opsi lanjutan
-    if st.button("BUKA / TUTUP PENGATURAN ADVANCED", use_container_width=True):
-        st.session_state.adv_open = not st.session_state.adv_open
-        st.session_state.sim_run = False
+    with st.container(border=True):
+        c1, c2, c3 = st.columns(3)
+        negara = c1.selectbox("PILIH NEGARA", COUNTRIES)
+        thn_target = c2.slider("TAHUN TARGET", 2026, 2050, 2035)
+        pemicu = c3.selectbox("PENYEBAB UTAMA", DRIVERS)
+        
+        # Opsi default berdasarkan negara
+        base_data = df[df["Country"] == negara]
+        def_land = float(base_data["Land_Area_km2"].values[0]) if not base_data.empty else 400000.0
+        def_forest = float(base_data[base_data["Year"] == YEAR_MAX]["Forest_Area_km2"].values[0]) if not base_data.empty else 250000.0
+        def_d = float(base_data["Annual_Deforestation_Rate"].mean()) if not base_data.empty else 1.2
+        def_a = float(base_data["Annual_Afforestation_Rate"].mean()) if not base_data.empty else 0.5
+        
+        st.write("---")
+        
+        # MURNI BUTTON SEBAGAI PENGGANTI EXPANDER (TIDAK ADA PANAH ERROR)
+        if st.button("BUKA / TUTUP PENGATURAN ADVANCED", use_container_width=True):
+            st.session_state.adv_open = not st.session_state.adv_open
+            st.session_state.sim_run = False
 
-    if st.session_state.adv_open:
+        if st.session_state.adv_open:
+            st.write("")
+            s1, s2 = st.columns(2)
+            laju_d = s1.slider("KECEPATAN HUTAN HILANG (%)", 0.0, 5.0, def_d, 0.1)
+            laju_a = s2.slider("KECEPATAN HUTAN TUMBUH (%)", 0.0, 5.0, def_a, 0.1)
+
+            a1, a2 = st.columns(2)
+            luas_h_input = a1.number_input("LUAS HUTAN AWAL (km²)", min_value=0.0, value=def_forest, step=1000.0)
+            luas_l_input = a2.number_input("LUAS DARATAN (km²)", min_value=0.0, value=def_land, step=1000.0)
+        else:
+            laju_d, laju_a = def_d, def_a
+            luas_h_input, luas_l_input = def_forest, def_land
+
         st.write("")
-        s1, s2 = st.columns(2)
-        laju_d = s1.slider("KECEPATAN HUTAN HILANG (%)", 0.0, 5.0, def_d, 0.1)
-        laju_a = s2.slider("KECEPATAN HUTAN TUMBUH (%)", 0.0, 5.0, def_a, 0.1)
+        if st.button("JALANKAN SIMULASI", use_container_width=True):
+            st.session_state.sim_run = True
 
-        a1, a2 = st.columns(2)
-        luas_h_input = a1.number_input("LUAS HUTAN AWAL (km²)", min_value=0.0, value=def_forest, step=1000.0)
-        luas_l_input = a2.number_input("LUAS DARATAN (km²)", min_value=0.0, value=def_land, step=1000.0)
-    else:
-        laju_d, laju_a = def_d, def_a
-        luas_h_input, luas_l_input = def_forest, def_land
-
-    st.write("")
-    if st.button("JALANKAN SIMULASI", use_container_width=True):
-        st.session_state.sim_run = True
-    st.markdown("</div>", unsafe_allow_html=True)
-
+    # Jika disubmit, baru panel bawah muncul
     if st.session_state.sim_run:
         hasil_list, thn_list = [], []
         
@@ -394,37 +383,35 @@ elif page == "simulator":
         diff_carbon = end_carbon - start_carbon
         persentase_perubahan = (diff_carbon / start_carbon) * 100 if start_carbon > 0 else 0
 
-        st.markdown("<div class='retro-card'>", unsafe_allow_html=True)
-        st.markdown("<div class='header-text'>Prediksi Cadangan Karbon Visual</div>", unsafe_allow_html=True)
-        fig_line = go.Figure(go.Scatter(
-            x=thn_list, y=hasil_list, mode="lines+markers",
-            line=dict(color="#022C22", width=4),
-            marker=dict(size=12, color="#FFFFFF", line=dict(color="#022C22", width=3))
-        ))
-        fig_line.update_layout(**CHART_LAYOUT, xaxis=AX_STYLE, yaxis=AX_STYLE)
-        st.plotly_chart(fig_line, use_container_width=True)
+        with st.container(border=True):
+            st.markdown("<div class='header-text'>Prediksi Cadangan Karbon Visual</div>", unsafe_allow_html=True)
+            fig_line = go.Figure(go.Scatter(
+                x=thn_list, y=hasil_list, mode="lines+markers",
+                line=dict(color="#022C22", width=4),
+                marker=dict(size=12, color="#FFFFFF", line=dict(color="#022C22", width=3))
+            ))
+            fig_line.update_layout(**CHART_LAYOUT, xaxis=AX_STYLE, yaxis=AX_STYLE)
+            st.plotly_chart(fig_line, use_container_width=True)
 
-        if persentase_perubahan > 0:
-            insight_msg = f"Tren Positif: Berdasarkan laju pertumbuhan hutan sebesar {laju_a:.2f}% dan laju kehilangan sebesar {laju_d:.2f}%, stok karbon di {negara} diproyeksikan akan meningkat sebesar {persentase_perubahan:.2f}%. Pada tahun {thn_target}, estimasi total stok karbon akan mencapai {end_carbon:,.0f} Ton."
-        elif persentase_perubahan < 0:
-            insight_msg = f"Krisis Menurun: Berdasarkan model, laju kehilangan hutan sebesar {laju_d:.2f}% mendominasi pertumbuhan yang hanya {laju_a:.2f}%. Hal ini menyebabkan stok karbon di {negara} diproyeksikan menyusut tajam sebesar {abs(persentase_perubahan):.2f}%. Pada tahun {thn_target}, stok tersisa diperkirakan hanya {end_carbon:,.0f} Ton."
-        else:
-            insight_msg = f"Stagnan: Kondisi hutan di {negara} diperkirakan stabil tanpa ada perubahan signifikan pada stok karbon hingga tahun {thn_target}, bertahan di angka {end_carbon:,.0f} Ton."
+            if persentase_perubahan > 0:
+                insight_msg = f"Tren Positif: Berdasarkan laju pertumbuhan hutan sebesar {laju_a:.2f}% dan laju kehilangan sebesar {laju_d:.2f}%, stok karbon di {negara} diproyeksikan akan meningkat sebesar {persentase_perubahan:.2f}%. Pada tahun {thn_target}, estimasi total stok karbon akan mencapai {end_carbon:,.0f} Ton."
+            elif persentase_perubahan < 0:
+                insight_msg = f"Krisis Menurun: Berdasarkan model, laju kehilangan hutan sebesar {laju_d:.2f}% mendominasi pertumbuhan yang hanya {laju_a:.2f}%. Hal ini menyebabkan stok karbon di {negara} diproyeksikan menyusut tajam sebesar {abs(persentase_perubahan):.2f}%. Pada tahun {thn_target}, stok tersisa diperkirakan hanya {end_carbon:,.0f} Ton."
+            else:
+                insight_msg = f"Stagnan: Kondisi hutan di {negara} diperkirakan stabil tanpa ada perubahan signifikan pada stok karbon hingga tahun {thn_target}, bertahan di angka {end_carbon:,.0f} Ton."
 
-        st.markdown(f"<div class='insight-text'>{insight_msg}</div>", unsafe_allow_html=True)
-        st.markdown("</div>", unsafe_allow_html=True)
+            st.markdown(f"<div class='insight-text'>{insight_msg}</div>", unsafe_allow_html=True)
 
 # ==================== HALAMAN 3: KEBIJAKAN ====================
 else:
-    st.markdown("<div class='retro-card'>", unsafe_allow_html=True)
-    st.markdown("<div class='title-text'>SIMULATOR KEBIJAKAN</div>", unsafe_allow_html=True)
-    st.markdown("<div class='sub-text'>Coba terapkan kebijakan pada suatu negara dan lihat dampaknya di tahun 2030 berdasarkan baseline data asli.</div>", unsafe_allow_html=True)
-    st.markdown("</div>", unsafe_allow_html=True)
+    with st.container(border=True):
+        st.markdown("<div class='title-text'>SIMULATOR KEBIJAKAN</div>", unsafe_allow_html=True)
+        st.markdown("<div class='sub-text'>Coba terapkan kebijakan pada suatu negara dan lihat dampaknya di tahun 2030 berdasarkan baseline data asli.</div>", unsafe_allow_html=True)
 
     col_l, col_r = st.columns([1, 1])
 
     with col_l:
-        with st.form("form_kebijakan", border=False):
+        with st.container(border=True):
             st.markdown("<div class='header-text'>Panel Kebijakan</div>", unsafe_allow_html=True)
             negara_kebijakan = st.selectbox("PILIH NEGARA UNTUK DITERAPKAN", COUNTRIES)
             
@@ -434,10 +421,11 @@ else:
             p4 = st.toggle("BERIKAN INSENTIF PETANI")
             
             st.write("")
-            run_pol = st.form_submit_button("TERAPKAN ATURAN", use_container_width=True)
+            if st.button("TERAPKAN ATURAN", use_container_width=True):
+                st.session_state.pol_run = True
 
     with col_r:
-        if run_pol:
+        if st.session_state.pol_run:
             base_data_pol = df[df["Country"] == negara_kebijakan]
             pol_land = float(base_data_pol["Land_Area_km2"].values[0]) if not base_data_pol.empty else 600000.0
             pol_forest = float(base_data_pol[base_data_pol["Year"] == YEAR_MAX]["Forest_Area_km2"].values[0]) if not base_data_pol.empty else 400000.0
@@ -466,17 +454,16 @@ else:
                 "Annual_Deforestation_Rate": bd, "Annual_Afforestation_Rate": ba
             })
             
-            st.markdown("<div class='retro-card'>", unsafe_allow_html=True)
-            st.markdown(f"<div class='header-text'>Proyeksi {negara_kebijakan} (2030)</div>", unsafe_allow_html=True)
-            m1, m2 = st.columns(2)
-            m1.metric("HUTAN HILANG", f"{bd:.2f}%")
-            m2.metric("HUTAN TUMBUH", f"{ba:.2f}%")
-            st.metric("ESTIMASI STOK KARBON", f"{h_pol:,.0f} Ton")
+            with st.container(border=True):
+                st.markdown(f"<div class='header-text'>Proyeksi {negara_kebijakan} (2030)</div>", unsafe_allow_html=True)
+                m1, m2 = st.columns(2)
+                m1.metric("HUTAN HILANG", f"{bd:.2f}%")
+                m2.metric("HUTAN TUMBUH", f"{ba:.2f}%")
+                st.metric("ESTIMASI STOK KARBON", f"{h_pol:,.0f} Ton")
 
-            if not kebijakan_diterapkan:
-                penjelasan = "Tidak ada kebijakan baru yang diterapkan. Kondisi lingkungan akan bergerak sesuai rata-rata kebiasaan saat ini."
-            else:
-                penjelasan = f"Dampak Kebijakan: {' '.join(kebijakan_diterapkan)} Perubahan ini memproyeksikan perbaikan iklim yang relevan di masa mendatang."
-            
-            st.markdown(f"<div class='insight-text'>{penjelasan}</div>", unsafe_allow_html=True)
-            st.markdown("</div>", unsafe_allow_html=True)
+                if not kebijakan_diterapkan:
+                    penjelasan = "Tidak ada kebijakan baru yang diterapkan. Kondisi lingkungan akan bergerak sesuai rata-rata kebiasaan saat ini."
+                else:
+                    penjelasan = f"Dampak Kebijakan: {' '.join(kebijakan_diterapkan)} Perubahan ini memproyeksikan perbaikan iklim yang relevan di masa mendatang."
+                
+                st.markdown(f"<div class='insight-text'>{penjelasan}</div>", unsafe_allow_html=True)
