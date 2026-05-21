@@ -1,19 +1,19 @@
-import streamlit as st # Mengimpor library Streamlit untuk membangun UI web
-import pandas as pd # Mengimpor Pandas untuk pengolahan dataset
-import numpy as np # Mengimpor Numpy untuk operasi matematis dan numerik
-import plotly.express as px # Mengimpor Plotly Express untuk visualisasi peta
-import plotly.graph_objects as go # Mengimpor Plotly Graph Objects untuk chart kustom
-import os # Mengimpor OS untuk membaca file sistem
-import joblib # Mengimpor Joblib untuk memuat model prediksi Machine Learning
+import streamlit as st # Mengimpor library UI Streamlit
+import pandas as pd # Manipulasi data tabular
+import numpy as np # Operasi numerik
+import plotly.express as px # Visualisasi peta interaktif
+import plotly.graph_objects as go # Visualisasi chart kustom
+import os # Mengecek ketersediaan file
+import joblib # Memuat model prediksi
 
-# Pengaturan konfigurasi halaman utama
+# Konfigurasi halaman
 st.set_page_config(
     page_title="Global Carbon Dashboard",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
-# Menyimpan riwayat navigasi dan filter pengguna di dalam session_state
+# Menyimpan state untuk navigasi & filter
 if "page" not in st.session_state: st.session_state.page = "dashboard"
 if "filters_applied" not in st.session_state: st.session_state.filters_applied = False
 if "applied_region" not in st.session_state: st.session_state.applied_region = []
@@ -21,7 +21,7 @@ if "applied_country" not in st.session_state: st.session_state.applied_country =
 if "applied_driver" not in st.session_state: st.session_state.applied_driver = []
 if "applied_year" not in st.session_state: st.session_state.applied_year = None
 
-# Inject CSS untuk desain "Cute Gen Z Retro Roundy" dan memperbaiki bug visual
+# Inject CSS untuk desain bersih, putih pada dropdown/button, dan hilangkan icon/arrows
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&display=swap');
@@ -36,7 +36,7 @@ body, .stApp, .block-container, header[data-testid="stHeader"] {
 [data-testid="stSidebar"] { display: none; }
 .block-container { padding: 2rem 2.25rem 5rem !important; max-width: 1250px !important; }
 
-/* KARTU CONTAINER (RETRO BORDER & SHADOW) */
+/* KARTU CONTAINER */
 [data-testid="stVerticalBlockBorderWrapper"], [data-testid="stForm"] {
     background-color: #FFFFFF !important;
     border: 3px solid #022C22 !important;
@@ -47,7 +47,6 @@ body, .stApp, .block-container, header[data-testid="stHeader"] {
     margin-bottom: 1.5rem !important;
 }
 
-/* ANIMASI CUTE WOBBLE SAAT HOVER KARTU */
 @keyframes cuteWobble {
     0% { transform: rotate(0deg) translateY(0px); }
     25% { transform: rotate(-1deg) translateY(-2px); }
@@ -60,15 +59,7 @@ body, .stApp, .block-container, header[data-testid="stHeader"] {
     box-shadow: 8px 8px 0px #022C22 !important;
 }
 
-/* ANIMASI FLOATING UNTUK EMOJI */
-@keyframes floatIcon {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(-8px); }
-    100% { transform: translateY(0px); }
-}
-.floating-icon { display: inline-block; animation: floatIcon 3s ease-in-out infinite; }
-
-/* DESAIN TOMBOL (SEMUA PUTIH DENGAN BORDER RETRO) */
+/* SEMUA TOMBOL BERWARNA PUTIH */
 .stButton > button, [data-testid="baseButton-secondaryFormSubmit"] {
     background-color: #FFFFFF !important;
     color: #022C22 !important;
@@ -86,7 +77,7 @@ body, .stApp, .block-container, header[data-testid="stHeader"] {
     transform: translate(4px, 4px) !important;
 }
 
-/* DESAIN METRIK / ANGKA BESAR */
+/* METRIK ANGKA */
 [data-testid="stMetric"] {
     background: #FFFFFF !important;
     border: 2px solid #022C22 !important;
@@ -98,7 +89,7 @@ body, .stApp, .block-container, header[data-testid="stHeader"] {
 [data-testid="stMetricLabel"] > div { font-size: 1rem !important; font-weight: 800 !important; }
 [data-testid="stMetricValue"] { font-size: 2.2rem !important; font-weight: 800 !important; }
 
-/* MEMASTIKAN DROPDOWN DAN INPUT BERWARNA PUTIH */
+/* FIX HITAM PADA DROPDOWN & MULTISELECT - PAKSA PUTIH KESELURUHAN */
 .stSelectbox label, .stSlider > label, .stNumberInput label, .stMultiSelect label {
     font-size: 1.05rem !important; font-weight: 800 !important; color: #022C22 !important;
 }
@@ -108,29 +99,36 @@ div[data-baseweb="select"] > div, .stTextInput input, .stNumberInput input {
     border-radius: 12px !important;
     color: #022C22 !important;
 }
-div[data-baseweb="select"] { background-color: #FFFFFF !important; }
-div[role="listbox"], ul[role="listbox"], div[data-baseweb="popover"] { background-color: #FFFFFF !important; }
-ul[role="listbox"] li { color: #022C22 !important; font-weight: 700 !important; background-color: #FFFFFF !important;}
+/* Menargetkan panel popover dan list dropdown Streamlit agar putih */
+div[data-baseweb="popover"], div[data-baseweb="popover"] *, div[data-baseweb="menu"], ul[role="listbox"] { 
+    background-color: #FFFFFF !important; 
+}
+ul[role="listbox"] li { 
+    color: #022C22 !important; 
+    font-weight: 700 !important; 
+    background-color: #FFFFFF !important;
+}
 ul[role="listbox"] li:hover { background-color: #F1F5F9 !important; }
-span[data-baseweb="tag"] { background-color: #FFFFFF !important; border: 2px solid #022C22 !important; }
+span[data-baseweb="tag"] { background-color: #FFFFFF !important; border: 2px solid #022C22 !important; color: #022C22 !important; }
+div[role="listbox"] { background-color: #FFFFFF !important; }
 
-/* MEMPERBAIKI BUG PANAH EXPANDER YANG BOCOR / HILANG */
+/* EXPANDER (ADVANCED): HILANGKAN PANAH DAN PASTIKAN TETAP PUTIH SAAT AKTIF */
 [data-testid="stExpander"] { 
     background-color: #FFFFFF !important; 
     border: 2px solid #022C22 !important; 
     border-radius: 16px !important; 
 }
-[data-testid="stExpander"] summary p { font-weight: 800 !important; font-size: 1.1rem !important; }
-[data-testid="stExpander"] summary svg {
-    display: inline-block !important;
-    fill: #022C22 !important;
-    color: #022C22 !important;
-    stroke: #022C22 !important;
-    visibility: visible !important;
+/* Paksa warna background putih walaupun terbuka/diklik */
+[data-testid="stExpander"] details, [data-testid="stExpander"] summary, [data-testid="stExpander"] details[open] summary {
+    background-color: #FFFFFF !important;
 }
+[data-testid="stExpander"] summary:hover { background-color: #FFFFFF !important; }
+[data-testid="stExpander"] summary p { font-weight: 800 !important; font-size: 1.1rem !important; }
+/* Menyembunyikan svg panah bawaan Streamlit */
+[data-testid="stExpander"] summary svg { display: none !important; }
 [data-testid="stCheckbox"] label p { font-weight: 700 !important; font-size: 1.1rem !important; }
 
-/* TEKS CUSTOM */
+/* TEKS */
 .title-text { font-size: 2.5rem; font-weight: 800; margin-bottom: 0.2rem; color: #022C22; text-transform: uppercase; }
 .sub-text { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; color: #064E3B; }
 .header-text { font-size: 1.5rem; font-weight: 800; margin-bottom: 1rem; color: #022C22; }
@@ -153,7 +151,7 @@ with nav_3:
         st.session_state.page = "kebijakan"
         st.rerun()
 
-# Fungsi memuat data dengan fallback dummy
+# Fungsi memuat dataset dasar
 @st.cache_data
 def load_data():
     paths = ["global_deforestation_2000_2025 (2).csv", "/content/drive/MyDrive/Tugas Week 12/global_deforestation_2000_2025.csv", "global_deforestation_2000_2025.csv"]
@@ -172,6 +170,7 @@ def load_data():
             if "Region" not in df.columns: df["Region"] = df["Country"].apply(region)
             return df
 
+    # Data fallback jika file tidak ada
     np.random.seed(42)
     countries = ["Brazil", "Indonesia", "Canada", "Russia", "USA", "Congo", "Australia", "India"]
     rows = []
@@ -192,7 +191,7 @@ def load_data():
             })
     return pd.DataFrame(rows)
 
-# Fungsi memuat model AI XGBoost
+# Fungsi memuat model prediksi AI
 @st.cache_resource
 def load_ml_model():
     paths = ["model_xgboost.pkl", "/content/drive/MyDrive/Tugas Week 12/model_xgboost.pkl"]
@@ -204,7 +203,7 @@ def load_ml_model():
 
 ml_model = load_ml_model()
 
-# Fungsi perhitungan karbon
+# Algoritma hitung persentase & prediksi karbon
 def predict_carbon(f: dict) -> float:
     if ml_model is not None:
         try:
@@ -217,7 +216,6 @@ def predict_carbon(f: dict) -> float:
     val = (4.2 + 0.94 * log_f + 0.08 * ratio - 0.04 * f.get("Annual_Deforestation_Rate", 0) + 0.025 * f.get("Annual_Afforestation_Rate", 0))
     return max(np.expm1(val), 0)
 
-# Parsing parameter inti dataset
 df = load_data()
 COUNTRIES = sorted([str(x) for x in df["Country"].dropna().unique()])
 DRIVERS = sorted([str(x) for x in df["Primary_Driver_of_Change"].dropna().unique()])
@@ -227,7 +225,7 @@ YEAR_MAX = int(df["Year"].max()) if not df["Year"].isnull().all() else 2025
 
 if st.session_state.applied_year is None: st.session_state.applied_year = YEAR_MAX
 
-# Konfigurasi gaya chart Plotly
+# Style layout untuk chart dari Plotly
 CHART_LAYOUT = dict(
     paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
     font=dict(family="Plus Jakarta Sans", color="#022C22", size=14),
@@ -240,7 +238,6 @@ AX_STYLE = dict(
 )
 MAP_SCALE = [[0.0, "#D1FAE5"], [1.0, "#064E3B"]]
 
-# Modul penyaringan data
 def get_filtered_data():
     if not st.session_state.filters_applied:
         return df, df[df["Year"] == st.session_state.applied_year]
@@ -256,7 +253,7 @@ page = st.session_state.page
 # ==================== HALAMAN 1: DASHBOARD ====================
 if page == "dashboard":
     with st.container(border=True):
-        st.markdown("<div class='title-text'><span class='floating-icon'>🌍</span> DASHBOARD KARBON</div>", unsafe_allow_html=True)
+        st.markdown("<div class='title-text'>DASHBOARD KARBON</div>", unsafe_allow_html=True)
         st.markdown("<div class='sub-text'>Pantau ketersediaan area hutan dan cadangan karbon di seluruh dunia.</div>", unsafe_allow_html=True)
 
     with st.container(border=True):
@@ -339,7 +336,7 @@ if page == "dashboard":
 # ==================== HALAMAN 2: SIMULATOR ====================
 elif page == "simulator":
     with st.container(border=True):
-        st.markdown("<div class='title-text'><span class='floating-icon'>🔮</span> SIMULATOR MASA DEPAN</div>", unsafe_allow_html=True)
+        st.markdown("<div class='title-text'>SIMULATOR MASA DEPAN</div>", unsafe_allow_html=True)
         st.markdown("<div class='sub-text'>Atur konfigurasi di bawah untuk memprediksi sisa cadangan karbon global di masa depan.</div>", unsafe_allow_html=True)
 
     with st.form("form_sim", border=True):
@@ -348,7 +345,8 @@ elif page == "simulator":
         thn_target = c2.slider("TAHUN TARGET", 2026, 2050, 2035)
         pemicu = c3.selectbox("PENYEBAB UTAMA", DRIVERS)
         
-        with st.expander("PENGATURAN LANJUTAN (ADVANCED)"):
+        # Expander tanpa arrow dengan label teks spesifik
+        with st.expander("KLIK UNTUK PENGATURAN LANJUTAN (ADVANCED)"):
             base_data = df[df["Country"] == negara]
             def_land = float(base_data["Land_Area_km2"].values[0]) if not base_data.empty else 400000.0
             def_forest = float(base_data[base_data["Year"] == YEAR_MAX]["Forest_Area_km2"].values[0]) if not base_data.empty else 250000.0
@@ -406,7 +404,7 @@ elif page == "simulator":
 # ==================== HALAMAN 3: KEBIJAKAN ====================
 else:
     with st.container(border=True):
-        st.markdown("<div class='title-text'><span class='floating-icon'>📜</span> SIMULATOR KEBIJAKAN</div>", unsafe_allow_html=True)
+        st.markdown("<div class='title-text'>SIMULATOR KEBIJAKAN</div>", unsafe_allow_html=True)
         st.markdown("<div class='sub-text'>Coba terapkan kebijakan pada suatu negara dan lihat dampaknya di tahun 2030 berdasarkan baseline data asli.</div>", unsafe_allow_html=True)
 
     col_l, col_r = st.columns([1, 1])
