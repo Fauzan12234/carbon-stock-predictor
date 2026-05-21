@@ -21,7 +21,7 @@ if "applied_country" not in st.session_state: st.session_state.applied_country =
 if "applied_driver" not in st.session_state: st.session_state.applied_driver = []
 if "applied_year" not in st.session_state: st.session_state.applied_year = None
 
-# Inject CSS untuk desain bersih, putih pada dropdown/button, dan hilangkan icon/arrows
+# Inject CSS untuk desain bersih, putih pada dropdown/button, hilangkan icon
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&display=swap');
@@ -120,30 +120,7 @@ ul[role="listbox"] li:hover { background-color: #F1F5F9 !important; }
 span[data-baseweb="tag"] { background-color: #FFFFFF !important; border: 2px solid #022C22 !important; color: #022C22 !important; }
 div[role="listbox"] { background-color: #FFFFFF !important; }
 
-/* EXPANDER (ADVANCED): HILANGKAN PANAH DAN PASTIKAN TETAP PUTIH SAAT AKTIF */
-[data-testid="stExpander"] { 
-    background-color: #FFFFFF !important; 
-    border: 2px solid #022C22 !important; 
-    border-radius: 16px !important; 
-}
-/* Paksa warna background putih dan hilangkan style list bawaan */
-[data-testid="stExpander"] details, [data-testid="stExpander"] summary, [data-testid="stExpander"] details[open] summary {
-    background-color: #FFFFFF !important;
-    list-style: none !important;
-}
-[data-testid="stExpander"] summary::-webkit-details-marker {
-    display: none !important;
-}
-[data-testid="stExpander"] summary:hover { background-color: #FFFFFF !important; }
-[data-testid="stExpander"] summary p { font-weight: 800 !important; font-size: 1.1rem !important; margin: 0; }
-/* Menyembunyikan svg dan semua bentuk icon panah bawaan Streamlit secara paksa */
-[data-testid="stExpander"] summary svg, [data-testid="stExpanderIcon"] { 
-    display: none !important; 
-    visibility: hidden !important; 
-    opacity: 0 !important;
-    width: 0 !important;
-    height: 0 !important;
-}
+/* CHECKBOX & TOGGLES */
 [data-testid="stCheckbox"] label p { font-weight: 700 !important; font-size: 1.1rem !important; }
 
 /* TEKS */
@@ -241,7 +218,7 @@ REGIONS = sorted([str(x) for x in df["Region"].dropna().unique()])
 YEAR_MIN = int(df["Year"].min()) if not df["Year"].isnull().all() else 2000
 YEAR_MAX = int(df["Year"].max()) if not df["Year"].isnull().all() else 2025
 
-if st.session_state.applied_year is None: st.session_state.applied_year = YEAR_MAX
+if st.session_state.applied_year is None: st.session_state.applied_year = (YEAR_MIN, YEAR_MAX)
 
 # Style layout untuk chart dari Plotly
 CHART_LAYOUT = dict(
@@ -257,13 +234,15 @@ AX_STYLE = dict(
 MAP_SCALE = [[0.0, "#D1FAE5"], [1.0, "#064E3B"]]
 
 def get_filtered_data():
+    y_min, y_max = st.session_state.applied_year
     if not st.session_state.filters_applied:
-        return df, df[df["Year"] == st.session_state.applied_year]
+        return df, df[(df["Year"] >= y_min) & (df["Year"] <= y_max)]
+    
     dff = df.copy()
     if st.session_state.applied_region: dff = dff[dff["Region"].astype(str).isin(st.session_state.applied_region)]
     if st.session_state.applied_country: dff = dff[dff["Country"].astype(str).isin(st.session_state.applied_country)]
     if st.session_state.applied_driver: dff = dff[dff["Primary_Driver_of_Change"].astype(str).isin(st.session_state.applied_driver)]
-    df_yr = dff[dff["Year"] == st.session_state.applied_year]
+    df_yr = dff[(dff["Year"] >= y_min) & (dff["Year"] <= y_max)]
     return dff, df_yr
 
 page = st.session_state.page
@@ -276,30 +255,33 @@ if page == "dashboard":
 
     with st.container(border=True):
         st.markdown("<div class='header-text'>Filter Data Pilihan</div>", unsafe_allow_html=True)
-        f1, f2, f3, f4 = st.columns(4)
+        f1, f2, f3 = st.columns(3)
         with f1: sel_region = st.multiselect("KAWASAN", REGIONS, default=[])
         with f2: sel_country = st.multiselect("NEGARA", COUNTRIES, default=[])
         with f3: sel_driver = st.multiselect("PENYEBAB", DRIVERS, default=[])
-        year_options = ["Semua Tahun"] + list(range(YEAR_MIN, YEAR_MAX + 1))
-        default_year_idx = year_options.index(st.session_state.applied_year) if st.session_state.applied_year in year_options else 0
-        with f4: sel_year = st.selectbox("TAHUN", year_options, index=default_year_idx)
+        
+        sel_year = st.slider("RENTANG TAHUN", min_value=YEAR_MIN, max_value=YEAR_MAX, value=st.session_state.applied_year)
 
         if st.button("Terapkan Visualisasi", use_container_width=True):
             st.session_state.applied_region = sel_region
             st.session_state.applied_country = sel_country
             st.session_state.applied_driver = sel_driver
-            st.session_state.applied_year = YEAR_MAX if sel_year == "Semua Tahun" else sel_year
+            st.session_state.applied_year = sel_year
             st.session_state.filters_applied = True
             st.rerun()
 
     df_f, df_yr = get_filtered_data()
-
+    
+    # Agregasi data jika range lebih dari satu tahun
     if not df_yr.empty:
-        total_c = df_yr["Total_Carbon_Stock_Tonnes"].sum() / 1e12
-        total_f = df_yr["Forest_Area_km2"].sum() / 1e6
-        avg_d = df_yr["Annual_Deforestation_Rate"].mean()
-        avg_a = df_yr["Annual_Afforestation_Rate"].mean()
-    else: total_c = total_f = avg_d = avg_a = 0
+        df_agg = df_yr.groupby("Country", as_index=False).mean(numeric_only=True)
+        total_c = df_agg["Total_Carbon_Stock_Tonnes"].sum() / 1e12
+        total_f = df_agg["Forest_Area_km2"].sum() / 1e6
+        avg_d = df_agg["Annual_Deforestation_Rate"].mean()
+        avg_a = df_agg["Annual_Afforestation_Rate"].mean()
+    else:
+        df_agg = pd.DataFrame()
+        total_c = total_f = avg_d = avg_a = 0
 
     k1, k2, k3, k4 = st.columns(4)
     k1.metric("TOTAL KARBON", f"{total_c:.2f} Tt")
@@ -309,9 +291,9 @@ if page == "dashboard":
 
     with st.container(border=True):
         st.markdown("<div class='header-text'>Peta Intensitas Karbon</div>", unsafe_allow_html=True)
-        if not df_yr.empty:
+        if not df_agg.empty:
             fig_map = px.choropleth(
-                df_yr, locations="Country", locationmode="country names",
+                df_agg, locations="Country", locationmode="country names",
                 color="Total_Carbon_Stock_Tonnes", color_continuous_scale=MAP_SCALE
             )
             fig_map.update_layout(
@@ -341,8 +323,8 @@ if page == "dashboard":
     with col_b:
         with st.container(border=True):
             st.markdown("<div class='header-text'>Negara Karbon Tertinggi</div>", unsafe_allow_html=True)
-            if not df_yr.empty:
-                top = df_yr.nlargest(5, "Total_Carbon_Stock_Tonnes")
+            if not df_agg.empty:
+                top = df_agg.nlargest(5, "Total_Carbon_Stock_Tonnes")
                 fig_top = go.Figure(go.Bar(
                     x=top["Total_Carbon_Stock_Tonnes"] / 1e9, y=top["Country"], orientation="h",
                     marker=dict(color="#34D399", line=dict(color="#022C22", width=3))
@@ -363,14 +345,18 @@ elif page == "simulator":
         thn_target = c2.slider("TAHUN TARGET", 2026, 2050, 2035)
         pemicu = c3.selectbox("PENYEBAB UTAMA", DRIVERS)
         
-        # Expander tanpa arrow dengan label teks spesifik
-        with st.expander("KLIK UNTUK PENGATURAN LANJUTAN (ADVANCED)"):
-            base_data = df[df["Country"] == negara]
-            def_land = float(base_data["Land_Area_km2"].values[0]) if not base_data.empty else 400000.0
-            def_forest = float(base_data[base_data["Year"] == YEAR_MAX]["Forest_Area_km2"].values[0]) if not base_data.empty else 250000.0
-            def_d = float(base_data["Annual_Deforestation_Rate"].mean()) if not base_data.empty else 1.2
-            def_a = float(base_data["Annual_Afforestation_Rate"].mean()) if not base_data.empty else 0.5
-            
+        # Opsi default sebelum di-override
+        base_data = df[df["Country"] == negara]
+        def_land = float(base_data["Land_Area_km2"].values[0]) if not base_data.empty else 400000.0
+        def_forest = float(base_data[base_data["Year"] == YEAR_MAX]["Forest_Area_km2"].values[0]) if not base_data.empty else 250000.0
+        def_d = float(base_data["Annual_Deforestation_Rate"].mean()) if not base_data.empty else 1.2
+        def_a = float(base_data["Annual_Afforestation_Rate"].mean()) if not base_data.empty else 0.5
+        
+        st.write("---")
+        # Mengganti expander menjadi toggle switch (on/off button) yang lebih mulus dan anti-bug
+        is_advanced = st.toggle("AKTIFKAN PENGATURAN LANJUTAN (ADVANCED)")
+        
+        if is_advanced:
             s1, s2 = st.columns(2)
             laju_d = s1.slider("KECEPATAN HUTAN HILANG (%)", 0.0, 5.0, def_d, 0.1)
             laju_a = s2.slider("KECEPATAN HUTAN TUMBUH (%)", 0.0, 5.0, def_a, 0.1)
@@ -378,7 +364,12 @@ elif page == "simulator":
             a1, a2 = st.columns(2)
             luas_h_input = a1.number_input("LUAS HUTAN AWAL (km²)", min_value=0.0, value=def_forest, step=1000.0)
             luas_l_input = a2.number_input("LUAS DARATAN (km²)", min_value=0.0, value=def_land, step=1000.0)
+        else:
+            # Jika opsi mati (off), parameter mengikuti nilai default dasar
+            laju_d, laju_a = def_d, def_a
+            luas_h_input, luas_l_input = def_forest, def_land
 
+        st.write("")
         run_btn = st.form_submit_button("JALANKAN SIMULASI", use_container_width=True)
 
     if run_btn:
