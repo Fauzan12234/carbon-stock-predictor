@@ -36,102 +36,103 @@ body, .stApp, .block-container, header[data-testid="stHeader"] {
 [data-testid="stSidebar"] { display: none; }
 .block-container { padding: 2rem 2.25rem 5rem !important; max-width: 1250px !important; }
 
-/* KARTU */
+/* KARTU CONTAINER */
 [data-testid="stVerticalBlockBorderWrapper"], [data-testid="stForm"] {
     background-color: #FFFFFF !important;
     border: 3px solid #022C22 !important;
     border-radius: 24px !important;
     box-shadow: 5px 5px 0px #022C22 !important;
     padding: 1.5rem !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
     margin-bottom: 1.5rem !important;
 }
 
-/* BUTTON SIMULASI */
-div[data-testid="stForm"] button[kind="secondaryFormSubmit"] {
-    background-color: #FFFFFF !important;
-    color: #022C22 !important;
-    border: 3px solid #022C22 !important;
-    font-weight: 800 !important;
+@keyframes cuteWobble {
+    0% { transform: rotate(0deg) translateY(0px); }
+    25% { transform: rotate(-1deg) translateY(-2px); }
+    50% { transform: rotate(1deg) translateY(-4px); }
+    75% { transform: rotate(-1deg) translateY(-2px); }
+    100% { transform: rotate(0deg) translateY(0px); }
+}
+[data-testid="stVerticalBlockBorderWrapper"]:hover, [data-testid="stForm"]:hover {
+    animation: cuteWobble 0.5s ease-in-out forwards;
+    box-shadow: 8px 8px 0px #022C22 !important;
 }
 
-/* SEMUA BUTTON */
+/* SEMUA TOMBOL BERWARNA PUTIH */
 .stButton > button, [data-testid="baseButton-secondaryFormSubmit"] {
     background-color: #FFFFFF !important;
     color: #022C22 !important;
     border: 3px solid #022C22 !important;
     border-radius: 100px !important;
     box-shadow: 4px 4px 0px #022C22 !important;
+    font-size: 1.1rem !important;
     font-weight: 800 !important;
+    padding: 0.6rem !important;
+    transition: all 0.1s ease;
+}
+.stButton > button:hover, [data-testid="baseButton-secondaryFormSubmit"]:hover {
+    background-color: #F8FAFC !important;
+    box-shadow: 0px 0px 0px #022C22 !important;
+    transform: translate(4px, 4px) !important;
 }
 
-/* METRIC */
+/* METRIK ANGKA */
 [data-testid="stMetric"] {
     background: #FFFFFF !important;
     border: 2px solid #022C22 !important;
     border-radius: 16px !important;
     padding: 1rem !important;
+    text-align: center;
+    box-shadow: 3px 3px 0px #D1FAE5 !important;
 }
+[data-testid="stMetricLabel"] > div { font-size: 1rem !important; font-weight: 800 !important; }
+[data-testid="stMetricValue"] { font-size: 2.2rem !important; font-weight: 800 !important; }
 
-/* DROPDOWN */
-div[data-baseweb="select"] > div {
+/* FIX HITAM PADA DROPDOWN & MULTISELECT - PAKSA PUTIH KESELURUHAN */
+.stSelectbox label, .stSlider > label, .stNumberInput label, .stMultiSelect label {
+    font-size: 1.05rem !important; font-weight: 800 !important; color: #022C22 !important;
+}
+div[data-baseweb="select"] > div, .stTextInput input, .stNumberInput input {
     background-color: #FFFFFF !important; 
     border: 2px solid #022C22 !important;
+    border-radius: 12px !important;
+    color: #022C22 !important;
 }
+/* Menargetkan panel popover dan list dropdown Streamlit agar putih */
+div[data-baseweb="popover"], div[data-baseweb="popover"] *, div[data-baseweb="menu"], ul[role="listbox"] { 
+    background-color: #FFFFFF !important; 
+}
+ul[role="listbox"] li { 
+    color: #022C22 !important; 
+    font-weight: 700 !important; 
+    background-color: #FFFFFF !important;
+}
+ul[role="listbox"] li:hover { background-color: #F1F5F9 !important; }
+span[data-baseweb="tag"] { background-color: #FFFFFF !important; border: 2px solid #022C22 !important; color: #022C22 !important; }
+div[role="listbox"] { background-color: #FFFFFF !important; }
 
-/* ===================== */
-/* 🔥 EXPANDER FINAL FIX */
-/* ===================== */
-
+/* EXPANDER (ADVANCED): HILANGKAN PANAH DAN PASTIKAN TETAP PUTIH SAAT AKTIF */
 [data-testid="stExpander"] { 
     background-color: #FFFFFF !important; 
     border: 2px solid #022C22 !important; 
     border-radius: 16px !important; 
 }
-
-/* Paksa semua putih */
-[data-testid="stExpander"] details,
-[data-testid="stExpander"] summary,
-[data-testid="stExpander"] details[open] summary {
+/* Paksa warna background putih walaupun terbuka/diklik */
+[data-testid="stExpander"] details, [data-testid="stExpander"] summary, [data-testid="stExpander"] details[open] summary {
     background-color: #FFFFFF !important;
 }
-
-/* HAPUS TOTAL SEMUA ARROW & ICON */
-[data-testid="stExpander"] summary svg,
-[data-testid="stExpander"] summary * svg {
-    display: none !important;
-}
-
-/* Hapus marker bawaan browser */
-[data-testid="stExpander"] summary::marker,
-[data-testid="stExpander"] summary::-webkit-details-marker {
-    display: none !important;
-    content: "" !important;
-}
-
-/* Hapus wrapper icon kiri (INI YANG BIKIN BOCAH SEBELUMNYA) */
-[data-testid="stExpander"] summary > div:first-child {
-    display: none !important;
-}
-
-/* Hilangkan spacing kiri */
-[data-testid="stExpander"] summary {
-    list-style: none !important;
-    margin-left: 0 !important;
-    padding-left: 0 !important;
-}
+[data-testid="stExpander"] summary:hover { background-color: #FFFFFF !important; }
+[data-testid="stExpander"] summary p { font-weight: 800 !important; font-size: 1.1rem !important; }
+/* Menyembunyikan svg panah bawaan Streamlit */
+[data-testid="stExpander"] summary svg { display: none !important; }
+[data-testid="stCheckbox"] label p { font-weight: 700 !important; font-size: 1.1rem !important; }
 
 /* TEKS */
-.title-text { font-size: 2.5rem; font-weight: 800; }
-.sub-text { font-size: 1.1rem; font-weight: 600; }
-.header-text { font-size: 1.5rem; font-weight: 800; }
-.insight-text { 
-    font-size: 1.1rem; 
-    background: #FFFFFF; 
-    padding: 1.5rem; 
-    border-radius: 16px; 
-    border: 2px dashed #022C22; 
-}
-
+.title-text { font-size: 2.5rem; font-weight: 800; margin-bottom: 0.2rem; color: #022C22; text-transform: uppercase; }
+.sub-text { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; color: #064E3B; }
+.header-text { font-size: 1.5rem; font-weight: 800; margin-bottom: 1rem; color: #022C22; }
+.insight-text { font-size: 1.15rem; font-weight: 600; line-height: 1.6; color: #022C22; background: #FFFFFF; padding: 1.5rem; border-radius: 16px; border: 2px dashed #022C22; margin-top: 1rem;}
 </style>
 """, unsafe_allow_html=True)
 
