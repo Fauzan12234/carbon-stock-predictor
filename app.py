@@ -126,14 +126,24 @@ div[role="listbox"] { background-color: #FFFFFF !important; }
     border: 2px solid #022C22 !important; 
     border-radius: 16px !important; 
 }
-/* Paksa warna background putih walaupun terbuka/diklik */
+/* Paksa warna background putih dan hilangkan style list bawaan */
 [data-testid="stExpander"] details, [data-testid="stExpander"] summary, [data-testid="stExpander"] details[open] summary {
     background-color: #FFFFFF !important;
+    list-style: none !important;
+}
+[data-testid="stExpander"] summary::-webkit-details-marker {
+    display: none !important;
 }
 [data-testid="stExpander"] summary:hover { background-color: #FFFFFF !important; }
-[data-testid="stExpander"] summary p { font-weight: 800 !important; font-size: 1.1rem !important; }
-/* Menyembunyikan svg panah bawaan Streamlit */
-[data-testid="stExpander"] summary svg { display: none !important; }
+[data-testid="stExpander"] summary p { font-weight: 800 !important; font-size: 1.1rem !important; margin: 0; }
+/* Menyembunyikan svg dan semua bentuk icon panah bawaan Streamlit secara paksa */
+[data-testid="stExpander"] summary svg, [data-testid="stExpanderIcon"] { 
+    display: none !important; 
+    visibility: hidden !important; 
+    opacity: 0 !important;
+    width: 0 !important;
+    height: 0 !important;
+}
 [data-testid="stCheckbox"] label p { font-weight: 700 !important; font-size: 1.1rem !important; }
 
 /* TEKS */
