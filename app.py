@@ -6,7 +6,7 @@ import plotly.graph_objects as go # Visualisasi chart kustom
 import os # Mengecek ketersediaan file
 import joblib # Memuat model prediksi
 
-# Konfigurasi halaman
+# Konfigurasi halaman utama
 st.set_page_config(
     page_title="Global Carbon Dashboard",
     layout="wide",
@@ -21,13 +21,18 @@ if "applied_country" not in st.session_state: st.session_state.applied_country =
 if "applied_driver" not in st.session_state: st.session_state.applied_driver = []
 if "applied_year" not in st.session_state: st.session_state.applied_year = None
 
-# Inject CSS untuk desain bersih, putih pada dropdown/button, hilangkan icon
+# CSS yang diperbaiki untuk mengatasi bug tulisan invisible dan tampilan layout
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&display=swap');
 
-/* GLOBAL STYLES */
-* { font-family: 'Plus Jakarta Sans', sans-serif !important; color: #022C22 !important; }
+/* Menerapkan font ke seluruh halaman */
+html, body, [class*="css"] { font-family: 'Plus Jakarta Sans', sans-serif !important; }
+
+/* FIX INVISIBLE TEXT: Memaksa warna tulisan menjadi hijau gelap agar tidak transparan saat loading */
+p, span, label, h1, h2, h3, h4, h5, h6, li, div[data-baseweb="select"] * { color: #022C22 !important; }
+
+/* Background utama */
 body, .stApp, .block-container, header[data-testid="stHeader"] { 
     background-color: #FAFAF9 !important; 
     background-image: radial-gradient(#D1FAE5 1px, transparent 1px);
@@ -37,7 +42,7 @@ body, .stApp, .block-container, header[data-testid="stHeader"] {
 .block-container { padding: 2rem 2.25rem 5rem !important; max-width: 1250px !important; }
 
 /* KARTU CONTAINER */
-[data-testid="stVerticalBlockBorderWrapper"], [data-testid="stForm"] {
+[data-testid="stVerticalBlockBorderWrapper"] {
     background-color: #FFFFFF !important;
     border: 3px solid #022C22 !important;
     border-radius: 24px !important;
@@ -46,29 +51,13 @@ body, .stApp, .block-container, header[data-testid="stHeader"] {
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     margin-bottom: 1.5rem !important;
 }
-
-@keyframes cuteWobble {
-    0% { transform: rotate(0deg) translateY(0px); }
-    25% { transform: rotate(-1deg) translateY(-2px); }
-    50% { transform: rotate(1deg) translateY(-4px); }
-    75% { transform: rotate(-1deg) translateY(-2px); }
-    100% { transform: rotate(0deg) translateY(0px); }
-}
-[data-testid="stVerticalBlockBorderWrapper"]:hover, [data-testid="stForm"]:hover {
-    animation: cuteWobble 0.5s ease-in-out forwards;
+[data-testid="stVerticalBlockBorderWrapper"]:hover {
+    transform: translateY(-3px);
     box-shadow: 8px 8px 0px #022C22 !important;
 }
 
-/* KHUSUS BUTTON JALANKAN SIMULASI */
-div[data-testid="stForm"] button[kind="secondaryFormSubmit"] {
-    background-color: #FFFFFF !important;
-    color: #022C22 !important;
-    border: 3px solid #022C22 !important;
-    font-weight: 800 !important;
-}
-
-/* SEMUA TOMBOL BERWARNA PUTIH */
-.stButton > button, [data-testid="baseButton-secondaryFormSubmit"] {
+/* SEMUA TOMBOL (Dibuat putih terang) */
+.stButton > button {
     background-color: #FFFFFF !important;
     color: #022C22 !important;
     border: 3px solid #022C22 !important;
@@ -79,13 +68,13 @@ div[data-testid="stForm"] button[kind="secondaryFormSubmit"] {
     padding: 0.6rem !important;
     transition: all 0.1s ease;
 }
-.stButton > button:hover, [data-testid="baseButton-secondaryFormSubmit"]:hover {
+.stButton > button:hover {
     background-color: #F8FAFC !important;
     box-shadow: 0px 0px 0px #022C22 !important;
     transform: translate(4px, 4px) !important;
 }
 
-/* METRIK ANGKA */
+/* KOTAK METRIK ANGKA */
 [data-testid="stMetric"] {
     background: #FFFFFF !important;
     border: 2px solid #022C22 !important;
@@ -97,33 +86,34 @@ div[data-testid="stForm"] button[kind="secondaryFormSubmit"] {
 [data-testid="stMetricLabel"] > div { font-size: 1rem !important; font-weight: 800 !important; }
 [data-testid="stMetricValue"] { font-size: 2.2rem !important; font-weight: 800 !important; }
 
-/* FIX HITAM PADA DROPDOWN & MULTISELECT - PAKSA PUTIH KESELURUHAN */
-.stSelectbox label, .stSlider > label, .stNumberInput label, .stMultiSelect label {
-    font-size: 1.05rem !important; font-weight: 800 !important; color: #022C22 !important;
-}
-div[data-baseweb="select"] > div, .stTextInput input, .stNumberInput input {
+/* DESAIN DROPDOWN & INPUTS (Memaksa background putih) */
+div[data-baseweb="select"] > div, input {
     background-color: #FFFFFF !important; 
     border: 2px solid #022C22 !important;
     border-radius: 12px !important;
     color: #022C22 !important;
 }
-/* Menargetkan panel popover dan list dropdown Streamlit agar putih */
-div[data-baseweb="popover"], div[data-baseweb="popover"] *, div[data-baseweb="menu"], ul[role="listbox"] { 
+/* Popover List Item (Menu yang muncul ke bawah saat dropdown diklik) */
+div[data-baseweb="popover"], div[data-baseweb="menu"], ul[role="listbox"] { 
     background-color: #FFFFFF !important; 
 }
 ul[role="listbox"] li { 
+    background-color: #FFFFFF !important;
     color: #022C22 !important; 
     font-weight: 700 !important; 
-    background-color: #FFFFFF !important;
 }
-ul[role="listbox"] li:hover { background-color: #F1F5F9 !important; }
-span[data-baseweb="tag"] { background-color: #FFFFFF !important; border: 2px solid #022C22 !important; color: #022C22 !important; }
-div[role="listbox"] { background-color: #FFFFFF !important; }
+ul[role="listbox"] li:hover { background-color: #D1FAE5 !important; }
+/* Tags untuk Multiselect */
+span[data-baseweb="tag"] { 
+    background-color: #D1FAE5 !important; 
+    border: 2px solid #022C22 !important; 
+    color: #022C22 !important; 
+}
 
-/* CHECKBOX & TOGGLES */
-[data-testid="stCheckbox"] label p { font-weight: 700 !important; font-size: 1.1rem !important; }
+/* LABEL CHECKBOX / TOGGLE */
+[data-testid="stCheckbox"] label p { font-weight: 700 !important; font-size: 1.1rem !important; color: #022C22 !important; }
 
-/* TEKS */
+/* TEKS CUSTOM */
 .title-text { font-size: 2.5rem; font-weight: 800; margin-bottom: 0.2rem; color: #022C22; text-transform: uppercase; }
 .sub-text { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; color: #064E3B; }
 .header-text { font-size: 1.5rem; font-weight: 800; margin-bottom: 1rem; color: #022C22; }
@@ -165,7 +155,7 @@ def load_data():
             if "Region" not in df.columns: df["Region"] = df["Country"].apply(region)
             return df
 
-    # Data fallback jika file tidak ada
+    # Data dummy cadangan jika file CSV tidak ditemukan
     np.random.seed(42)
     countries = ["Brazil", "Indonesia", "Canada", "Russia", "USA", "Congo", "Australia", "India"]
     rows = []
@@ -186,7 +176,7 @@ def load_data():
             })
     return pd.DataFrame(rows)
 
-# Fungsi memuat model prediksi AI
+# Fungsi memuat model Machine Learning
 @st.cache_resource
 def load_ml_model():
     paths = ["model_xgboost.pkl", "/content/drive/MyDrive/Tugas Week 12/model_xgboost.pkl"]
@@ -198,7 +188,7 @@ def load_ml_model():
 
 ml_model = load_ml_model()
 
-# Algoritma hitung persentase & prediksi karbon
+# Algoritma prediksi karbon menggunakan ML atau rumus matematis
 def predict_carbon(f: dict) -> float:
     if ml_model is not None:
         try:
@@ -220,7 +210,7 @@ YEAR_MAX = int(df["Year"].max()) if not df["Year"].isnull().all() else 2025
 
 if st.session_state.applied_year is None: st.session_state.applied_year = (YEAR_MIN, YEAR_MAX)
 
-# Style layout untuk chart dari Plotly
+# Gaya layout grafik Plotly
 CHART_LAYOUT = dict(
     paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
     font=dict(family="Plus Jakarta Sans", color="#022C22", size=14),
@@ -233,6 +223,7 @@ AX_STYLE = dict(
 )
 MAP_SCALE = [[0.0, "#D1FAE5"], [1.0, "#064E3B"]]
 
+# Modul penyaringan data (mendukung range slider tahun)
 def get_filtered_data():
     y_min, y_max = st.session_state.applied_year
     if not st.session_state.filters_applied:
@@ -272,7 +263,6 @@ if page == "dashboard":
 
     df_f, df_yr = get_filtered_data()
     
-    # Agregasi data jika range lebih dari satu tahun
     if not df_yr.empty:
         df_agg = df_yr.groupby("Country", as_index=False).mean(numeric_only=True)
         total_c = df_agg["Total_Carbon_Stock_Tonnes"].sum() / 1e12
@@ -339,13 +329,14 @@ elif page == "simulator":
         st.markdown("<div class='title-text'>SIMULATOR MASA DEPAN</div>", unsafe_allow_html=True)
         st.markdown("<div class='sub-text'>Atur konfigurasi di bawah untuk memprediksi sisa cadangan karbon global di masa depan.</div>", unsafe_allow_html=True)
 
-    with st.form("form_sim", border=True):
+    # Menggunakan st.container BUKAN st.form agar toggle bereaksi secara instan tanpa perlu disubmit
+    with st.container(border=True):
         c1, c2, c3 = st.columns(3)
         negara = c1.selectbox("PILIH NEGARA", COUNTRIES)
         thn_target = c2.slider("TAHUN TARGET", 2026, 2050, 2035)
         pemicu = c3.selectbox("PENYEBAB UTAMA", DRIVERS)
         
-        # Opsi default sebelum di-override
+        # Mengambil parameter default berbasis negara
         base_data = df[df["Country"] == negara]
         def_land = float(base_data["Land_Area_km2"].values[0]) if not base_data.empty else 400000.0
         def_forest = float(base_data[base_data["Year"] == YEAR_MAX]["Forest_Area_km2"].values[0]) if not base_data.empty else 250000.0
@@ -353,7 +344,8 @@ elif page == "simulator":
         def_a = float(base_data["Annual_Afforestation_Rate"].mean()) if not base_data.empty else 0.5
         
         st.write("---")
-        # Mengganti expander menjadi toggle switch (on/off button) yang lebih mulus dan anti-bug
+        
+        # Toggle Advanced menggantikan expander (Bebas dari bug arrow icon)
         is_advanced = st.toggle("AKTIFKAN PENGATURAN LANJUTAN (ADVANCED)")
         
         if is_advanced:
@@ -365,12 +357,12 @@ elif page == "simulator":
             luas_h_input = a1.number_input("LUAS HUTAN AWAL (km²)", min_value=0.0, value=def_forest, step=1000.0)
             luas_l_input = a2.number_input("LUAS DARATAN (km²)", min_value=0.0, value=def_land, step=1000.0)
         else:
-            # Jika opsi mati (off), parameter mengikuti nilai default dasar
+            # Jika toggle dimatikan, sistem menggunakan base rate dari data asli
             laju_d, laju_a = def_d, def_a
             luas_h_input, luas_l_input = def_forest, def_land
 
         st.write("")
-        run_btn = st.form_submit_button("JALANKAN SIMULASI", use_container_width=True)
+        run_btn = st.button("JALANKAN SIMULASI", use_container_width=True)
 
     if run_btn:
         hasil_list, thn_list = [], []
@@ -419,7 +411,7 @@ else:
     col_l, col_r = st.columns([1, 1])
 
     with col_l:
-        with st.form("form_kebijakan", border=True):
+        with st.container(border=True):
             st.markdown("<div class='header-text'>Panel Kebijakan</div>", unsafe_allow_html=True)
             negara_kebijakan = st.selectbox("PILIH NEGARA UNTUK DITERAPKAN", COUNTRIES)
             
@@ -428,7 +420,8 @@ else:
             p3 = st.toggle("HUKUM TEGAS BAKAR HUTAN")
             p4 = st.toggle("BERIKAN INSENTIF PETANI")
             
-            run_pol = st.form_submit_button("TERAPKAN ATURAN", use_container_width=True)
+            st.write("")
+            run_pol = st.button("TERAPKAN ATURAN", use_container_width=True)
 
     with col_r:
         if run_pol:
