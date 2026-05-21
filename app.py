@@ -41,15 +41,15 @@ body, .stApp, .block-container, header[data-testid="stHeader"] {
 [data-testid="stSidebar"] { display: none; }
 .block-container { padding: 2rem 2.25rem 5rem !important; max-width: 1250px !important; }
 
-/* PANEL BELAKANG KUSTOM (MENGGANTIKAN DIV MANUAL AGAR TIDAK ADA SHAPE KOSONG) */
+/* PANEL BELAKANG (SHAPE ROUNDED BACKGROUND PUTIH DENGAN OUTLINE SHADOW GELAP) */
 [data-testid="stVerticalBlockBorderWrapper"], [data-testid="stForm"] {
     background-color: #FFFFFF !important;
     border: 3px solid #022C22 !important;
     border-radius: 24px !important;
     box-shadow: 5px 5px 0px #022C22 !important;
     padding: 1.5rem !important;
+    margin-bottom: 1.5rem !important;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
-    margin-bottom: 1rem !important;
 }
 [data-testid="stVerticalBlockBorderWrapper"]:hover, [data-testid="stForm"]:hover {
     transform: translateY(-3px);
@@ -102,6 +102,7 @@ div[data-baseweb="select"] > div, .stTextInput input, .stNumberInput input, div[
     color: #022C22 !important;
 }
 
+/* LIST DROPDOWN */
 div[data-baseweb="popover"], div[data-baseweb="menu"], ul[role="listbox"] { 
     background-color: #FFFFFF !important; 
 }
@@ -116,6 +117,9 @@ span[data-baseweb="tag"] {
     border: 2px solid #022C22 !important; 
     color: #022C22 !important; 
 }
+
+/* TOGGLES */
+[data-testid="stCheckbox"] label p { font-weight: 700 !important; font-size: 1.1rem !important; }
 
 /* TEKS CUSTOM */
 .title-text { font-size: 2.5rem; font-weight: 800; margin-bottom: 0.2rem; color: #022C22; text-transform: uppercase; }
@@ -139,6 +143,8 @@ with nav_3:
     if st.button("KEBIJAKAN", use_container_width=True):
         st.session_state.page = "kebijakan"
         st.rerun()
+
+st.write("")
 
 # Fungsi Dataset
 @st.cache_data
@@ -277,6 +283,7 @@ if page == "dashboard":
     k2.metric("LUAS HUTAN", f"{total_f:.2f} Jt km²")
     k3.metric("RATA-RATA HILANG", f"{avg_d:.2f}%")
     k4.metric("RATA-RATA TUMBUH", f"{avg_a:.2f}%")
+    st.write("")
 
     with st.container(border=True):
         st.markdown("<div class='header-text'>Peta Intensitas Karbon</div>", unsafe_allow_html=True)
@@ -339,12 +346,15 @@ elif page == "simulator":
         def_forest = float(base_data[base_data["Year"] == YEAR_MAX]["Forest_Area_km2"].values[0]) if not base_data.empty else 250000.0
         def_d = float(base_data["Annual_Deforestation_Rate"].mean()) if not base_data.empty else 1.2
         def_a = float(base_data["Annual_Afforestation_Rate"].mean()) if not base_data.empty else 0.5
-
+        
+        st.write("---")
+        
         if st.button("BUKA / TUTUP PENGATURAN ADVANCED", use_container_width=True):
             st.session_state.adv_open = not st.session_state.adv_open
             st.session_state.sim_run = False
 
         if st.session_state.adv_open:
+            st.write("")
             s1, s2 = st.columns(2)
             laju_d = s1.slider("KECEPATAN HUTAN HILANG (%)", 0.0, 5.0, def_d, 0.1)
             laju_a = s2.slider("KECEPATAN HUTAN TUMBUH (%)", 0.0, 5.0, def_a, 0.1)
@@ -356,6 +366,7 @@ elif page == "simulator":
             laju_d, laju_a = def_d, def_a
             luas_h_input, luas_l_input = def_forest, def_land
 
+        st.write("")
         if st.button("JALANKAN SIMULASI", use_container_width=True):
             st.session_state.sim_run = True
 
@@ -415,6 +426,7 @@ else:
             p3 = st.toggle("HUKUM TEGAS BAKAR HUTAN")
             p4 = st.toggle("BERIKAN INSENTIF PETANI")
             
+            st.write("")
             run_pol = st.form_submit_button("TERAPKAN ATURAN", use_container_width=True)
 
     with col_r:
