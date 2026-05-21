@@ -47,6 +47,14 @@ body, .stApp, .block-container, header[data-testid="stHeader"] {
     margin-bottom: 1.5rem !important;
 }
 
+/* KHUSUS BUTTON JALANKAN SIMULASI */
+div[data-testid="stForm"] button[kind="secondaryFormSubmit"] {
+    background-color: #FFFFFF !important;
+    color: #022C22 !important;
+    border: 3px solid #022C22 !important;
+    font-weight: 800 !important;
+}
+
 @keyframes cuteWobble {
     0% { transform: rotate(0deg) translateY(0px); }
     25% { transform: rotate(-1deg) translateY(-2px); }
@@ -122,11 +130,13 @@ div[role="listbox"] { background-color: #FFFFFF !important; }
 [data-testid="stExpander"] details, [data-testid="stExpander"] summary, [data-testid="stExpander"] details[open] summary {
     background-color: #FFFFFF !important;
 }
-[data-testid="stExpander"] summary:hover { background-color: #FFFFFF !important; }
-[data-testid="stExpander"] summary p { font-weight: 800 !important; font-size: 1.1rem !important; }
-/* Menyembunyikan svg panah bawaan Streamlit */
-[data-testid="stExpander"] summary svg { display: none !important; }
-[data-testid="stCheckbox"] label p { font-weight: 700 !important; font-size: 1.1rem !important; }
+/* HAPUS SEMUA ARROW EXPANDER */
+[data-testid="stExpander"] summary svg,
+[data-testid="stExpander"] summary::marker,
+[data-testid="stExpander"] summary::-webkit-details-marker {
+    display: none !important;
+    content: "" !important;
+}
 
 /* TEKS */
 .title-text { font-size: 2.5rem; font-weight: 800; margin-bottom: 0.2rem; color: #022C22; text-transform: uppercase; }
