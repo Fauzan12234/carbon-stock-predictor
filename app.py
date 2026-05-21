@@ -59,6 +59,14 @@ body, .stApp, .block-container, header[data-testid="stHeader"] {
     box-shadow: 8px 8px 0px #022C22 !important;
 }
 
+/* KHUSUS BUTTON JALANKAN SIMULASI */
+div[data-testid="stForm"] button[kind="secondaryFormSubmit"] {
+    background-color: #FFFFFF !important;
+    color: #022C22 !important;
+    border: 3px solid #022C22 !important;
+    font-weight: 800 !important;
+}
+
 /* SEMUA TOMBOL BERWARNA PUTIH */
 .stButton > button, [data-testid="baseButton-secondaryFormSubmit"] {
     background-color: #FFFFFF !important;
