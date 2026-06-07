@@ -31,7 +31,7 @@ for _k, _v in _def.items():
     if _k not in st.session_state:
         st.session_state[_k] = _v
 
-# ─── CSS — PIXEL ART GREEN THEME ─────────────────────────────
+# ─── CSS — PIXEL ART GREEN THEME (NO EMOJI, BLEND CARDS) ─────
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
@@ -71,9 +71,9 @@ footer {
     background-color: transparent !important;
 }
 
-/* ── CONTAINER CARDS ─── */
+/* ── CONTAINER CARDS — BLEND WITH MAIN BACKGROUND ─── */
 [data-testid="stVerticalBlockBorderWrapper"] {
-    background-color: #FFFFFF !important;
+    background-color: #F0FDF4 !important;
     border: 4px solid #064E3B !important;
     border-radius: 0px !important;
     box-shadow: 6px 6px 0px #22C55E !important;
@@ -396,8 +396,7 @@ hr {
 .stMarkdown p, .stMarkdown span, p, span { color: #064E3B !important; }
 .stMarkdown p { font-size: 0.65rem !important; line-height: 1.9 !important; }
 
-/* ── PLOTLY — SOLID WHITE (CRITICAL FIX) ─── */
-/* Ensures the outer chart wrapper has a solid white background */
+/* ── PLOTLY — SOLID WHITE ─── */
 .stPlotlyChart > div:first-child {
     background-color: #FFFFFF !important;
     border: 3px solid #064E3B !important;
@@ -411,19 +410,19 @@ hr {
 </style>
 """, unsafe_allow_html=True)
 
-# ─── NAVIGATION ───────────────────────────────────────────────
+# ─── NAVIGATION (NO EMOJIS) ─────────────────────────────────
 n1, n2, n3, n4 = st.columns(4)
 with n1:
-    if st.button("📊 DASHBOARD", use_container_width=True):
+    if st.button("DASHBOARD", use_container_width=True):
         st.session_state.page = "dashboard"; st.rerun()
 with n2:
-    if st.button("🔮 SIMULATOR", use_container_width=True):
+    if st.button("SIMULATOR", use_container_width=True):
         st.session_state.page = "simulator"; st.rerun()
 with n3:
-    if st.button("⚖️ KEBIJAKAN", use_container_width=True):
+    if st.button("KEBIJAKAN", use_container_width=True):
         st.session_state.page = "kebijakan"; st.rerun()
 with n4:
-    if st.button("⚔️ KOMPARASI", use_container_width=True):
+    if st.button("KOMPARASI", use_container_width=True):
         st.session_state.page = "komparasi"; st.rerun()
 
 st.write("")
@@ -515,7 +514,6 @@ if st.session_state.applied_year is None:
     st.session_state.applied_year = (YEAR_MIN, YEAR_MAX)
 
 # ─── CHART STYLE CONSTANTS ────────────────────────────────────
-# paper_bgcolor & plot_bgcolor = solid #FFFFFF (no transparency)
 CHART_LAYOUT = dict(
     paper_bgcolor="#FFFFFF",
     plot_bgcolor="#FFFFFF",
@@ -536,7 +534,7 @@ LEGEND_STYLE = dict(
     font=dict(family="Press Start 2P", color="#064E3B", size=7),
     bgcolor="#FFFFFF", bordercolor="#064E3B", borderwidth=2,
 )
-C1, C2 = "#4ADE80", "#064E3B"  # Primary, Secondary colors for charts
+C1, C2 = "#4ADE80", "#064E3B"
 
 
 def _txt_font(size=7):
@@ -565,7 +563,7 @@ page = st.session_state.page
 if page == "dashboard":
 
     with st.container(border=True):
-        st.markdown("<div class='title-text'>📊 DASHBOARD KARBON GLOBAL</div>", unsafe_allow_html=True)
+        st.markdown("<div class='title-text'>DASHBOARD KARBON GLOBAL</div>", unsafe_allow_html=True)
         st.markdown("<div class='sub-text'>Pantau ketersediaan area hutan dan cadangan karbon di seluruh dunia.</div>", unsafe_allow_html=True)
 
     # ── FILTER PANEL ──────────────────────────────
@@ -687,7 +685,6 @@ if page == "dashboard":
                      .sum()
                      .assign(Karbon_Gt=lambda x: x["Total_Carbon_Stock_Tonnes"] / 1e9))
 
-            # Show label every 5 years
             lbl_trend = [
                 f"{v:.0f}" if yr % 5 == 0 else ""
                 for yr, v in zip(trend["Year"], trend["Karbon_Gt"])
@@ -751,7 +748,7 @@ if page == "dashboard":
 elif page == "simulator":
 
     with st.container(border=True):
-        st.markdown("<div class='title-text'>🔮 SIMULATOR MASA DEPAN</div>", unsafe_allow_html=True)
+        st.markdown("<div class='title-text'>SIMULATOR MASA DEPAN</div>", unsafe_allow_html=True)
         st.markdown("<div class='sub-text'>Atur konfigurasi untuk memprediksi sisa karbon di masa depan.</div>", unsafe_allow_html=True)
 
     with st.container(border=True):
@@ -811,14 +808,12 @@ elif page == "simulator":
         end_c   = hasil_list[-1]
         pct     = ((end_c - start_c) / start_c) * 100 if start_c > 0 else 0
 
-        # Save results to session
         df_sim = pd.DataFrame({"Tahun": thn_list, "Prediksi_Karbon_Ton": hasil_list})
         st.session_state.sim_results = df_sim
 
         with st.container(border=True):
             st.markdown("<div class='header-text'>Prediksi Karbon Visual</div>", unsafe_allow_html=True)
 
-            # Labels only for key points
             n_pts   = len(hasil_list)
             labels  = [""] * n_pts
             labels[0]  = f"{hasil_list[0]:,.0f}"
@@ -843,7 +838,6 @@ elif page == "simulator":
             )
             st.plotly_chart(fig_line, use_container_width=True)
 
-            # Insight box
             if pct > 0:
                 msg = (f"TREN POSITIF: Hutan tumbuh {laju_a:.2f}%, hilang {laju_d:.2f}%. "
                        f"Karbon {negara} naik {pct:.2f}%. Capai {end_c:,.0f} Ton di {thn_target}.")
@@ -854,7 +848,6 @@ elif page == "simulator":
                 msg = f"STAGNAN: Kondisi stabil di {end_c:,.0f} Ton hingga {thn_target}."
             st.markdown(f"<div class='insight-text'>{msg}</div>", unsafe_allow_html=True)
 
-        # ── HASIL TABLE & DOWNLOAD ─────────────────
         with st.container(border=True):
             st.markdown("<div class='header-text'>Tabel Hasil Prediksi</div>", unsafe_allow_html=True)
 
@@ -868,14 +861,13 @@ elif page == "simulator":
             with d1:
                 csv_bytes = df_sim.to_csv(index=False).encode("utf-8")
                 st.download_button(
-                    label="⬇️ UNDUH HASIL — CSV",
+                    label="UNDUH HASIL CSV",
                     data=csv_bytes,
                     file_name=f"simulasi_{negara}_{thn_target}.csv",
                     mime="text/csv",
                     use_container_width=True,
                 )
             with d2:
-                # Summary TXT download
                 summary = (
                     f"=== RINGKASAN SIMULASI ===\n"
                     f"Negara     : {negara}\n"
@@ -888,7 +880,7 @@ elif page == "simulator":
                     f"Perubahan  : {pct:.2f}%\n"
                 )
                 st.download_button(
-                    label="⬇️ UNDUH RINGKASAN — TXT",
+                    label="UNDUH RINGKASAN TXT",
                     data=summary.encode("utf-8"),
                     file_name=f"ringkasan_{negara}_{thn_target}.txt",
                     mime="text/plain",
@@ -902,7 +894,7 @@ elif page == "simulator":
 elif page == "kebijakan":
 
     with st.container(border=True):
-        st.markdown("<div class='title-text'>⚖️ SIMULATOR KEBIJAKAN</div>", unsafe_allow_html=True)
+        st.markdown("<div class='title-text'>SIMULATOR KEBIJAKAN</div>", unsafe_allow_html=True)
         st.markdown("<div class='sub-text'>Terapkan kebijakan berbasis riset global dan lihat dampaknya di 2030.</div>", unsafe_allow_html=True)
 
     col_l, col_r = st.columns([1, 1])
@@ -972,7 +964,6 @@ elif page == "kebijakan":
                     penjelasan = "DAMPAK KEBIJAKAN TERUKUR:<br><br> • " + "<br> • ".join(kebijakan_list)
                 st.markdown(f"<div class='insight-text'>{penjelasan}</div>", unsafe_allow_html=True)
 
-            # ── BEFORE / AFTER CHART ──────────────────
             with st.container(border=True):
                 st.markdown("<div class='header-text'>Perbandingan Sebelum vs Sesudah Kebijakan</div>", unsafe_allow_html=True)
 
@@ -1004,10 +995,9 @@ elif page == "kebijakan":
                 )
                 st.plotly_chart(fig_ba, use_container_width=True)
 
-                # Download before/after CSV
                 df_ba = pd.DataFrame({"Metrik": cats, "Sebelum": v_bef, "Sesudah": v_aft})
                 st.download_button(
-                    "⬇️ UNDUH HASIL KEBIJAKAN — CSV",
+                    "UNDUH HASIL KEBIJAKAN CSV",
                     data=df_ba.to_csv(index=False).encode("utf-8"),
                     file_name=f"kebijakan_{negara_kebijakan}_2030.csv",
                     mime="text/csv",
@@ -1016,12 +1006,12 @@ elif page == "kebijakan":
 
 
 # ═══════════════════════════════════════════════════
-# PAGE 4 — KOMPARASI (NEW)
+# PAGE 4 — KOMPARASI
 # ═══════════════════════════════════════════════════
 elif page == "komparasi":
 
     with st.container(border=True):
-        st.markdown("<div class='title-text'>⚔️ KOMPARASI 2 NEGARA</div>", unsafe_allow_html=True)
+        st.markdown("<div class='title-text'>KOMPARASI 2 NEGARA</div>", unsafe_allow_html=True)
         st.markdown("<div class='sub-text'>Bandingkan dua negara secara langsung: karbon, hutan, dan tren historis.</div>", unsafe_allow_html=True)
 
     with st.container(border=True):
@@ -1031,7 +1021,7 @@ elif page == "komparasi":
         neg2 = cx2.selectbox("NEGARA 2", COUNTRIES, index=min(1, len(COUNTRIES) - 1))
 
     if neg1 == neg2:
-        st.markdown("<div class='insight-text'>⚠ Pilih dua negara yang berbeda untuk komparasi.</div>", unsafe_allow_html=True)
+        st.markdown("<div class='insight-text'>PERINGATAN: Pilih dua negara yang berbeda untuk komparasi.</div>", unsafe_allow_html=True)
         st.stop()
 
     d1_all = df[df["Country"] == neg1]
@@ -1039,7 +1029,6 @@ elif page == "komparasi":
     d1_avg = d1_all.mean(numeric_only=True)
     d2_avg = d2_all.mean(numeric_only=True)
 
-    # ── KPI SIDE BY SIDE ──────────────────────────
     with st.container(border=True):
         st.markdown("<div class='header-text'>Ringkasan Metrik (Rata-rata Historis)</div>", unsafe_allow_html=True)
 
@@ -1053,7 +1042,6 @@ elif page == "komparasi":
         m5.metric(f"{lbl2}\nHUTAN",     f"{d2_avg['Forest_Area_km2']/1e3:.0f}k km²")
         m6.metric(f"{lbl2}\nDEFOR",     f"{d2_avg['Annual_Deforestation_Rate']:.2f}%")
 
-    # ── GROUPED BAR — NORMALIZED COMPARISON ───────
     with st.container(border=True):
         st.markdown("<div class='header-text'>Perbandingan Multi-Metrik (Ternormalisasi 0-100)</div>", unsafe_allow_html=True)
 
@@ -1096,14 +1084,12 @@ elif page == "komparasi":
         )
         st.plotly_chart(fig_cmp, use_container_width=True)
 
-    # ── LINE: CARBON TREND ────────────────────────
     with st.container(border=True):
         st.markdown("<div class='header-text'>Tren Stok Karbon (2000—2025)</div>", unsafe_allow_html=True)
 
         t1 = d1_all.groupby("Year")["Total_Carbon_Stock_Tonnes"].mean().reset_index()
         t2 = d2_all.groupby("Year")["Total_Carbon_Stock_Tonnes"].mean().reset_index()
 
-        # Labels for first/last only
         def edge_labels(series, years):
             lbl = [""] * len(series)
             lbl[0]  = f"{series.iloc[0]/1e9:.1f}B"
@@ -1137,7 +1123,6 @@ elif page == "komparasi":
         )
         st.plotly_chart(fig_ct, use_container_width=True)
 
-    # ── LINE: DEFORESTATION RATE TREND ────────────
     with st.container(border=True):
         st.markdown("<div class='header-text'>Tren Laju Deforestasi (2000—2025)</div>", unsafe_allow_html=True)
 
@@ -1167,7 +1152,6 @@ elif page == "komparasi":
         )
         st.plotly_chart(fig_dr, use_container_width=True)
 
-    # ── SCATTER: FOREST AREA vs CARBON ────────────
     with st.container(border=True):
         st.markdown("<div class='header-text'>Luas Hutan vs Stok Karbon (Scatter)</div>", unsafe_allow_html=True)
 
@@ -1194,7 +1178,6 @@ elif page == "komparasi":
         )
         st.plotly_chart(fig_sc, use_container_width=True)
 
-    # ── DOWNLOAD COMPARISON CSV ────────────────────
     with st.container(border=True):
         st.markdown("<div class='header-text'>Ekspor Data Komparasi</div>", unsafe_allow_html=True)
 
@@ -1220,7 +1203,7 @@ elif page == "komparasi":
         st.dataframe(df_exp, use_container_width=True, hide_index=True)
         st.write("")
         st.download_button(
-            label=f"⬇️ UNDUH KOMPARASI {neg1} vs {neg2} — CSV",
+            label=f"UNDUH KOMPARASI {neg1} vs {neg2} CSV",
             data=df_exp.to_csv(index=False).encode("utf-8"),
             file_name=f"komparasi_{neg1}_{neg2}.csv",
             mime="text/csv",
