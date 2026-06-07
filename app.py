@@ -6,14 +6,12 @@ import plotly.graph_objects as go
 import os
 import joblib
 
-# Konfigurasi Halaman
 st.set_page_config(
     page_title="Global Carbon Dashboard",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
-# Inisialisasi State
 if "page" not in st.session_state: st.session_state.page = "dashboard"
 if "filters_applied" not in st.session_state: st.session_state.filters_applied = False
 if "applied_region" not in st.session_state: st.session_state.applied_region = []
@@ -24,38 +22,34 @@ if "adv_open" not in st.session_state: st.session_state.adv_open = False
 if "sim_run" not in st.session_state: st.session_state.sim_run = False
 if "pol_run" not in st.session_state: st.session_state.pol_run = False
 
-# CSS Custom - Pixel Art (Murni Hijau Terang, Hijau Gelap, Putih)
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
-/* GLOBAL STYLES */
 * { 
     font-family: 'Press Start 2P', cursive !important; 
-    color: #064E3B !important; /* HIJAU GELAP */
+    color: #064E3B !important; 
 }
 
-/* Latar Belakang Aplikasi Terang */
 body, .stApp, .block-container, header[data-testid="stHeader"] { 
-    background-color: #F0FDF4 !important; /* HIJAU SANGAT TERANG / MINT */
+    background-color: #F0FDF4 !important; 
     background-image: none !important;
 }
+
 [data-testid="stSidebar"] { display: none; }
 .block-container { padding: 2rem 3rem 5rem !important; max-width: 1300px !important; }
 
-/* KARTU CONTAINER (PIXEL SOLID) */
 [data-testid="stVerticalBlockBorderWrapper"] {
-    background-color: #FFFFFF !important; /* PUTIH */
+    background-color: #FFFFFF !important; 
     border: 4px solid #064E3B !important;
     border-radius: 0px !important;
-    box-shadow: 6px 6px 0px #4ADE80 !important; /* HIJAU TERANG */
+    box-shadow: 6px 6px 0px #4ADE80 !important; 
     padding: 1.8rem !important;
-    margin-bottom: 2rem !important; /* Tambah jarak antar container agar tidak numpuk */
+    margin-bottom: 2rem !important; 
 }
 
-/* SEMUA TOMBOL */
 .stButton > button {
-    background-color: #4ADE80 !important; /* HIJAU TERANG */
+    background-color: #4ADE80 !important; 
     color: #064E3B !important;
     border: 4px solid #064E3B !important;
     border-radius: 0px !important;
@@ -64,14 +58,14 @@ body, .stApp, .block-container, header[data-testid="stHeader"] {
     padding: 0.8rem !important;
     transition: none !important;
     width: 100% !important;
-}
-.stButton > button:hover {
-    transform: translate(2px, 2px) !important;
-    box-shadow: 2px 2px 0px #064E3B !important;
-    background-color: #22C55E !important;
+    opacity: 1 !important;
 }
 
-/* KOTAK METRIK ANGKA */
+.stButton > button:active {
+    transform: translate(4px, 4px) !important;
+    box-shadow: 0px 0px 0px #064E3B !important;
+}
+
 [data-testid="stMetric"] {
     background: #FFFFFF !important;
     border: 4px solid #064E3B !important;
@@ -81,15 +75,14 @@ body, .stApp, .block-container, header[data-testid="stHeader"] {
     box-shadow: 4px 4px 0px #4ADE80 !important;
     margin-bottom: 1rem !important;
 }
-[data-testid="stMetricLabel"] > div { font-size: 0.65rem !important; margin-bottom: 0.5rem; }
+[data-testid="stMetricLabel"] > div { font-size: 0.65rem !important; margin-bottom: 0.5rem; color: #064E3B !important; }
 [data-testid="stMetricValue"] { font-size: 1.3rem !important; color: #064E3B !important; }
 
-/* FIX UNTUK DROPDOWN, INPUT, DAN MULTISELECT (Agar tidak transparan/gelap) */
 .stSelectbox label, .stSlider > label, .stNumberInput label, .stMultiSelect label, .stToggle label {
     font-size: 0.7rem !important; color: #064E3B !important; padding-bottom: 0.5rem !important;
+    visibility: visible !important;
 }
 
-/* Kotak Input Utama */
 div[data-baseweb="select"] > div, 
 div[data-baseweb="base-input"], 
 .stTextInput input, 
@@ -101,25 +94,23 @@ div[data-baseweb="base-input"],
     font-size: 0.7rem !important;
 }
 
-/* Teks di dalam input */
 input, textarea, select {
     color: #064E3B !important;
     background-color: #FFFFFF !important;
 }
 
-/* Dropdown Menu Popover (List item) */
 div[data-baseweb="popover"] > div,
 ul[role="listbox"],
 ul[role="listbox"] li {
     background-color: #FFFFFF !important;
     color: #064E3B !important;
+    opacity: 1 !important;
+    visibility: visible !important;
 }
 ul[role="listbox"] li:hover {
     background-color: #4ADE80 !important;
-    color: #064E3B !important;
 }
 
-/* Tag di dalam Multiselect */
 span[data-baseweb="tag"] {
     background-color: #4ADE80 !important;
     color: #064E3B !important;
@@ -127,11 +118,9 @@ span[data-baseweb="tag"] {
     border-radius: 0px !important;
 }
 
-/* Slider */
 div[data-baseweb="slider"] div { background-color: #064E3B !important; }
 div[data-baseweb="slider"] div[role="slider"] { background-color: #4ADE80 !important; border: 3px solid #064E3B !important; }
 
-/* TEKS CUSTOM */
 .title-text { font-size: 1.8rem; margin-bottom: 0.8rem; color: #064E3B; text-transform: uppercase; line-height: 1.4; text-align: center; }
 .sub-text { font-size: 0.75rem; margin-bottom: 1.5rem; color: #064E3B; line-height: 1.6; text-align: center; }
 .header-text { font-size: 1rem; margin-bottom: 1.5rem; color: #064E3B; text-transform: uppercase; border-bottom: 4px dashed #4ADE80; padding-bottom: 0.5rem; }
@@ -139,7 +128,6 @@ div[data-baseweb="slider"] div[role="slider"] { background-color: #4ADE80 !impor
 </style>
 """, unsafe_allow_html=True)
 
-# Navigasi Menu
 nav_1, nav_2, nav_3 = st.columns(3)
 with nav_1:
     if st.button("DASHBOARD", use_container_width=True):
@@ -154,9 +142,8 @@ with nav_3:
         st.session_state.page = "kebijakan"
         st.rerun()
 
-st.markdown("<br>", unsafe_allow_html=True) # Spacing tambahan di bawah menu
+st.markdown("<br>", unsafe_allow_html=True)
 
-# Fungsi Load Dataset
 @st.cache_data
 def load_data():
     paths = ["global_deforestation_2000_2025 (2).csv", "/content/drive/MyDrive/Tugas Week 12/global_deforestation_2000_2025.csv", "global_deforestation_2000_2025.csv"]
@@ -195,7 +182,6 @@ def load_data():
             })
     return pd.DataFrame(rows)
 
-# Fungsi Prediksi Karbon ML
 @st.cache_resource
 def load_ml_model():
     paths = ["model_xgboost.pkl", "/content/drive/MyDrive/Tugas Week 12/model_xgboost.pkl"]
@@ -207,18 +193,32 @@ def load_ml_model():
 
 ml_model = load_ml_model()
 
+# ==============================================================================
+# LOGIKA INTI PREDIKSI KARBON
+# ==============================================================================
 def predict_carbon(f: dict) -> float:
+    # 1. PENGGUNAAN MODEL MACHINE LEARNING (UTAMA)
+    # Jika model XGBoost (.pkl) berhasil dimuat, sistem akan memprioritaskan model tersebut.
+    # Model ini dilatih menggunakan korelasi non-linear dari data historis (2000-2025) 
+    # antara luas hutan, rasio tutupan, dan driver deforestasi untuk menghasilkan prediksi persediaan karbon.
     if ml_model is not None:
         try:
             df_pred = pd.DataFrame([f])
             return float(ml_model.predict(df_pred)[0])
         except: pass
+        
+    # 2. FUNGSI MATEMATIS HEURISTIK (FALLBACK JIKA ML GAGAL/TIDAK ADA)
+    # Logika dasar: Biomassa karbon memiliki hubungan logaritmik dengan luas hutan, bukan linear murni.
+    # - np.log1p (log natural + 1) digunakan agar kalkulasi tidak menghasilkan infinity jika luas hutan = 0.
+    # - Bobot 0.94 dikalikan pada log luas hutan sebagai baseline persediaan karbon.
+    # - Penyesuaian dinamika: Kecepatan deforestasi (Annual_Deforestation_Rate) memberikan penalti (-0.04),
+    #   sedangkan usaha reboisasi (Annual_Afforestation_Rate) memberikan bonus (+0.025).
     log_f = np.log1p(max(f.get("Forest_Area_km2", 1000), 1.0))
     ratio = f.get("Forest_Area_km2", 1000) / (f.get("Land_Area_km2", 1000) + 1e-6)
     val = (4.2 + 0.94 * log_f + 0.08 * ratio - 0.04 * f.get("Annual_Deforestation_Rate", 0) + 0.025 * f.get("Annual_Afforestation_Rate", 0))
     return max(np.expm1(val), 0)
+# ==============================================================================
 
-# Persiapan Data Global
 df = load_data()
 COUNTRIES = sorted([str(x) for x in df["Country"].dropna().unique()])
 DRIVERS = sorted([str(x) for x in df["Primary_Driver_of_Change"].dropna().unique()])
@@ -228,7 +228,6 @@ YEAR_MAX = int(df["Year"].max()) if not df["Year"].isnull().all() else 2025
 
 if st.session_state.applied_year is None: st.session_state.applied_year = (YEAR_MIN, YEAR_MAX)
 
-# Styling Chart Plotly
 CHART_LAYOUT = dict(
     paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
     font=dict(family="Press Start 2P", color="#064E3B", size=9),
@@ -255,7 +254,6 @@ def get_filtered_data():
 
 page = st.session_state.page
 
-# ==================== HALAMAN 1: DASHBOARD ====================
 if page == "dashboard":
     st.markdown("<div class='title-text'>DASHBOARD KARBON</div>", unsafe_allow_html=True)
     st.markdown("<div class='sub-text'>Pantau ketersediaan area hutan dan cadangan karbon di seluruh dunia.</div>", unsafe_allow_html=True)
@@ -344,7 +342,6 @@ if page == "dashboard":
                 st.plotly_chart(fig_top, use_container_width=True)
             else: st.markdown("Data kosong.")
 
-# ==================== HALAMAN 2: SIMULATOR ====================
 elif page == "simulator":
     st.markdown("<div class='title-text'>SIMULATOR MASA DEPAN</div>", unsafe_allow_html=True)
     st.markdown("<div class='sub-text'>Atur konfigurasi di bawah untuk memprediksi sisa karbon.</div>", unsafe_allow_html=True)
@@ -427,7 +424,6 @@ elif page == "simulator":
 
             st.markdown(f"<div class='insight-text'>{insight_msg}</div>", unsafe_allow_html=True)
 
-# ==================== HALAMAN 3: KEBIJAKAN ====================
 else:
     st.markdown("<div class='title-text'>SIMULATOR KEBIJAKAN</div>", unsafe_allow_html=True)
     st.markdown("<div class='sub-text'>Coba terapkan kebijakan berbasis riset global dan lihat dampaknya di 2030.</div>", unsafe_allow_html=True)
@@ -462,22 +458,36 @@ else:
 
             kebijakan_diterapkan = []
             
-            # --- LOGIKA KEBIJAKAN BERDASARKAN RISET ---
+            # ==============================================================================
+            # LOGIKA KEBIJAKAN PREDIKTIF (BERBASIS RISET GLOBAL)
+            # ==============================================================================
+            # Penyesuaian persentase multiplier (0.65, 1.5, dll) tidak diambil secara acak,
+            # melainkan di-mapping dari berbagai laporan efektivitas kebijakan iklim global:
+            
             if p1: 
                 bd *= 0.65 
+                # WRI/CIFOR membuktikan moratorium lisensi tebang baru di negara berkembang
+                # mampu menekan deforestasi aktual hingga 35% jika penegakan hukum konsisten.
                 kebijakan_diterapkan.append("[WRI/CIFOR] Moratorium menurunkan laju tebang hingga 35%.")
             
             if p2: 
                 ba *= 1.5 
+                # Program Injeksi dana seperti REDD+ terbukti dapat mendorong aktivitas aforestasi
+                # (reboisasi) naik sebesar 50% di fase implementasi awal.
                 kebijakan_diterapkan.append("[REDD+] Injeksi dana mem-boost laju aforestasi sebesar 50%.")
             
             if p3: 
                 bd *= 0.75 
+                # Laporan Bank Dunia menunjukkan hukum pidana tegas terhadap pembakaran liar
+                # dapat memangkas 25% titik api dan hilangnya hutan sekunder.
                 kebijakan_diterapkan.append("[Bank Dunia] Hukum karhutla memangkas hilangnya hutan sebesar 25%.")
             
             if p4: 
                 ba *= 1.2; bd *= 0.85 
+                # FAO mencatat skema PES (Payment for Environmental Services) merubah petani 
+                # menjadi pelindung hutan: Tumbuh naik 20%, laju hilang turun 15%.
                 kebijakan_diterapkan.append("[FAO-PES] Insentif petani menaikkan tumbuh hutan 20% & menekan hilangnya 15%.")
+            # ==============================================================================
 
             h_pol = predict_carbon({
                 "Country": negara_kebijakan, "Primary_Driver_of_Change": "None", "Year": 2030, 
