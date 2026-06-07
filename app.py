@@ -23,11 +23,10 @@ if "applied_year" not in st.session_state: st.session_state.applied_year = None
 if "adv_open" not in st.session_state: st.session_state.adv_open = False
 if "sim_run" not in st.session_state: st.session_state.sim_run = False
 if "pol_run" not in st.session_state: st.session_state.pol_run = False
-if "compare_mode" not in st.session_state: st.session_state.compare_mode = False
 
 # ============================================================
-# CSS — PIXEL ART DARK THEME (SOLID BACKGROUNDS & WHITE TEXT)
-# Latar belakang gelap pekat, teks putih, aksen hijau
+# CSS — PIXEL ART GREEN THEME (REVISED)
+# Palet ketat: #FFFFFF · #DCFCE7/#BBF7D0/#4ADE80/#22C55E · #166534/#064E3B
 # ============================================================
 st.markdown("""
 <style>
@@ -36,91 +35,95 @@ st.markdown("""
 /* ── GLOBAL RESET ─────────────────────────────────────────── */
 * {
     font-family: 'Press Start 2P', cursive !important;
-    color: #FFFFFF !important;
+    color: #064E3B !important;
     box-sizing: border-box !important;
 }
 
-/* ── APP BACKGROUND — GELAP PEKAT ─────────────────────────── */
+/* ── APP BACKGROUND — semua layer ─────────────────────────── */
 html, body {
-    background-color: #121212 !important;
+    background-color: #F0FDF4 !important;
     background-image: none !important;
 }
 .stApp,
 [data-testid="stAppViewContainer"],
 [data-testid="stMain"],
 .main {
-    background-color: #121212 !important;
+    background-color: #F0FDF4 !important;
     background-image: none !important;
 }
 [data-testid="stHeader"] {
-    background-color: #121212 !important;
+    background-color: #F0FDF4 !important;
     border-bottom: 3px solid #22C55E !important;
     box-shadow: none !important;
 }
 [data-testid="stBottomBlockContainer"],
 [data-testid="stStatusWidget"],
 footer {
-    background-color: #121212 !important;
+    background-color: #F0FDF4 !important;
 }
 [data-testid="stSidebar"] { display: none !important; }
 
-/* Block container — Spacing diperlebar agar tidak nabrak */
+/* Block container — lebih lega */
 .block-container {
-    padding: 3rem 4rem 8rem !important;
-    max-width: 1300px !important;
-    background-color: #121212 !important;
+    padding: 3rem 3.5rem 8rem !important;
+    max-width: 1280px !important;
+    background-color: transparent !important;
 }
 
-/* ── KARTU CONTAINER (SOLID DARK) ────────────────────────── */
+/* ── KARTU CONTAINER (PIXEL SOLID) ────────────────────────── */
 [data-testid="stVerticalBlockBorderWrapper"] {
-    background-color: #1E1E1E !important;
-    border: 4px solid #22C55E !important;
+    background-color: #FFFFFF !important;
+    border: 4px solid #064E3B !important;
     border-radius: 0px !important;
-    box-shadow: 6px 6px 0px #064E3B !important;
-    padding: 2.5rem 2rem !important;
-    margin-bottom: 2.5rem !important;
+    box-shadow: 6px 6px 0px #22C55E !important;
+    padding: 2rem 2rem !important;
+    margin-bottom: 2.25rem !important;
 }
 
 /* ── TOMBOL ────────────────────────────────────────────────── */
-.stButton > button, .stDownloadButton > button {
-    background-color: #22C55E !important;
-    color: #FFFFFF !important;
+.stButton > button {
+    background-color: #4ADE80 !important;
+    color: #064E3B !important;
     border: 4px solid #064E3B !important;
     border-radius: 0px !important;
     box-shadow: 4px 4px 0px #064E3B !important;
-    font-size: 0.7rem !important;
-    padding: 0.8rem 1rem !important;
+    font-family: 'Press Start 2P', cursive !important;
+    font-size: 0.65rem !important;
+    padding: 0.75rem 1rem !important;
     line-height: 1.6 !important;
     transition: none !important;
     cursor: pointer !important;
     width: 100% !important;
 }
-.stButton > button:hover, .stDownloadButton > button:hover {
+.stButton > button:hover {
     transform: translate(2px, 2px) !important;
     box-shadow: 2px 2px 0px #064E3B !important;
-    background-color: #4ADE80 !important;
-    color: #121212 !important;
+    background-color: #22C55E !important;
+}
+.stButton > button:active {
+    transform: translate(4px, 4px) !important;
+    box-shadow: none !important;
 }
 
-/* ── METRIK (SOLID BOX) ────────────────────────────────────── */
+/* ── METRIK ────────────────────────────────────────────────── */
 [data-testid="stMetric"] {
-    background-color: #2D2D2D !important;
-    border: 4px solid #22C55E !important;
+    background-color: #DCFCE7 !important;
+    border: 4px solid #064E3B !important;
     border-radius: 0px !important;
-    padding: 1.5rem 1rem !important;
+    padding: 1.25rem 1rem !important;
     text-align: center !important;
-    box-shadow: 4px 4px 0px #064E3B !important;
-    margin-bottom: 1rem !important;
+    box-shadow: 4px 4px 0px #22C55E !important;
+    margin-bottom: 0.5rem !important;
 }
 [data-testid="stMetricLabel"] > div,
 [data-testid="stMetricLabel"] p {
-    font-size: 0.6rem !important;
-    color: #4ADE80 !important;
+    font-size: 0.58rem !important;
+    color: #064E3B !important;
     line-height: 1.7 !important;
 }
 [data-testid="stMetricValue"] > div {
-    font-size: 1.2rem !important;
-    color: #FFFFFF !important;
+    font-size: 1.1rem !important;
+    color: #064E3B !important;
 }
 [data-testid="stMetricDelta"] { display: none !important; }
 
@@ -131,89 +134,281 @@ footer {
 .stSlider > label,
 .stNumberInput label,
 .stTextInput label {
-    font-size: 0.7rem !important;
-    color: #FFFFFF !important;
-    margin-bottom: 0.6rem !important;
+    font-size: 0.65rem !important;
+    color: #064E3B !important;
+    margin-bottom: 0.5rem !important;
     display: block !important;
     line-height: 1.7 !important;
 }
 
-/* ── INPUT FIELDS (SELECT/TEXT/NUMBER) ─────────────────────── */
-div[data-baseweb="select"], div[data-baseweb="base-input"] {
-    background-color: #121212 !important;
+/* ── SELECT / DROPDOWN ─────────────────────────────────────── */
+/* Outer wrapper */
+div[data-baseweb="select"] {
+    background-color: #FFFFFF !important;
 }
-div[data-baseweb="select"] > div:first-child, div[data-baseweb="base-input"] > input {
-    background-color: #121212 !important;
-    border: 3px solid #22C55E !important;
+/* Trigger box */
+div[data-baseweb="select"] > div:first-child {
+    background-color: #FFFFFF !important;
+    border: 4px solid #064E3B !important;
     border-radius: 0px !important;
-    color: #FFFFFF !important;
+    min-height: 2.8rem !important;
+    padding: 0.35rem 0.75rem !important;
+    cursor: pointer !important;
 }
-div[data-baseweb="select"] span, div[data-baseweb="select"] input {
-    color: #FFFFFF !important;
+div[data-baseweb="select"] > div:first-child:hover,
+div[data-baseweb="select"] > div:first-child:focus-within {
+    background-color: #F0FDF4 !important;
+    border-color: #064E3B !important;
+    box-shadow: 3px 3px 0px #22C55E !important;
+}
+/* Teks nilai & placeholder */
+div[data-baseweb="select"] span,
+div[data-baseweb="select"] input,
+div[data-baseweb="select"] [class*="placeholder"],
+div[data-baseweb="select"] [class*="singleValue"],
+div[data-baseweb="select"] [class*="Input"] {
+    color: #064E3B !important;
     font-size: 0.65rem !important;
+    font-family: 'Press Start 2P', cursive !important;
+    background-color: transparent !important;
 }
-div[data-baseweb="popover"] > div {
-    background-color: #1E1E1E !important;
-    border: 3px solid #22C55E !important;
+/* Ikon panah */
+div[data-baseweb="select"] svg,
+div[data-baseweb="select"] [class*="indicatorContainer"] svg {
+    fill: #064E3B !important;
+    color: #064E3B !important;
 }
-li[data-baseweb="option"] {
-    background-color: #1E1E1E !important;
-    color: #FFFFFF !important;
-    font-size: 0.65rem !important;
+
+/* ── DROPDOWN POPOVER / MENU ───────────────────────────────── */
+[data-baseweb="popover"] {
+    background-color: #FFFFFF !important;
+    border: 4px solid #064E3B !important;
+    border-radius: 0px !important;
+    box-shadow: 6px 6px 0px #22C55E !important;
+    overflow: hidden !important;
 }
-li[data-baseweb="option"]:hover {
-    background-color: #2D2D2D !important;
+[data-baseweb="popover"] > div,
+[data-baseweb="popover"] > div > div {
+    background-color: #FFFFFF !important;
+}
+ul[data-baseweb="menu"] {
+    background-color: #FFFFFF !important;
+    border: none !important;
+    padding: 4px 4px !important;
+    margin: 0 !important;
+}
+li[data-baseweb="option"],
+[role="option"] {
+    background-color: #FFFFFF !important;
+    color: #064E3B !important;
+    font-family: 'Press Start 2P', cursive !important;
+    font-size: 0.58rem !important;
+    padding: 0.75rem 0.9rem !important;
+    cursor: pointer !important;
+    border-bottom: 2px solid #F0FDF4 !important;
+    line-height: 1.6 !important;
+}
+li[data-baseweb="option"]:last-child,
+[role="option"]:last-child {
+    border-bottom: none !important;
+}
+li[data-baseweb="option"]:hover,
+[role="option"]:hover {
+    background-color: #DCFCE7 !important;
+}
+li[data-baseweb="option"][aria-selected="true"],
+[role="option"][aria-selected="true"] {
+    background-color: #BBF7D0 !important;
+    color: #064E3B !important;
 }
 
 /* ── MULTISELECT TAGS ──────────────────────────────────────── */
 span[data-baseweb="tag"] {
-    background-color: #2D2D2D !important;
-    border: 2px solid #22C55E !important;
+    background-color: #4ADE80 !important;
+    border: 2px solid #064E3B !important;
+    border-radius: 0px !important;
+    padding: 0.2rem 0.5rem !important;
+    margin: 2px !important;
+    box-shadow: 2px 2px 0px #064E3B !important;
 }
 span[data-baseweb="tag"] span {
-    color: #FFFFFF !important;
+    color: #064E3B !important;
+    font-size: 0.55rem !important;
+    font-family: 'Press Start 2P', cursive !important;
+}
+span[data-baseweb="tag"] button,
+span[data-baseweb="tag"] [role="presentation"] {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    cursor: pointer !important;
+}
+span[data-baseweb="tag"] svg,
+span[data-baseweb="tag"] button svg {
+    fill: #064E3B !important;
+    color: #064E3B !important;
 }
 
-/* ── PLOTLY CHART (NO TRANSPARENCY) ────────────────────────── */
-.js-plotly-plot, .plotly, .stPlotlyChart {
-    background-color: #1E1E1E !important;
+/* ── NUMBER INPUT ──────────────────────────────────────────── */
+div[data-baseweb="base-input"] {
+    background-color: #FFFFFF !important;
+    border: 4px solid #064E3B !important;
+    border-radius: 0px !important;
+    overflow: hidden !important;
+}
+div[data-baseweb="base-input"] input {
+    background-color: #FFFFFF !important;
+    color: #064E3B !important;
+    font-size: 0.65rem !important;
+    font-family: 'Press Start 2P', cursive !important;
+    border: none !important;
+    padding: 0.5rem 0.75rem !important;
+}
+div[data-baseweb="base-input"]:focus-within {
+    border-color: #064E3B !important;
+    box-shadow: 4px 4px 0px #22C55E !important;
+}
+/* Tombol +/- number input */
+[data-testid="stNumberInputContainer"] button {
+    background-color: #DCFCE7 !important;
+    border: none !important;
+    border-left: 3px solid #064E3B !important;
+    color: #064E3B !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    padding: 0.3rem 0.6rem !important;
+}
+[data-testid="stNumberInputContainer"] button:hover {
+    background-color: #4ADE80 !important;
+    box-shadow: none !important;
+}
+[data-testid="stNumberInputContainer"] button svg {
+    fill: #064E3B !important;
+    color: #064E3B !important;
+}
+
+/* ── SLIDER ────────────────────────────────────────────────── */
+/* Label nilai */
+.stSlider [data-testid="stTickBarMin"],
+.stSlider [data-testid="stTickBarMax"],
+.stSlider p {
+    font-size: 0.55rem !important;
+    color: #064E3B !important;
+    font-family: 'Press Start 2P', cursive !important;
+}
+/* Track warna */
+.stSlider > div > div > div > div {
+    background-color: #DCFCE7 !important;
+}
+/* Thumb */
+.stSlider > div > div > div > div > div[role="slider"],
+[data-testid="stSlider"] [role="slider"] {
+    background-color: #064E3B !important;
+    border: 3px solid #064E3B !important;
+    box-shadow: 3px 3px 0px #22C55E !important;
+    width: 20px !important;
+    height: 20px !important;
+}
+/* Bagian track yang aktif (terisi) */
+.stSlider > div > div > div > div:nth-child(2) {
+    background-color: #4ADE80 !important;
+}
+
+/* ── TOGGLE ────────────────────────────────────────────────── */
+[data-testid="stToggle"] label p {
+    font-size: 0.65rem !important;
+    color: #064E3B !important;
+    font-family: 'Press Start 2P', cursive !important;
+}
+[data-testid="stToggle"] div[role="switch"] {
+    border: 3px solid #064E3B !important;
+    background-color: #DCFCE7 !important;
+}
+[data-testid="stToggle"] div[role="switch"][aria-checked="true"] {
+    background-color: #4ADE80 !important;
+    border-color: #064E3B !important;
+}
+[data-testid="stToggle"] div[role="switch"] > div {
+    background-color: #FFFFFF !important;
+    border: 2px solid #064E3B !important;
+    box-shadow: 2px 2px 0px #064E3B !important;
+}
+
+/* ── DIVIDER ───────────────────────────────────────────────── */
+hr {
+    border: none !important;
+    border-top: 3px solid #DCFCE7 !important;
+    margin: 1.75rem 0 !important;
 }
 
 /* ── COLUMNS SPACING ───────────────────────────────────────── */
-[data-testid="stColumns"] {
-    gap: 1.5rem !important;
+[data-testid="stColumns"] > [data-testid="column"] {
+    padding-left: 0.6rem !important;
+    padding-right: 0.6rem !important;
+}
+[data-testid="stColumns"] > [data-testid="column"]:first-child {
+    padding-left: 0 !important;
+}
+[data-testid="stColumns"] > [data-testid="column"]:last-child {
+    padding-right: 0 !important;
 }
 
 /* ── TEKS CUSTOM ───────────────────────────────────────────── */
 .title-text {
-    font-size: 1.5rem !important;
-    margin-bottom: 1rem !important;
-    color: #4ADE80 !important;
+    font-size: 1.35rem !important;
+    margin-bottom: 0.75rem !important;
+    color: #064E3B !important;
     text-transform: uppercase;
-    line-height: 1.8;
+    line-height: 1.7;
+    letter-spacing: 0.03rem;
 }
 .sub-text {
-    font-size: 0.75rem !important;
+    font-size: 0.65rem !important;
     margin-bottom: 0.5rem !important;
-    color: #FFFFFF !important;
+    color: #166534 !important;
     line-height: 2;
 }
 .header-text {
-    font-size: 1rem !important;
-    margin-bottom: 1.5rem !important;
-    color: #4ADE80 !important;
-    padding-bottom: 0.75rem !important;
-    border-bottom: 3px solid #2D2D2D !important;
+    font-size: 0.88rem !important;
+    margin-bottom: 1.25rem !important;
+    color: #064E3B !important;
+    padding-bottom: 0.65rem !important;
+    border-bottom: 3px solid #DCFCE7 !important;
     display: block !important;
+    line-height: 1.5 !important;
 }
 .insight-text {
-    font-size: 0.75rem !important;
+    font-size: 0.68rem !important;
     line-height: 2.1 !important;
-    color: #FFFFFF !important;
-    background-color: #2D2D2D !important;
-    padding: 1.5rem !important;
-    border: 3px dashed #22C55E !important;
+    color: #064E3B !important;
+    background-color: #DCFCE7 !important;
+    padding: 1.5rem 1.75rem !important;
+    border: 4px dashed #064E3B !important;
+    border-radius: 0 !important;
     margin-top: 1.5rem !important;
+}
+
+/* ── MARKDOWN & TEKS UMUM ──────────────────────────────────── */
+.stMarkdown p,
+.stMarkdown span,
+p, span {
+    color: #064E3B !important;
+}
+.stMarkdown p {
+    font-size: 0.65rem !important;
+    line-height: 1.9 !important;
+}
+
+/* ── PLOTLY CHART ──────────────────────────────────────────── */
+.js-plotly-plot, .plotly, .stPlotlyChart {
+    background: transparent !important;
+}
+
+/* ── OVERLAY / PORTAL FALLBACK ─────────────────────────────── */
+/* Memastikan elemen popover yang di-mount di root juga putih */
+[data-baseweb="tooltip"],
+[data-baseweb="layer"] {
+    background-color: #FFFFFF !important;
 }
 
 </style>
@@ -222,24 +417,25 @@ span[data-baseweb="tag"] span {
 # Navigasi Menu
 nav_1, nav_2, nav_3 = st.columns(3)
 with nav_1:
-    if st.button("DASHBOARD"):
+    if st.button("DASHBOARD", use_container_width=True):
         st.session_state.page = "dashboard"
         st.rerun()
 with nav_2:
-    if st.button("SIMULATOR"):
+    if st.button("SIMULATOR", use_container_width=True):
         st.session_state.page = "simulator"
         st.rerun()
 with nav_3:
-    if st.button("KEBIJAKAN"):
+    if st.button("KEBIJAKAN", use_container_width=True):
         st.session_state.page = "kebijakan"
         st.rerun()
 
+st.write("")
 st.write("")
 
 # Fungsi Load Dataset
 @st.cache_data
 def load_data():
-    paths = ["global_deforestation_2000_2025 (2).csv", "global_deforestation_2000_2025.csv"]
+    paths = ["global_deforestation_2000_2025 (2).csv", "/content/drive/MyDrive/Tugas Week 12/global_deforestation_2000_2025.csv", "global_deforestation_2000_2025.csv"]
     def region(c):
         m = {
             "brazil": "Amerika Selatan", "colombia": "Amerika Selatan", "peru": "Amerika Selatan",
@@ -275,9 +471,10 @@ def load_data():
             })
     return pd.DataFrame(rows)
 
+# Fungsi Prediksi Karbon ML
 @st.cache_resource
 def load_ml_model():
-    paths = ["model_xgboost.pkl"]
+    paths = ["model_xgboost.pkl", "/content/drive/MyDrive/Tugas Week 12/model_xgboost.pkl"]
     for p in paths:
         if os.path.exists(p):
             try: return joblib.load(p)
@@ -307,19 +504,19 @@ YEAR_MAX = int(df["Year"].max()) if not df["Year"].isnull().all() else 2025
 
 if st.session_state.applied_year is None: st.session_state.applied_year = (YEAR_MIN, YEAR_MAX)
 
-# Styling Chart Plotly — Background Solid Gelap & Teks Putih
+# Styling Chart Plotly — palette hijau ketat
 CHART_LAYOUT = dict(
-    paper_bgcolor="#1E1E1E", plot_bgcolor="#1E1E1E",
-    font=dict(family="Press Start 2P", color="#FFFFFF", size=10),
-    margin=dict(l=20, r=20, t=40, b=20),
+    paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
+    font=dict(family="Press Start 2P", color="#064E3B", size=9),
+    margin=dict(l=10, r=10, t=30, b=10),
 )
 AX_STYLE = dict(
-    showgrid=True, gridcolor="#2D2D2D", gridwidth=1,
-    linecolor="#4ADE80", linewidth=2,
-    tickfont=dict(family="Press Start 2P", color="#FFFFFF", size=8),
-    zeroline=True, zerolinecolor="#4ADE80", zerolinewidth=2,
+    showgrid=True, gridcolor="#DCFCE7", gridwidth=2,
+    linecolor="#064E3B", linewidth=3,
+    tickfont=dict(family="Press Start 2P", color="#064E3B", size=7),
+    zeroline=True, zerolinecolor="#064E3B", zerolinewidth=3,
 )
-MAP_SCALE = [[0.0, "#2D2D2D"], [1.0, "#4ADE80"]]
+MAP_SCALE = [[0.0, "#DCFCE7"], [1.0, "#166534"]]
 
 def get_filtered_data():
     y_min, y_max = st.session_state.applied_year
@@ -338,7 +535,7 @@ page = st.session_state.page
 # ==================== HALAMAN 1: DASHBOARD ====================
 if page == "dashboard":
     with st.container(border=True):
-        st.markdown("<div class='title-text'>DASHBOARD KARBON GLOBAL</div>", unsafe_allow_html=True)
+        st.markdown("<div class='title-text'>DASHBOARD KARBON</div>", unsafe_allow_html=True)
         st.markdown("<div class='sub-text'>Pantau ketersediaan area hutan dan cadangan karbon di seluruh dunia.</div>", unsafe_allow_html=True)
 
     with st.container(border=True):
@@ -350,28 +547,17 @@ if page == "dashboard":
 
         st.write("")
         sel_year = st.slider("RENTANG TAHUN", min_value=YEAR_MIN, max_value=YEAR_MAX, value=st.session_state.applied_year)
-        
         st.write("")
-        btn1, btn2 = st.columns(2)
-        with btn1:
-            if st.button("TERAPKAN VISUALISASI"):
-                st.session_state.applied_region = sel_region
-                st.session_state.applied_country = sel_country
-                st.session_state.applied_driver = sel_driver
-                st.session_state.applied_year = sel_year
-                st.session_state.filters_applied = True
-                st.rerun()
-        
-        df_f, df_yr = get_filtered_data()
-        csv_data = df_yr.to_csv(index=False).encode('utf-8')
-        with btn2:
-            st.download_button(
-                label="DOWNLOAD DATA (CSV)",
-                data=csv_data,
-                file_name="filtered_carbon_data.csv",
-                mime="text/csv",
-                use_container_width=True
-            )
+
+        if st.button("TERAPKAN VISUALISASI", use_container_width=True):
+            st.session_state.applied_region = sel_region
+            st.session_state.applied_country = sel_country
+            st.session_state.applied_driver = sel_driver
+            st.session_state.applied_year = sel_year
+            st.session_state.filters_applied = True
+            st.rerun()
+
+    df_f, df_yr = get_filtered_data()
 
     if not df_yr.empty:
         df_agg = df_yr.groupby("Country", as_index=False).mean(numeric_only=True)
@@ -384,13 +570,15 @@ if page == "dashboard":
         total_c = total_f = avg_d = avg_a = 0
 
     k1, k2, k3, k4 = st.columns(4)
-    k1.metric("TOT KARBON", f"{total_c:.2f} TeraTon")
-    k2.metric("LUAS HUTAN", f"{total_f:.2f} Juta KM²")
+    k1.metric("TOT KARBON", f"{total_c:.2f} Tt")
+    k2.metric("LUAS HUTAN", f"{total_f:.2f} Jt")
     k3.metric("RATA HILANG", f"{avg_d:.2f}%")
     k4.metric("RATA TUMBUH", f"{avg_a:.2f}%")
 
+    st.write("")
+
     with st.container(border=True):
-        st.markdown("<div class='header-text'>Peta Intensitas Karbon (Solid Background)</div>", unsafe_allow_html=True)
+        st.markdown("<div class='header-text'>Peta Intensitas Karbon</div>", unsafe_allow_html=True)
         if not df_agg.empty:
             fig_map = px.choropleth(
                 df_agg, locations="Country", locationmode="country names",
@@ -399,11 +587,9 @@ if page == "dashboard":
             fig_map.update_layout(
                 **CHART_LAYOUT,
                 geo=dict(
-                    showframe=True, framecolor="#22C55E", framewidth=2, 
-                    showcoastlines=True, coastlinecolor="#4ADE80",
-                    bgcolor="#1E1E1E", showland=True, landcolor="#2D2D2D", 
-                    showocean=True, oceancolor="#121212"
-                ), coloraxis_showscale=True
+                    showframe=True, framecolor="#064E3B", framewidth=3, showcoastlines=True, coastlinecolor="#064E3B",
+                    bgcolor="rgba(0,0,0,0)", showland=True, landcolor="#FFFFFF", showocean=True, oceancolor="#BBF7D0"
+                ), coloraxis_showscale=False
             )
             st.plotly_chart(fig_map, use_container_width=True)
         else:
@@ -417,8 +603,7 @@ if page == "dashboard":
                 drv = df_f.groupby("Primary_Driver_of_Change").size().reset_index(name="n")
                 fig_drv = go.Figure(go.Bar(
                     x=drv["n"], y=drv["Primary_Driver_of_Change"], orientation="h",
-                    text=drv["n"], textposition="auto", textfont=dict(color="#121212", size=12),
-                    marker=dict(color="#4ADE80", line=dict(color="#22C55E", width=2))
+                    marker=dict(color="#4ADE80", line=dict(color="#064E3B", width=4))
                 ))
                 fig_drv.update_layout(**CHART_LAYOUT, xaxis=AX_STYLE, yaxis=AX_STYLE)
                 st.plotly_chart(fig_drv, use_container_width=True)
@@ -427,15 +612,12 @@ if page == "dashboard":
 
     with col_b:
         with st.container(border=True):
-            st.markdown("<div class='header-text'>Top 5 Stok Karbon</div>", unsafe_allow_html=True)
+            st.markdown("<div class='header-text'>Top Karbon</div>", unsafe_allow_html=True)
             if not df_agg.empty:
                 top = df_agg.nlargest(5, "Total_Carbon_Stock_Tonnes")
-                top["Val_Billion"] = top["Total_Carbon_Stock_Tonnes"] / 1e9
-                text_labels = [f"{v:.1f} Milyar" for v in top["Val_Billion"]]
                 fig_top = go.Figure(go.Bar(
-                    x=top["Val_Billion"], y=top["Country"], orientation="h",
-                    text=text_labels, textposition="auto", textfont=dict(color="#121212", size=10),
-                    marker=dict(color="#22C55E", line=dict(color="#4ADE80", width=2))
+                    x=top["Total_Carbon_Stock_Tonnes"] / 1e9, y=top["Country"], orientation="h",
+                    marker=dict(color="#22C55E", line=dict(color="#064E3B", width=4))
                 ))
                 fig_top.update_layout(**CHART_LAYOUT, xaxis=AX_STYLE, yaxis=AX_STYLE)
                 st.plotly_chart(fig_top, use_container_width=True)
@@ -446,104 +628,83 @@ if page == "dashboard":
 elif page == "simulator":
     with st.container(border=True):
         st.markdown("<div class='title-text'>SIMULATOR MASA DEPAN</div>", unsafe_allow_html=True)
-        st.markdown("<div class='sub-text'>Atur konfigurasi dan bandingkan prediksi sisa karbon di masa depan.</div>", unsafe_allow_html=True)
+        st.markdown("<div class='sub-text'>Atur konfigurasi untuk memprediksi sisa karbon di masa depan.</div>", unsafe_allow_html=True)
 
     with st.container(border=True):
-        st.session_state.compare_mode = st.toggle("MODE KOMPARASI (Bandingkan 2 Negara)", value=st.session_state.compare_mode)
-        
         c1, c2, c3 = st.columns(3)
-        negara1 = c1.selectbox("NEGARA UTAMA", COUNTRIES, index=0)
-        
-        if st.session_state.compare_mode:
-            negara2 = c2.selectbox("NEGARA PEMBANDING", COUNTRIES, index=1 if len(COUNTRIES)>1 else 0)
-            thn_target = c3.slider("TAHUN TARGET", 2026, 2050, 2035)
-        else:
-            negara2 = None
-            thn_target = c2.slider("TAHUN TARGET", 2026, 2050, 2035)
-            pemicu = c3.selectbox("PENYEBAB UTAMA", DRIVERS)
+        negara = c1.selectbox("NEGARA", COUNTRIES)
+        thn_target = c2.slider("TAHUN", 2026, 2050, 2035)
+        pemicu = c3.selectbox("PENYEBAB", DRIVERS)
 
-        # Base Data Negara 1
-        b1 = df[df["Country"] == negara1]
-        def_land1 = float(b1["Land_Area_km2"].values[0]) if not b1.empty else 400000.0
-        def_forest1 = float(b1[b1["Year"] == YEAR_MAX]["Forest_Area_km2"].values[0]) if not b1.empty else 250000.0
-        def_d1 = float(b1["Annual_Deforestation_Rate"].mean()) if not b1.empty else 1.2
-        def_a1 = float(b1["Annual_Afforestation_Rate"].mean()) if not b1.empty else 0.5
-        
-        # Base Data Negara 2 (Jika Komparasi)
-        if st.session_state.compare_mode:
-            b2 = df[df["Country"] == negara2]
-            def_land2 = float(b2["Land_Area_km2"].values[0]) if not b2.empty else 400000.0
-            def_forest2 = float(b2[b2["Year"] == YEAR_MAX]["Forest_Area_km2"].values[0]) if not b2.empty else 250000.0
-            def_d2 = float(b2["Annual_Deforestation_Rate"].mean()) if not b2.empty else 1.2
-            def_a2 = float(b2["Annual_Afforestation_Rate"].mean()) if not b2.empty else 0.5
+        base_data = df[df["Country"] == negara]
+        def_land = float(base_data["Land_Area_km2"].values[0]) if not base_data.empty else 400000.0
+        def_forest = float(base_data[base_data["Year"] == YEAR_MAX]["Forest_Area_km2"].values[0]) if not base_data.empty else 250000.0
+        def_d = float(base_data["Annual_Deforestation_Rate"].mean()) if not base_data.empty else 1.2
+        def_a = float(base_data["Annual_Afforestation_Rate"].mean()) if not base_data.empty else 0.5
 
         st.write("")
-        if st.button("JALANKAN SIMULASI"):
+        st.write("---")
+        st.write("")
+
+        if st.button("BUKA / TUTUP ADVANCED", use_container_width=True):
+            st.session_state.adv_open = not st.session_state.adv_open
+            st.session_state.sim_run = False
+
+        if st.session_state.adv_open:
+            st.write("")
+            s1, s2 = st.columns(2)
+            laju_d = s1.slider("KECEPATAN HILANG (%)", 0.0, 5.0, def_d, 0.1)
+            laju_a = s2.slider("KECEPATAN TUMBUH (%)", 0.0, 5.0, def_a, 0.1)
+
+            st.write("")
+            a1, a2 = st.columns(2)
+            luas_h_input = a1.number_input("LUAS HUTAN AWAL", min_value=0.0, value=def_forest, step=1000.0)
+            luas_l_input = a2.number_input("LUAS DARATAN", min_value=0.0, value=def_land, step=1000.0)
+        else:
+            laju_d, laju_a = def_d, def_a
+            luas_h_input, luas_l_input = def_forest, def_land
+
+        st.write("")
+        if st.button("JALANKAN SIMULASI", use_container_width=True):
             st.session_state.sim_run = True
 
     if st.session_state.sim_run:
-        hasil_list1, thn_list = [], []
-        hasil_list2 = []
+        hasil_list, thn_list = [], []
 
         for y in range(YEAR_MAX, thn_target + 1):
-            thn_list.append(y)
-            # Prediksi Negara 1
-            fa1 = def_forest1 * (1 + (def_a1 - def_d1) / 100) ** (y - YEAR_MAX)
-            hasil1 = predict_carbon({
-                "Country": negara1, "Primary_Driver_of_Change": "Mixed", "Year": y,
-                "Forest_Area_km2": max(fa1, 1000), "Land_Area_km2": def_land1,
-                "Forest_Cover_Pct": (max(fa1, 1000) / def_land1) * 100 if def_land1 > 0 else 0,
-                "Annual_Deforestation_Rate": def_d1, "Annual_Afforestation_Rate": def_a1
+            fa = luas_h_input * (1 + (laju_a - laju_d) / 100) ** (y - YEAR_MAX)
+            hasil = predict_carbon({
+                "Country": negara, "Primary_Driver_of_Change": pemicu, "Year": y,
+                "Forest_Area_km2": max(fa, 1000), "Land_Area_km2": luas_l_input,
+                "Forest_Cover_Pct": (max(fa, 1000) / luas_l_input) * 100 if luas_l_input > 0 else 0,
+                "Annual_Deforestation_Rate": laju_d, "Annual_Afforestation_Rate": laju_a
             })
-            hasil_list1.append(hasil1)
+            hasil_list.append(hasil)
+            thn_list.append(y)
 
-            # Prediksi Negara 2
-            if st.session_state.compare_mode:
-                fa2 = def_forest2 * (1 + (def_a2 - def_d2) / 100) ** (y - YEAR_MAX)
-                hasil2 = predict_carbon({
-                    "Country": negara2, "Primary_Driver_of_Change": "Mixed", "Year": y,
-                    "Forest_Area_km2": max(fa2, 1000), "Land_Area_km2": def_land2,
-                    "Forest_Cover_Pct": (max(fa2, 1000) / def_land2) * 100 if def_land2 > 0 else 0,
-                    "Annual_Deforestation_Rate": def_d2, "Annual_Afforestation_Rate": def_a2
-                })
-                hasil_list2.append(hasil2)
+        start_carbon = hasil_list[0]
+        end_carbon = hasil_list[-1]
+        diff_carbon = end_carbon - start_carbon
+        persentase_perubahan = (diff_carbon / start_carbon) * 100 if start_carbon > 0 else 0
 
         with st.container(border=True):
-            st.markdown("<div class='header-text'>Prediksi Tren Karbon</div>", unsafe_allow_html=True)
-            
-            fig_line = go.Figure()
-            # Garis Negara 1
-            fig_line.add_trace(go.Scatter(
-                x=thn_list, y=hasil_list1, mode="lines+markers+text", name=negara1,
-                text=[f"{v/1e9:.1f}B" for v in hasil_list1], textposition="top center",
-                line=dict(color="#4ADE80", width=4),
-                marker=dict(size=10, color="#1E1E1E", line=dict(color="#4ADE80", width=3))
+            st.markdown("<div class='header-text'>Prediksi Karbon Visual</div>", unsafe_allow_html=True)
+            fig_line = go.Figure(go.Scatter(
+                x=thn_list, y=hasil_list, mode="lines+markers",
+                line=dict(color="#064E3B", width=4),
+                marker=dict(size=12, color="#FFFFFF", line=dict(color="#064E3B", width=4))
             ))
-            
-            # Garis Negara 2
-            if st.session_state.compare_mode:
-                fig_line.add_trace(go.Scatter(
-                    x=thn_list, y=hasil_list2, mode="lines+markers+text", name=negara2,
-                    text=[f"{v/1e9:.1f}B" for v in hasil_list2], textposition="bottom center",
-                    line=dict(color="#F87171", width=4), # Warna merah kontras untuk pembanding
-                    marker=dict(size=10, color="#1E1E1E", line=dict(color="#F87171", width=3))
-                ))
-
-            fig_line.update_layout(**CHART_LAYOUT, xaxis=AX_STYLE, yaxis=AX_STYLE, showlegend=True)
+            fig_line.update_layout(**CHART_LAYOUT, xaxis=AX_STYLE, yaxis=AX_STYLE)
             st.plotly_chart(fig_line, use_container_width=True)
-            
-            # Export Data Simulasi
-            df_sim = pd.DataFrame({"Tahun": thn_list, f"Karbon_{negara1}": hasil_list1})
-            if st.session_state.compare_mode: df_sim[f"Karbon_{negara2}"] = hasil_list2
-            csv_sim = df_sim.to_csv(index=False).encode('utf-8')
-            
-            st.download_button(
-                label="DOWNLOAD HASIL SIMULASI (CSV)",
-                data=csv_sim,
-                file_name="hasil_simulasi_karbon.csv",
-                mime="text/csv",
-                use_container_width=True
-            )
+
+            if persentase_perubahan > 0:
+                insight_msg = f"TREN POSITIF: Hutan tumbuh {laju_a:.2f}%, hilang {laju_d:.2f}%. Stok karbon {negara} naik {persentase_perubahan:.2f}%. Tahun {thn_target} capai {end_carbon:,.0f} Ton."
+            elif persentase_perubahan < 0:
+                insight_msg = f"KRISIS MENURUN: Hutan hilang {laju_d:.2f}% vs tumbuh {laju_a:.2f}%. Karbon {negara} susut {abs(persentase_perubahan):.2f}%. Tersisa {end_carbon:,.0f} Ton pada {thn_target}."
+            else:
+                insight_msg = f"STAGNAN: Kondisi stabil. Karbon bertahan di {end_carbon:,.0f} Ton hingga {thn_target}."
+
+            st.markdown(f"<div class='insight-text'>{insight_msg}</div>", unsafe_allow_html=True)
 
 # ==================== HALAMAN 3: KEBIJAKAN ====================
 else:
@@ -565,11 +726,12 @@ else:
             p4 = st.toggle("INSENTIF PETANI (PES)")
 
             st.write("")
-            if st.button("TERAPKAN ATURAN"):
+            if st.button("TERAPKAN ATURAN", use_container_width=True):
                 st.session_state.pol_run = True
 
     with col_r:
         if st.session_state.pol_run:
+
             base_data_pol = df[df["Country"] == negara_kebijakan]
             pol_land = float(base_data_pol["Land_Area_km2"].values[0]) if not base_data_pol.empty else 600000.0
             pol_forest = float(base_data_pol[base_data_pol["Year"] == YEAR_MAX]["Forest_Area_km2"].values[0]) if not base_data_pol.empty else 400000.0
@@ -579,16 +741,36 @@ else:
 
             kebijakan_diterapkan = []
 
+            # --- LOGIKA KEBIJAKAN BERDASARKAN RISET & STUDI KASUS GLOBAL ---
+
             if p1:
+                # P1. Stop Tebang Komersial (Moratorium)
+                # Referensi: Kebijakan Moratorium Hutan Indonesia & Soy Moratorium Brazil.
+                # Riset WRI (World Resources Institute) & CIFOR menunjukkan kebijakan moratorium efektif
+                # menurunkan angka deforestasi sekitar 30% - 40%. Di sini kita asumsikan penurunan 35% (pengali 0.65).
                 bd *= 0.65
                 kebijakan_diterapkan.append("[WRI/CIFOR] Moratorium menurunkan laju tebang hingga 35%.")
+
             if p2:
+                # P2. Tambah Dana Reboisasi (REDD+ / Bonn Challenge)
+                # Referensi: Program REDD+ PBB dan "Grain for Green" di Tiongkok.
+                # Insentif pendanaan berskala nasional terbukti bisa meningkatkan laju aforestasi (hutan tumbuh)
+                # secara signifikan. Kita gunakan pengali 1.5 (peningkatan 50% dari rata-rata).
                 ba *= 1.5
                 kebijakan_diterapkan.append("[REDD+] Injeksi dana mem-boost laju aforestasi sebesar 50%.")
+
             if p3:
+                # P3. Hukum Tegas Bakar Hutan
+                # Referensi: Evaluasi kebijakan pencegahan karhutla pasca-2015 di Asia Tenggara (Studi Bank Dunia).
+                # Penegakan hukum dan patroli mampu menekan deforestasi akibat api sekitar 25% (pengali 0.75).
                 bd *= 0.75
                 kebijakan_diterapkan.append("[Bank Dunia] Hukum karhutla memangkas hilangnya hutan sebesar 25%.")
+
             if p4:
+                # P4. Insentif Petani (Payment for Environmental Services / PES)
+                # Referensi: Studi kasus program PES di Kosta Rika (FAO).
+                # Memberikan insentif finansial pada petani untuk menjaga pohon (agroforestri) dapat
+                # menekan deforestasi ~15% (pengali 0.85) dan menaikkan tutupan pohon ~20% (pengali 1.2).
                 ba *= 1.2; bd *= 0.85
                 kebijakan_diterapkan.append("[FAO-PES] Insentif petani menaikkan tumbuh hutan 20% & menekan hilangnya 15%.")
 
