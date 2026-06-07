@@ -6,12 +6,14 @@ import plotly.graph_objects as go
 import os
 import joblib
 
+# Konfigurasi Halaman
 st.set_page_config(
     page_title="Global Carbon Dashboard",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
+# Inisialisasi State
 if "page" not in st.session_state: st.session_state.page = "dashboard"
 if "filters_applied" not in st.session_state: st.session_state.filters_applied = False
 if "applied_region" not in st.session_state: st.session_state.applied_region = []
@@ -22,67 +24,78 @@ if "adv_open" not in st.session_state: st.session_state.adv_open = False
 if "sim_run" not in st.session_state: st.session_state.sim_run = False
 if "pol_run" not in st.session_state: st.session_state.pol_run = False
 
+# CSS Custom - Perbaikan Layout & Kontras (Background Gelap = Teks Putih)
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
+/* GLOBAL STYLES */
 * { 
     font-family: 'Press Start 2P', cursive !important; 
-    color: #064E3B !important; 
 }
 
+/* Latar Belakang Aplikasi Terang */
 body, .stApp, .block-container, header[data-testid="stHeader"] { 
-    background-color: #F0FDF4 !important; 
+    background-color: #F0FDF4 !important; /* Hijau Sangat Terang / Mint */
+    color: #064E3B !important; /* Hijau Gelap untuk teks di bg terang */
     background-image: none !important;
 }
-
 [data-testid="stSidebar"] { display: none; }
-.block-container { padding: 2rem 3rem 5rem !important; max-width: 1300px !important; }
+.block-container { padding: 3rem 4rem 5rem !important; max-width: 1400px !important; }
 
+/* KARTU CONTAINER (PIXEL SOLID) - Diperlebar spacingnya */
 [data-testid="stVerticalBlockBorderWrapper"] {
     background-color: #FFFFFF !important; 
     border: 4px solid #064E3B !important;
     border-radius: 0px !important;
-    box-shadow: 6px 6px 0px #4ADE80 !important; 
-    padding: 1.8rem !important;
-    margin-bottom: 2rem !important; 
+    box-shadow: 8px 8px 0px #4ADE80 !important; 
+    padding: 2.5rem !important;
+    margin-bottom: 3rem !important; /* Jarak ekstra agar tidak menumpuk */
 }
 
+/* SEMUA TOMBOL (BACKGROUND GELAP, TEKS PUTIH) */
 .stButton > button {
-    background-color: #4ADE80 !important; 
-    color: #064E3B !important;
-    border: 4px solid #064E3B !important;
+    background-color: #064E3B !important; 
+    color: #FFFFFF !important; 
+    border: 4px solid #4ADE80 !important;
     border-radius: 0px !important;
-    box-shadow: 4px 4px 0px #064E3B !important;
-    font-size: 0.75rem !important;
-    padding: 0.8rem !important;
-    transition: none !important;
+    box-shadow: 6px 6px 0px #4ADE80 !important;
+    font-size: 0.8rem !important;
+    padding: 1rem !important;
+    transition: all 0.1s ease-in-out !important;
     width: 100% !important;
     opacity: 1 !important;
 }
-
-.stButton > button:active {
-    transform: translate(4px, 4px) !important;
-    box-shadow: 0px 0px 0px #064E3B !important;
-}
-
-[data-testid="stMetric"] {
-    background: #FFFFFF !important;
-    border: 4px solid #064E3B !important;
-    border-radius: 0px !important;
-    padding: 1.5rem 1rem !important;
-    text-align: center;
+.stButton > button:hover {
+    background-color: #047857 !important; /* Hijau gelap yang sedikit lebih terang pas di-hover */
+    color: #FFFFFF !important;
+    transform: translate(2px, 2px) !important;
     box-shadow: 4px 4px 0px #4ADE80 !important;
-    margin-bottom: 1rem !important;
 }
-[data-testid="stMetricLabel"] > div { font-size: 0.65rem !important; margin-bottom: 0.5rem; color: #064E3B !important; }
-[data-testid="stMetricValue"] { font-size: 1.3rem !important; color: #064E3B !important; }
 
+/* KOTAK METRIK ANGKA (BACKGROUND GELAP, TEKS PUTIH) */
+[data-testid="stMetric"] {
+    background: #064E3B !important;
+    border: 4px solid #4ADE80 !important;
+    border-radius: 0px !important;
+    padding: 2rem 1rem !important;
+    text-align: center;
+    box-shadow: 6px 6px 0px #4ADE80 !important;
+    margin-bottom: 1.5rem !important;
+}
+[data-testid="stMetricLabel"] > div { font-size: 0.7rem !important; margin-bottom: 0.8rem; color: #F0FDF4 !important; }
+[data-testid="stMetricValue"] { font-size: 1.5rem !important; color: #FFFFFF !important; }
+
+/* FIX LABEL FORM AGAR SELALU MUNCUL */
 .stSelectbox label, .stSlider > label, .stNumberInput label, .stMultiSelect label, .stToggle label {
-    font-size: 0.7rem !important; color: #064E3B !important; padding-bottom: 0.5rem !important;
+    font-size: 0.75rem !important; 
+    color: #064E3B !important; 
+    padding-bottom: 0.5rem !important;
     visibility: visible !important;
+    opacity: 1 !important;
 }
 
+/* Kotak Input Utama */
 div[data-baseweb="select"] > div, 
 div[data-baseweb="base-input"], 
 .stTextInput input, 
@@ -91,44 +104,54 @@ div[data-baseweb="base-input"],
     border: 4px solid #064E3B !important;
     border-radius: 0px !important;
     color: #064E3B !important;
-    font-size: 0.7rem !important;
+    font-size: 0.75rem !important;
+    padding: 0.2rem !important;
 }
 
-input, textarea, select {
-    color: #064E3B !important;
-    background-color: #FFFFFF !important;
-}
-
+/* Dropdown Menu Popover */
 div[data-baseweb="popover"] > div,
 ul[role="listbox"],
 ul[role="listbox"] li {
     background-color: #FFFFFF !important;
     color: #064E3B !important;
-    opacity: 1 !important;
-    visibility: visible !important;
 }
 ul[role="listbox"] li:hover {
     background-color: #4ADE80 !important;
 }
 
+/* TAG DI DALAM MULTISELECT (BACKGROUND GELAP, TEKS PUTIH) */
 span[data-baseweb="tag"] {
-    background-color: #4ADE80 !important;
-    color: #064E3B !important;
-    border: 2px solid #064E3B !important;
+    background-color: #064E3B !important;
+    color: #FFFFFF !important;
+    border: 2px solid #4ADE80 !important;
     border-radius: 0px !important;
+    padding: 0.2rem 0.5rem !important;
 }
 
+/* Slider */
 div[data-baseweb="slider"] div { background-color: #064E3B !important; }
 div[data-baseweb="slider"] div[role="slider"] { background-color: #4ADE80 !important; border: 3px solid #064E3B !important; }
 
-.title-text { font-size: 1.8rem; margin-bottom: 0.8rem; color: #064E3B; text-transform: uppercase; line-height: 1.4; text-align: center; }
-.sub-text { font-size: 0.75rem; margin-bottom: 1.5rem; color: #064E3B; line-height: 1.6; text-align: center; }
-.header-text { font-size: 1rem; margin-bottom: 1.5rem; color: #064E3B; text-transform: uppercase; border-bottom: 4px dashed #4ADE80; padding-bottom: 0.5rem; }
-.insight-text { font-size: 0.75rem; line-height: 1.8; color: #064E3B; background: #FFFFFF; padding: 1.5rem; border: 4px dashed #064E3B; margin-top: 1.5rem;}
+/* TEKS CUSTOM */
+.title-text { font-size: 2rem; margin-bottom: 1rem; color: #064E3B; text-transform: uppercase; line-height: 1.4; text-align: center; }
+.sub-text { font-size: 0.8rem; margin-bottom: 2rem; color: #064E3B; line-height: 1.6; text-align: center; }
+.header-text { font-size: 1.1rem; margin-bottom: 1.5rem; color: #064E3B; text-transform: uppercase; border-bottom: 4px dashed #4ADE80; padding-bottom: 0.8rem; }
+
+/* KOTAK INSIGHT KESIMPULAN (BACKGROUND GELAP, TEKS PUTIH) */
+.insight-text { 
+    font-size: 0.8rem; 
+    line-height: 2; 
+    color: #FFFFFF; 
+    background: #064E3B; 
+    padding: 2rem; 
+    border: 4px dashed #4ADE80; 
+    margin-top: 2rem;
+}
 </style>
 """, unsafe_allow_html=True)
 
-nav_1, nav_2, nav_3 = st.columns(3)
+# Navigasi Menu dengan Gap Large
+nav_1, nav_2, nav_3 = st.columns(3, gap="large")
 with nav_1:
     if st.button("DASHBOARD", use_container_width=True):
         st.session_state.page = "dashboard"
@@ -142,8 +165,9 @@ with nav_3:
         st.session_state.page = "kebijakan"
         st.rerun()
 
-st.markdown("<br>", unsafe_allow_html=True)
+st.markdown("<br><br>", unsafe_allow_html=True) 
 
+# Fungsi Load Dataset
 @st.cache_data
 def load_data():
     paths = ["global_deforestation_2000_2025 (2).csv", "/content/drive/MyDrive/Tugas Week 12/global_deforestation_2000_2025.csv", "global_deforestation_2000_2025.csv"]
@@ -162,6 +186,7 @@ def load_data():
             if "Region" not in df.columns: df["Region"] = df["Country"].apply(region)
             return df
 
+    # Data Dummy jika file CSV tidak ditemukan
     np.random.seed(42)
     countries = ["Brazil", "Indonesia", "Canada", "Russia", "USA", "Congo", "Australia", "India"]
     rows = []
@@ -182,6 +207,7 @@ def load_data():
             })
     return pd.DataFrame(rows)
 
+# Fungsi Prediksi Karbon ML
 @st.cache_resource
 def load_ml_model():
     paths = ["model_xgboost.pkl", "/content/drive/MyDrive/Tugas Week 12/model_xgboost.pkl"]
@@ -228,6 +254,7 @@ YEAR_MAX = int(df["Year"].max()) if not df["Year"].isnull().all() else 2025
 
 if st.session_state.applied_year is None: st.session_state.applied_year = (YEAR_MIN, YEAR_MAX)
 
+# Styling Chart Plotly
 CHART_LAYOUT = dict(
     paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
     font=dict(family="Press Start 2P", color="#064E3B", size=9),
@@ -254,6 +281,7 @@ def get_filtered_data():
 
 page = st.session_state.page
 
+# ==================== HALAMAN 1: DASHBOARD ====================
 if page == "dashboard":
     st.markdown("<div class='title-text'>DASHBOARD KARBON</div>", unsafe_allow_html=True)
     st.markdown("<div class='sub-text'>Pantau ketersediaan area hutan dan cadangan karbon di seluruh dunia.</div>", unsafe_allow_html=True)
@@ -261,7 +289,8 @@ if page == "dashboard":
 
     with st.container(border=True):
         st.markdown("<div class='header-text'>FILTER DATA</div>", unsafe_allow_html=True)
-        f1, f2, f3 = st.columns(3)
+        # Menggunakan gap="large" agar field tidak berdekatan
+        f1, f2, f3 = st.columns(3, gap="large")
         with f1: sel_region = st.multiselect("PILIH KAWASAN", REGIONS, default=[])
         with f2: sel_country = st.multiselect("PILIH NEGARA", COUNTRIES, default=[])
         with f3: sel_driver = st.multiselect("PILIH PENYEBAB", DRIVERS, default=[])
@@ -291,7 +320,8 @@ if page == "dashboard":
         total_c = total_f = avg_d = avg_a = 0
 
     st.markdown("<br>", unsafe_allow_html=True)
-    k1, k2, k3, k4 = st.columns(4)
+    # Menggunakan gap="large" untuk metric boxes
+    k1, k2, k3, k4 = st.columns(4, gap="large")
     k1.metric("TOTAL KARBON", f"{total_c:.2f} Tt")
     k2.metric("LUAS HUTAN", f"{total_f:.2f} Jt")
     k3.metric("RATA HILANG", f"{avg_d:.2f}%")
@@ -315,7 +345,8 @@ if page == "dashboard":
             st.plotly_chart(fig_map, use_container_width=True)
         else: st.markdown("Data kosong.")
 
-    col_a, col_b = st.columns(2)
+    # Menggunakan gap="large" untuk grafik
+    col_a, col_b = st.columns(2, gap="large")
     with col_a:
         with st.container(border=True):
             st.markdown("<div class='header-text'>FAKTOR HUTAN HILANG</div>", unsafe_allow_html=True)
@@ -336,12 +367,13 @@ if page == "dashboard":
                 top = df_agg.nlargest(5, "Total_Carbon_Stock_Tonnes")
                 fig_top = go.Figure(go.Bar(
                     x=top["Total_Carbon_Stock_Tonnes"] / 1e9, y=top["Country"], orientation="h",
-                    marker=dict(color="#22C55E", line=dict(color="#064E3B", width=4))
+                    marker=dict(color="#064E3B", line=dict(color="#4ADE80", width=4))
                 ))
                 fig_top.update_layout(**CHART_LAYOUT, xaxis=AX_STYLE, yaxis=AX_STYLE)
                 st.plotly_chart(fig_top, use_container_width=True)
             else: st.markdown("Data kosong.")
 
+# ==================== HALAMAN 2: SIMULATOR ====================
 elif page == "simulator":
     st.markdown("<div class='title-text'>SIMULATOR MASA DEPAN</div>", unsafe_allow_html=True)
     st.markdown("<div class='sub-text'>Atur konfigurasi di bawah untuk memprediksi sisa karbon.</div>", unsafe_allow_html=True)
@@ -349,7 +381,7 @@ elif page == "simulator":
 
     with st.container(border=True):
         st.markdown("<div class='header-text'>PENGATURAN DASAR</div>", unsafe_allow_html=True)
-        c1, c2, c3 = st.columns(3)
+        c1, c2, c3 = st.columns(3, gap="large")
         negara = c1.selectbox("PILIH NEGARA", COUNTRIES)
         thn_target = c2.slider("TAHUN TARGET", 2026, 2050, 2035)
         pemicu = c3.selectbox("PENYEBAB UTAMA", DRIVERS)
@@ -369,12 +401,12 @@ elif page == "simulator":
     if st.session_state.adv_open:
         with st.container(border=True):
             st.markdown("<div class='header-text'>PENGATURAN ADVANCED</div>", unsafe_allow_html=True)
-            s1, s2 = st.columns(2)
+            s1, s2 = st.columns(2, gap="large")
             laju_d = s1.slider("KECEPATAN HILANG (%)", 0.0, 5.0, def_d, 0.1)
             laju_a = s2.slider("KECEPATAN TUMBUH (%)", 0.0, 5.0, def_a, 0.1)
 
             st.markdown("<br>", unsafe_allow_html=True)
-            a1, a2 = st.columns(2)
+            a1, a2 = st.columns(2, gap="large")
             luas_h_input = a1.number_input("LUAS HUTAN AWAL (KM2)", min_value=0.0, value=def_forest, step=1000.0)
             luas_l_input = a2.number_input("LUAS DARATAN (KM2)", min_value=0.0, value=def_land, step=1000.0)
     else:
@@ -410,7 +442,7 @@ elif page == "simulator":
             fig_line = go.Figure(go.Scatter(
                 x=thn_list, y=hasil_list, mode="lines+markers",
                 line=dict(color="#064E3B", width=4),
-                marker=dict(size=12, color="#4ADE80", line=dict(color="#064E3B", width=4))
+                marker=dict(size=12, color="#064E3B", line=dict(color="#4ADE80", width=3))
             ))
             fig_line.update_layout(**CHART_LAYOUT, xaxis=AX_STYLE, yaxis=AX_STYLE)
             st.plotly_chart(fig_line, use_container_width=True)
@@ -424,6 +456,7 @@ elif page == "simulator":
 
             st.markdown(f"<div class='insight-text'>{insight_msg}</div>", unsafe_allow_html=True)
 
+# ==================== HALAMAN 3: KEBIJAKAN ====================
 else:
     st.markdown("<div class='title-text'>SIMULATOR KEBIJAKAN</div>", unsafe_allow_html=True)
     st.markdown("<div class='sub-text'>Coba terapkan kebijakan berbasis riset global dan lihat dampaknya di 2030.</div>", unsafe_allow_html=True)
@@ -442,7 +475,7 @@ else:
             p3 = st.toggle("HUKUM TEGAS BAKAR")
             p4 = st.toggle("INSENTIF PETANI (PES)")
             
-            st.markdown("<br>", unsafe_allow_html=True)
+            st.markdown("<br><br>", unsafe_allow_html=True)
             if st.button("TERAPKAN ATURAN", use_container_width=True):
                 st.session_state.pol_run = True
 
@@ -461,9 +494,6 @@ else:
             # ==============================================================================
             # LOGIKA KEBIJAKAN PREDIKTIF (BERBASIS RISET GLOBAL)
             # ==============================================================================
-            # Penyesuaian persentase multiplier (0.65, 1.5, dll) tidak diambil secara acak,
-            # melainkan di-mapping dari berbagai laporan efektivitas kebijakan iklim global:
-            
             if p1: 
                 bd *= 0.65 
                 # WRI/CIFOR membuktikan moratorium lisensi tebang baru di negara berkembang
@@ -498,7 +528,7 @@ else:
             
             with st.container(border=True):
                 st.markdown(f"<div class='header-text'>PROYEKSI (2030)</div>", unsafe_allow_html=True)
-                m1, m2 = st.columns(2)
+                m1, m2 = st.columns(2, gap="large")
                 m1.metric("HUTAN HILANG", f"{bd:.2f}%")
                 m2.metric("HUTAN TUMBUH", f"{ba:.2f}%")
                 st.metric("ESTIMASI KARBON", f"{h_pol:,.0f} Ton")
